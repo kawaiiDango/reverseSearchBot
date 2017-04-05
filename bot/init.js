@@ -61,12 +61,16 @@ module.exports = function() {
     var reply = msg.message_id;
     if (global.debug) console.log("msg is ", msg);
 
-    if (msg.text === "/help") {
-      return;
-    } else if (msg.text === "/start") {
+    if (msg.text === "/help" || msg.text === "/start") {
       return;
     } else if (msg.text) {
-      if (msg.chat.type == "private"){
+      if (msg.text == "sauce" || msg.text == "source" || 
+        msg.text == "/sauce" || msg.text == "#sauce"){
+        var rmsg = msg.reply_to_message;
+        if (rmsg && rmsg.photo && rmsg.photo.length > 0)
+          getSauce(rmsg);
+      }
+      else if (msg.chat.type == "private"){
         if (tools.urlDetector(msg.text)) {
           var url = msg.text;
           request(url, bot, tokenSN, msg);
@@ -74,8 +78,17 @@ module.exports = function() {
           bot.sendMessage(chat_id, MESSAGE.invalidUrl, {reply: reply, parse: "Markdown"});
         }
       }
-    } else if (msg.photo && msg.photo.length > 0) {
-      bot.getFile(msg.photo[msg.photo.length-1].file_id)
+    } else if (msg.photo && msg.photo.length > 0 && 
+      (SETTINGS.favouriteGroups.indexOf(chat_id)>-1 || 
+        msg.chat.type == "private")) {
+      getSauce(msg);
+    } else {
+      ///bot.sendMessage(chat_id, MESSAGE.invalidForm, {reply: reply, parse: "Markdown"});
+    }
+  });
+
+  var getSauce = function(msg){
+    bot.getFile(msg.photo[msg.photo.length-1].file_id)
       .then(function(file) {
         if (global.debug) console.log("file is", file);
 
@@ -87,10 +100,7 @@ module.exports = function() {
         var url = "https://api.telegram.org/file/bot" + tokenBot + "/" + file.file_path;
         request(url, bot, tokenSN, msg);
       });
-    } else {
-      ///bot.sendMessage(chat_id, MESSAGE.invalidForm, {reply: reply, parse: "Markdown"});
-    }
-  });
+  };
 
   bot.connect();
   console.log("bot: connected");

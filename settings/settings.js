@@ -54,7 +54,10 @@ var settings = {
     reportLimitsOfSaucenao: {on: true, notify: false},
     reportRequestError: {on: true, notify: true},
     reportFileUrl: {on: true, notify: false}
-  }
+  },
+  favouriteGroups: [
+    "-1001053655109", // moe cave
+  ]
 };
 
 settings.flooder.msg = settings.msg.tooManyRequests;
