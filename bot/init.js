@@ -49,7 +49,7 @@ module.exports = function() {
   }
 
   bot.on(["/help", "/start"], function(msg) {
-    var chat_id = msg.from.id;
+    var chat_id = msg.chat.id;
     var reply = msg.message_id;
     if (global.debug) console.log("msg is ", msg);
 
@@ -57,7 +57,7 @@ module.exports = function() {
   });
 
   bot.on(["*"], function(msg) {
-    var chat_id = msg.from.id;
+    var chat_id = msg.chat.id;
     var reply = msg.message_id;
     if (global.debug) console.log("msg is ", msg);
 
@@ -66,11 +66,13 @@ module.exports = function() {
     } else if (msg.text === "/start") {
       return;
     } else if (msg.text) {
-      if (tools.urlDetector(msg.text)) {
-        var url = msg.text;
-        request(url, bot, tokenSN, msg);
-      } else {
-        bot.sendMessage(chat_id, MESSAGE.invalidUrl, {reply: reply, parse: "Markdown"});
+      if (msg.chat.type == "private"){
+        if (tools.urlDetector(msg.text)) {
+          var url = msg.text;
+          request(url, bot, tokenSN, msg);
+        } else {
+          bot.sendMessage(chat_id, MESSAGE.invalidUrl, {reply: reply, parse: "Markdown"});
+        }
       }
     } else if (msg.photo && msg.photo.length > 0) {
       bot.getFile(msg.photo[msg.photo.length-1].file_id)
@@ -79,13 +81,14 @@ module.exports = function() {
 
         reportToOwner.reportFileUrl(file, tokenBot, bot);
 
-        bot.sendMessage(chat_id, MESSAGE.loading, {reply: reply, parse: "Markdown"});
+        console.log("loading...");
+        ///bot.sendMessage(chat_id, MESSAGE.loading, {reply: reply, parse: "Markdown"});
 
         var url = "https://api.telegram.org/file/bot" + tokenBot + "/" + file.file_path;
         request(url, bot, tokenSN, msg);
       });
     } else {
-      bot.sendMessage(chat_id, MESSAGE.invalidForm, {reply: reply, parse: "Markdown"});
+      ///bot.sendMessage(chat_id, MESSAGE.invalidForm, {reply: reply, parse: "Markdown"});
     }
   });
 

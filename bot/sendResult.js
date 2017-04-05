@@ -4,9 +4,9 @@ var idButtonName = require("../settings/settings.js").id_buttonName;
 var idbaseArray = Object.keys(idButtonName);
 var tools = require("../tools/tools.js");
 
-var sendMsg = function(results, totalLength, bot, msg) {
+var sendResult = function(results, totalLength, bot, msg) {
   results = results || [];
-  var chat_id = msg.from.id;
+  var chat_id = msg.chat.id;
   var reply = msg.message_id;
   if (!results.length) {
     // console.log("Processing: nokori 0");
@@ -32,7 +32,7 @@ var sendMsg = function(results, totalLength, bot, msg) {
   var header = element.header;
   var data = element.data;
   var textarray = [];
-  var text = "";
+  var text = "", displayText = "";
   var buttons = [];
   var innerbuttons = [];
   var innerbuttonsContainer = [];
@@ -60,10 +60,11 @@ var sendMsg = function(results, totalLength, bot, msg) {
       "[<Thumnail>](" + header.thumbnail + ")"
     ];
     text = textarray.join(" ");
+    displayText = "*" + data.title + "*" + " - by _" + data.member_name + "_";
     buttons = [
       [
-        bot.inlineButton("Pixiv Link", {
-          url: urlbase.pixiv_id + data.pixiv_id
+        bot.inlineButton(buttonName, {
+          url: urlbase.pixiv_id + data.pixiv_id 
         })
       ]
     ];
@@ -83,6 +84,7 @@ var sendMsg = function(results, totalLength, bot, msg) {
       "[<Thumnail>](" + header.thumbnail + ")"
     ];
     text = textarray.join(" ");
+    displayText = "*" + data.title + "*" + " - by _" + data.member_name + "_";
 
     for (var j = 0; j < restOfIds.length; j++) {
       buttonName = idButtonName[restOfIds[j]];
@@ -109,6 +111,8 @@ var sendMsg = function(results, totalLength, bot, msg) {
       }
     }
   } else {
+    // skip the undetailed result
+    /*
     textarray = [
       number.toString() + "/" + totalLength.toString(), "|",
       "*Similarity:*", header.similarity + "%", "|",
@@ -122,16 +126,20 @@ var sendMsg = function(results, totalLength, bot, msg) {
       "[<Thumnail>](" + header.thumbnail + ")"
     ];
     text = textarray.join(" ");
+    displayText = "*" + data.title + "*" + " - by _" + data.member_name + "_";
+*/
+    return sendResult(results.slice(1), totalLength, bot, msg);
   }
 
   markup = bot.inlineKeyboard(buttons);
 
-  return bot.sendMessage(chat_id, text, {reply: reply, markup: markup, parse: "Markdown"})
+  return bot.sendMessage(chat_id, displayText, {reply: reply, markup: markup, parse: "Markdown"})
+  /*
   .then(function() {
     if (global.debug) console.log('inner then');
-    return sendMsg(results.slice(1), totalLength, bot, msg);
+    return sendResult(results.slice(1), totalLength, bot, msg);
   });
-
+*/
 };
 
-module.exports = sendMsg;
+module.exports = sendResult;

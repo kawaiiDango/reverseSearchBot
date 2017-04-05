@@ -69,7 +69,7 @@ module.exports = (bot, cfg) => {
         // { data, error } = event;
 
         bot.sendMessage(id,
-          `👤 <b>User:</b> ${ data.from.id } (${ data.chat.id })\n` +
+          `👤 <b>User:</b> ${ data.chat.id } (${ data.chat.id })\n` +
           `⚠ <b>Error:</b> ${ error.message || error }\n` +
           `${ error.stack ? `🚧 <b>Stack:</b>\n${ s(error.stack) }\n` : '' }` +
           `⏰ <b>Event:</b> ${ type }\n` +

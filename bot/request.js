@@ -1,13 +1,13 @@
 var axios = require("axios");
 var urlbase = require("../settings/settings.js").url;
 var MESSAGE = require("../settings/settings.js").msg;
-var sendMsg = require("./sendMsg.js");
+var sendResult = require("./sendResult.js");
 var reportToOwner = require("./reportToOwner.js");
 var reportLimitsOfSaucenao = reportToOwner.reportLimitsOfSaucenao;
 var reportRequestError = reportToOwner.reportRequestError;
 
 module.exports = function(url, bot, tokenSN, msg) {
-  var chat_id = msg.from.id;
+  var chat_id = msg.chat.id;
   var reply = msg.message_id;
   var params = urlbase.sauceNaoParams;
   params.url = url;
@@ -33,18 +33,14 @@ module.exports = function(url, bot, tokenSN, msg) {
     reportLimitsOfSaucenao(header, bot);
 
     if (results.length < 1) {
-      return bot.sendMessage(chat_id, MESSAGE.zeroResult, {reply: reply, parse: "Markdown"});
+      if (msg.chat.type == "private")
+        return bot.sendMessage(chat_id, MESSAGE.zeroResult, {reply: reply, parse: "Markdown"});
+      else return null;
     }
 
-    // console.log("res.data.results are ", results);
+    ///console.log("res.data.results are ", results);
 
-    bot.sendMessage(chat_id, MESSAGE.startResult, {reply: reply, parse: "Markdown"})
-    .then(function() {
-      return sendMsg(results, results.length, bot, msg);
-    })
-    .then(function() {
-        return bot.sendMessage(chat_id, MESSAGE.endResult, {reply: reply, parse: "Markdown"});
-    });
+    return sendResult(results, results.length, bot, msg);
   })
   .catch(function(err) {
     console.log("Error: error in get request to saucenao");

@@ -23,6 +23,7 @@ module.exports = function(bot, cfg) {
   // Load config data
   var opt = cfg.flooder || {};
   var interval = Number(opt.interval) || 1;
+  var numMsgs = Number(opt.numMsgs) || 1;
   var text = opt.message === undefined ?
     'Too many messages from you. Please, try later...' :
       opt.message;
@@ -31,16 +32,18 @@ module.exports = function(bot, cfg) {
   bot.mod('message', function(data) {
 
     var msg = data.msg;
-    var id = msg.from.id;
+    var id = msg.chat.id;
     var user = userList[id];
     var now = new Date(msg.date);
 
     if (user) {
       var diff = now - user.lastTime;
       user.lastTime = now;
-      if (diff <= interval) {
+      user.numMsgs = (user.numMsgs || 0) + 1;
+      if (diff <= interval && user.numMsgs > numMsgs) {
         if (!user.flood) {
-          if (text) bot.sendMessage(id, text, {notify: moduleSwitch.flooder.notify});
+          if (text && msg.chat.type == "private") 
+            bot.sendMessage(id, text, {notify: moduleSwitch.flooder.notify});
           user.flood = true;
         }
         data.msg = {};
