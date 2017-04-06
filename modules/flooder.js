@@ -1,4 +1,5 @@
 var moduleSwitch = require("../settings/settings.js").moduleSwitch;
+var KEYWORDS = require("../settings/settings.js").keywords;
 
 // source: https://github.com/kosmodrey/telebot/
 // modified by Frank Kim for compatibility under es6
@@ -39,7 +40,7 @@ module.exports = function(bot, cfg) {
     //ignore irrelevant group messages
     if(data.msg.chat.type != "private"){
       if(!data.msg.photo && (data.msg.text && 
-        data.msg.text.toLowerCase().indexOf("sauce") == -1))
+        KEYWORDS.indexOf(data.msg.text.toLowerCase()) == -1))
           return data;
     }
 

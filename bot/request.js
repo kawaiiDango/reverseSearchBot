@@ -1,6 +1,7 @@
 var axios = require("axios");
 var urlbase = require("../settings/settings.js").url;
 var MESSAGE = require("../settings/settings.js").msg;
+var KEYWORDS = require("../settings/settings.js").keywords;
 var sendResult = require("./sendResult.js");
 var reportToOwner = require("./reportToOwner.js");
 var reportLimitsOfSaucenao = reportToOwner.reportLimitsOfSaucenao;
@@ -33,7 +34,7 @@ module.exports = function(url, bot, tokenSN, msg) {
     reportLimitsOfSaucenao(header, bot);
 
     if (results.length < 1) {
-      if (msg.chat.type == "private")
+      if (msg.chat.type == "private" || (msg.text && KEYWORDS.indexOf(msg.text) > -1))
         return bot.sendMessage(chat_id, MESSAGE.zeroResult, {reply: reply, parse: "Markdown"});
       else return null;
     }

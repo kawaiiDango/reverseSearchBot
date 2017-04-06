@@ -28,7 +28,7 @@ var settings = {
     invalidUrl: "That doesn't look like a URL",
     invalidForm: "*<<Error>>*\nInvalid form. Please check if you sent a non-photo file or your photo is sent as file.\n혹시 사진을 파일로 보내지 않으셨나요? 사진보내기로 하셨는지 확인해주세요\nイメージ以外はしょりできませんから。",
     loading: "*<<Loading>>*\nImage is now in processing...\n이미지 처리중입니다.\nイメージ処理中…",
-    zeroResult: "*<<Result>>*\nNo results.\n결과가 없습니다.\n検索結果がありませんわ。",
+    zeroResult: "No sauce found. Maybe try butter instead?",
     startResult: "*<<Result>>*\nPrint start.\n결과출력을 시작합니다.\n結果を出歴するから。",
     endResult: "*<<Result>>*\nPrint End.\n출력이 종료되었습니다.\n出歴終了！",
     help: "Send me an image or an image URL to find your SauceRightNao.",
@@ -57,6 +57,7 @@ var settings = {
     reportRequestError: {on: true, notify: true},
     reportFileUrl: {on: true, notify: false}
   },
+  keywords: ["sauce", "/sauce", "#sauce", "source"],
   private: privateSettings
 };
 

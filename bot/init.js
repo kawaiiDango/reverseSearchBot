@@ -7,6 +7,7 @@ var SETTINGS = require("../settings/settings.js");
 var tokenBot = SETTINGS.private.botToken;
 // tokenBot should be the Telegram bot token
 var tokenSN = SETTINGS.private.SNKey;
+var KEYWORDS = require("../settings/settings.js").keywords;
 
 var TeleBot = require("telebot");
 var axios = require("axios");
@@ -66,9 +67,7 @@ module.exports = function() {
     if (msg.text === "/help" || msg.text === "/start") {
       return;
     } else if (msg.text) {
-      if (msg.text.toLowerCase() == "sauce" || 
-      	msg.text.toLowerCase() == "source" || 
-        msg.text == "/sauce" || msg.text == "#sauce"){
+      if (KEYWORDS.indexOf(msg.text.toLowerCase()) >-1){
         var rmsg = msg.reply_to_message;
         if (rmsg && rmsg.photo && rmsg.photo.length > 0)
           getSauce(rmsg);
