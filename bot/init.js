@@ -3,9 +3,10 @@ global.userCount = {
   on: true
 };
 
-var tokenBot = require("../account/bot.js");
+var SETTINGS = require("../settings/settings.js");
+var tokenBot = SETTINGS.private.botToken;
 // tokenBot should be the Telegram bot token
-var tokenSN = require("../account/saucenao.js");
+var tokenSN = SETTINGS.private.SNKey;
 
 var TeleBot = require("telebot");
 var axios = require("axios");
@@ -13,13 +14,13 @@ var request = require("./request.js");
 
 var tools = require("../tools/tools.js");
 
-var SETTINGS = require("../settings/settings.js");
+
 var MESSAGE = SETTINGS.msg;
 /* moduleSwitch's property indicates whether to turn on/off the module */
 var moduleSwitch = SETTINGS.moduleSwitch;
 var reportOpt = SETTINGS.report;
 /* overwrite reportOpt.receiver_id with your telegram user id(numtype) in array form*/
-reportOpt.receiver_id = require("../account/receiverId.js");
+reportOpt.receiver_id = SETTINGS.private.adminId;
 var flooderOpt = SETTINGS.flooder;
 var reportToOwner = require("./reportToOwner.js");
 
@@ -28,7 +29,8 @@ var bot = new TeleBot({
   modules: {
     flooder: {
       interval: flooderOpt.interval,
-      message: flooderOpt.msg
+      message: flooderOpt.msg,
+      numMsgs: flooderOpt.numMsgs
     },
     report: {
       events: reportOpt.condition,
@@ -64,7 +66,8 @@ module.exports = function() {
     if (msg.text === "/help" || msg.text === "/start") {
       return;
     } else if (msg.text) {
-      if (msg.text == "sauce" || msg.text == "source" || 
+      if (msg.text.toLowerCase() == "sauce" || 
+      	msg.text.toLowerCase() == "source" || 
         msg.text == "/sauce" || msg.text == "#sauce"){
         var rmsg = msg.reply_to_message;
         if (rmsg && rmsg.photo && rmsg.photo.length > 0)
@@ -79,7 +82,7 @@ module.exports = function() {
         }
       }
     } else if (msg.photo && msg.photo.length > 0 && 
-      (SETTINGS.favouriteGroups.indexOf(chat_id)>-1 || 
+      (SETTINGS.private.favouriteGroups.indexOf(chat_id)>-1 || 
         msg.chat.type == "private")) {
       getSauce(msg);
     } else {

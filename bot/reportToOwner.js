@@ -1,4 +1,4 @@
-var receiver_id = require("../account/receiverId.js");
+var receiver_id = require("../settings/settings.js").private.adminId;
 var reportToOwnerSwitch = require("../settings/settings.js").reportToOwnerSwitch;
 
 module.exports = {

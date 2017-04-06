@@ -36,6 +36,13 @@ module.exports = function(bot, cfg) {
     var user = userList[id];
     var now = new Date(msg.date);
 
+    //ignore irrelevant group messages
+    if(data.msg.chat.type != "private"){
+      if(!data.msg.photo && (data.msg.text && 
+        data.msg.text.toLowerCase().indexOf("sauce") == -1))
+          return data;
+    }
+
     if (user) {
       var diff = now - user.lastTime;
       user.lastTime = now;
