@@ -60,7 +60,8 @@ var sendResult = function(results, totalLength, bot, msg) {
       "[<Thumnail>](" + header.thumbnail + ")"
     ];
     text = textarray.join(" ");
-    displayText = "*" + data.title + "*" + " - by _" + data.member_name + "_";
+    displayText = "*" + (data.title || "...") + "*" + " by _" + 
+      (data.member_name || data.creator || "..." ) + "_";
     buttons = [
       [
         bot.inlineButton(buttonName, {
@@ -84,12 +85,16 @@ var sendResult = function(results, totalLength, bot, msg) {
       "[<Thumnail>](" + header.thumbnail + ")"
     ];
     text = textarray.join(" ");
-    displayText = "*" + data.title + "*" + " - by _" + data.member_name + "_";
+    displayText = "*" + (data.title || "...") + "*" + " by _" + 
+      (data.member_name || data.creator || "..." ) + "_";
 
     for (var j = 0; j < restOfIds.length; j++) {
       buttonName = idButtonName[restOfIds[j]];
       urlPrefix = urlbase[restOfIds[j]];
       id = data[restOfIds[j]];
+
+      if (j)
+        buttonName = buttonName.substr(buttonName.indexOf("View on ") + 8);
 
       innerbuttonsContainer.push(
         bot.inlineButton(buttonName, {
