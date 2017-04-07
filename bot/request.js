@@ -31,6 +31,15 @@ module.exports = function(url, bot, tokenSN, msg) {
     var header = res.data.header || {};
     var results = res.data.results || [];
 
+    for (i=0; i< results.length; i++){
+      console.log(results[i].header.similarity , params.minSimilarity, results[i].header.similarity < params.minSimilarity)
+      if(results[i].header.similarity < params.minSimilarity){
+        results.splice(i, 1);
+        i--;
+      }
+
+    }
+
     reportLimitsOfSaucenao(header, bot);
 
     if (results.length < 1) {

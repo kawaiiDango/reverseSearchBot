@@ -7,7 +7,8 @@ var settings = {
       db: 999,
       output_type: 2,
       testmode: 1,
-      numres: 7
+      numres: 5,
+      minSimilarity : 50
     },
     pixiv_id: "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=",
     danbooru_id: "https://danbooru.donmai.us/post/show/",
