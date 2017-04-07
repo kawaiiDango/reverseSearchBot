@@ -32,7 +32,7 @@ module.exports = function(url, bot, tokenSN, msg) {
     var results = res.data.results || [];
 
     for (i=0; i< results.length; i++){
-      console.log(results[i].header.similarity , params.minSimilarity, results[i].header.similarity < params.minSimilarity)
+      console.log(results[i].header.similarity);
       if(results[i].header.similarity < params.minSimilarity){
         results.splice(i, 1);
         i--;
@@ -43,9 +43,9 @@ module.exports = function(url, bot, tokenSN, msg) {
     reportLimitsOfSaucenao(header, bot);
 
     if (results.length < 1) {
-      if (msg.chat.type == "private" || (msg.text && KEYWORDS.indexOf(msg.text) > -1))
+      //if (msg.chat.type == "private" || (msg.text && KEYWORDS.indexOf(msg.text.toLowerCase()) > -1))
         return bot.sendMessage(chat_id, MESSAGE.zeroResult, {reply: reply, parse: "Markdown"});
-      else return null;
+      //else return null;
     }
 
     ///console.log("res.data.results are ", results);
