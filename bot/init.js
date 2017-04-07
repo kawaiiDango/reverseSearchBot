@@ -41,7 +41,7 @@ var bot = new TeleBot({
 });
 // console.log("bot obj is ", bot);
 
-module.exports = function() {
+module.exports = () => {
   /* Switch on/off the modules according to preset in moduleSwitch above */
   /* On/off settings of modules are at settings/settings.js */
   var modules = Object.keys(moduleSwitch);
@@ -51,7 +51,7 @@ module.exports = function() {
     }
   }
 
-  bot.on(["/help", "/start"], function(msg) {
+  bot.on(["/help", "/start"], msg => {
     var chat_id = msg.chat.id;
     var reply = msg.message_id;
     if (global.debug) console.log("msg is ", msg);
@@ -59,7 +59,7 @@ module.exports = function() {
     bot.sendMessage(chat_id, MESSAGE.help, {reply: reply, parse: "Markdown"});
   });
 
-  bot.on(["*"], function(msg) {
+  bot.on(["*"], msg => {
     var chat_id = msg.chat.id;
     var reply = msg.message_id;
     if (global.debug) console.log("msg is ", msg);
@@ -70,39 +70,123 @@ module.exports = function() {
       if (KEYWORDS.indexOf(msg.text.toLowerCase()) >-1){
         var rmsg = msg.reply_to_message;
         if (rmsg && rmsg.photo && rmsg.photo.length > 0)
-          getSauce(rmsg);
+          getSauceInit(rmsg);
       }
       else if (msg.chat.type == "private"){
         if (tools.urlDetector(msg.text)) {
-          var url = msg.text;
-          request(url, bot, tokenSN, msg);
-        } else {
+          msg.url = msg.text;
+          getSauceInit(msg);
+        } else if(!msg.entities){
           bot.sendMessage(chat_id, MESSAGE.invalidUrl, {reply: reply, parse: "Markdown"});
         }
       }
     } else if (msg.photo && msg.photo.length > 0 && 
       (SETTINGS.private.favouriteGroups.indexOf(chat_id)>-1 || 
         msg.chat.type == "private")) {
-      getSauce(msg);
+      getSauceInit(msg);
     } else {
       ///bot.sendMessage(chat_id, MESSAGE.invalidForm, {reply: reply, parse: "Markdown"});
     }
   });
 
-  var getSauce = function(msg){
-    bot.getFile(msg.photo[msg.photo.length-1].file_id)
-      .then(function(file) {
-        if (global.debug) console.log("file is", file);
+  // On inline query
+  bot.on('inlineQuery', msg => {
 
-        reportToOwner.reportFileUrl(file, tokenBot, bot);
+    let query = msg.query;
+    var loadingKb = bot.inlineQueryKeyboard([[
+        bot.inlineButton(SETTINGS.id_buttonName.loading, {
+          callback: "noop"
+        })
+      ]]);
+    const answers = bot.answerList(msg.id, { cacheTime: 1000 });
 
-        console.log("loading...");
-        ///bot.sendMessage(chat_id, MESSAGE.loading, {reply: reply, parse: "Markdown"});
+    if (tools.urlDetector(query)) { //url
+        answers.addArticle({
+          id: 'url',
+          title: 'Tap for reverse search by URL',
+          description: query,
+          message_text: MESSAGE.loading,
+          reply_markup: loadingKb,
+          parse_mode: 'Markdown'
+        });
 
-        var url = "https://api.telegram.org/file/bot" + tokenBot + "/" + file.file_path;
-        request(url, bot, tokenSN, msg);
+    } else if (query.match(/^[A-Za-z0-9_\-]+$/)) { //file id
+      answers.addArticle({
+        id: 'share',
+        title: 'Tap to share',
+        description: "your sauce",
+        message_text: MESSAGE.loading,
+        reply_markup: loadingKb,
+        parse_mode: 'Markdown'
       });
+    }
+
+    // Send answers
+    return bot.answerQuery(answers);
+
+  });
+
+  bot.on('inlineChoice', msg => {
+    getSauceInit(msg);
+  });
+
+  var getSauceInit = msg => {
+    if(msg.inline_message_id){
+      if (tools.urlDetector(msg.query))
+        msg.url = msg.query;
+      else
+        msg.fileId = msg.query;
+      getSauce(msg, msg);
+    } else {
+      if(msg.photo)
+        msg.fileId = msg.photo[msg.photo.length-1].file_id;
+      bot.sendMessage(msg.chat.id, MESSAGE.loading, {reply: msg.message_id, parse: "Markdown"})
+      .then(res => {
+        getSauce(msg, res.result);
+      });
+    }
   };
+
+  var getSauce = (msg, editMsg) => {
+    editMsg.fileId = msg.fileId;
+    editMsg.url = msg.url;
+    if(msg.url){
+      request(msg.url, bot, tokenSN, editMsg);
+    } else {
+      bot.getFile(msg.fileId)
+        .then(file => {
+          if (global.debug) console.log("file is", file);
+
+          reportToOwner.reportFileUrl(file, tokenBot, bot);
+          var url = "https://api.telegram.org/file/bot" + tokenBot + "/" + file.file_path;
+          request(url, bot, tokenSN, editMsg);
+        })
+        .catch( err => {
+          bot.editText(tools.getId(editMsg), MESSAGE.invalidFileId, {parse: "Markdown"});
+        });
+    }
+  };
+
+  var getTineye = msg => {
+    // bot.getFile(msg.photo[msg.photo.length-1].file_id)
+    //   .then(function(file) {
+        console.log("getTineye...");
+
+        // var url = "https://api.telegram.org/file/bot" + tokenBot + "/" + file.file_path;
+        var url = "http://wallpapers9.org/wp-content/uploads/2015/01/Cute-Girl.jpg";
+        axios.post("https://tineye.com/search", 
+          {url: url}
+        )
+        .then(function(res) {
+          console.log(res);
+        })
+        .catch(function (error) {
+          console.log("err: ", error);
+        });
+      // });
+  };
+
+  getTineye();
 
   bot.connect();
   console.log("bot: connected");

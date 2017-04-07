@@ -4,23 +4,24 @@ var idButtonName = require("../settings/settings.js").id_buttonName;
 var idbaseArray = Object.keys(idButtonName);
 var tools = require("../tools/tools.js");
 
-var sendResult = function(results, totalLength, bot, msg) {
+var sendResult = function(results, totalLength, bot, editMsg) {
   results = results || [];
-  var chat_id = msg.chat.id;
-  var reply = msg.message_id;
+  var from_id = editMsg.from.id;
+  var shareId = editMsg.fileId || editMsg.url;
+
   if (!results.length) {
     // console.log("Processing: nokori 0");
 
     // count user request and if it satisfies condition, print msg asking rating
     if (global.userCount.on) {
-      var count = global.userCount[chat_id.toString()];
-      if (count === undefined) global.userCount[chat_id.toString()] = 0;
-      global.userCount[chat_id.toString()] += 1;
+      var count = global.userCount[from_id.toString()];
+      if (count === undefined) global.userCount[from_id.toString()] = 0;
+      global.userCount[from_id.toString()] += 1;
 
-      count = global.userCount[chat_id.toString()];
+      count = global.userCount[from_id.toString()];
 
       if ((count / 2) - Math.floor(count / 2) === 0) {
-        bot.sendMessage(chat_id, MESSAGE.requestRating, {parse: "Markdown", preview: false});
+        bot.sendMessage(from_id, MESSAGE.requestRating, {parse: "Markdown", preview: false});
       }
     }
     return;
@@ -65,7 +66,10 @@ var sendResult = function(results, totalLength, bot, msg) {
     buttons = [
       [
         bot.inlineButton(buttonName, {
-          url: urlbase.pixiv_id + data.pixiv_id 
+          url: urlbase.pixiv_id + data.pixiv_id
+        }),
+        bot.inlineButton(idButtonName.share, {
+          inline: shareId
         })
       ]
     ];
@@ -102,6 +106,12 @@ var sendResult = function(results, totalLength, bot, msg) {
         })
       );
     }
+    innerbuttonsContainer.push(
+        bot.inlineButton(idButtonName.share, {
+          inline: shareId
+        })
+      );
+      
     for (var i = 0; i < innerbuttonsContainer.length; i++) {
       if (innerbuttons.length < 2){
         innerbuttons.push(innerbuttonsContainer[i]);
@@ -133,12 +143,12 @@ var sendResult = function(results, totalLength, bot, msg) {
     text = textarray.join(" ");
     displayText = "*" + data.title + "*" + " - by _" + data.member_name + "_";
 */
-    return sendResult(results.slice(1), totalLength, bot, msg);
+    return sendResult(results.slice(1), totalLength, bot, url, editMsg);
   }
 
   markup = bot.inlineKeyboard(buttons);
 
-  return bot.sendMessage(chat_id, displayText, {reply: reply, markup: markup, parse: "Markdown"})
+  return bot.editText(tools.getId(editMsg), displayText, {markup: markup, parse: "Markdown"});
   /*
   .then(function() {
     if (global.debug) console.log('inner then');

@@ -6,10 +6,9 @@ var sendResult = require("./sendResult.js");
 var reportToOwner = require("./reportToOwner.js");
 var reportLimitsOfSaucenao = reportToOwner.reportLimitsOfSaucenao;
 var reportRequestError = reportToOwner.reportRequestError;
+var tools = require("../tools/tools.js");
 
-module.exports = function(url, bot, tokenSN, msg) {
-  var chat_id = msg.chat.id;
-  var reply = msg.message_id;
+module.exports = function(url, bot, tokenSN, editMsg) {
   var params = urlbase.sauceNaoParams;
   params.url = url;
   params.api_key = tokenSN;
@@ -17,7 +16,7 @@ module.exports = function(url, bot, tokenSN, msg) {
   return axios.get(urlbase.sauceNao, {
     params: params
   })
-  .then(function(res) {
+  .then(res => {
     console.log("get request to saucenao completed");
     // console.log("response is ", res);
     if (global.debug) console.log("result is", res.data.results);
@@ -44,16 +43,17 @@ module.exports = function(url, bot, tokenSN, msg) {
 
     if (results.length < 1) {
       //if (msg.chat.type == "private" || (msg.text && KEYWORDS.indexOf(msg.text.toLowerCase()) > -1))
-        return bot.sendMessage(chat_id, MESSAGE.zeroResult, {reply: reply, parse: "Markdown"});
+        return bot.editText(tools.getId(editMsg), MESSAGE.zeroResult, {parse: "Markdown"});
       //else return null;
     }
 
     ///console.log("res.data.results are ", results);
 
-    return sendResult(results, results.length, bot, msg);
+    return sendResult(results, results.length, bot, editMsg);
   })
-  .catch(function(err) {
+  .catch(err => {
     console.log("Error: error in get request to saucenao");
+    console.dir(err);
     if (err.response) {
       // The request was made, but the server responded with a status code
       // that falls out of the range of 2xx
@@ -61,13 +61,13 @@ module.exports = function(url, bot, tokenSN, msg) {
       console.log("-----error.headers is", err.response.headers);
       console.log("-----error.data is", err.response.data);
       if (err.response.status && err.response.status == 429) {
-        bot.sendMessage(chat_id, MESSAGE.reachLimitation, {parse: "Markdown"});
+        bot.editText(tools.getId(editMsg), MESSAGE.reachLimitation, {parse: "Markdown"});
       }
 
     } else {
       // Something happened in setting up the request that triggered an Error
       console.log('-----error', err.message);
-      bot.sendMessage(chat_id, MESSAGE.unknownError, {parse: "Markdown"});
+      bot.editText(tools.getId(editMsg), MESSAGE.unknownError, {parse: "Markdown"});
     }
     console.log(err.config);
     reportRequestError(err, bot);

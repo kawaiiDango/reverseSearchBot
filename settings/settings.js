@@ -23,19 +23,20 @@ var settings = {
     gelbooru_id: "View on Gelbooru",
     sankaku_id: "View on Sankaku",
     "anime-pictures_id": "View on Anime-Pictures",
-    imdb_id: "View on IMDb"
+    imdb_id: "View on IMDb",
+    share: "↗️Share",
+    loading: "🍝"
   },
   msg: {
-    invalidUrl: "That doesn't look like a URL",
-    invalidForm: "*<<Error>>*\nInvalid form. Please check if you sent a non-photo file or your photo is sent as file.\n혹시 사진을 파일로 보내지 않으셨나요? 사진보내기로 하셨는지 확인해주세요\nイメージ以外はしょりできませんから。",
-    loading: "*<<Loading>>*\nImage is now in processing...\n이미지 처리중입니다.\nイメージ処理中…",
-    zeroResult: "No sauce found. Maybe try butter instead?",
-    startResult: "*<<Result>>*\nPrint start.\n결과출력을 시작합니다.\n結果を出歴するから。",
-    endResult: "*<<Result>>*\nPrint End.\n출력이 종료되었습니다.\n出歴終了！",
+    invalidUrl: "That doesn't look like a photo or a URL",
+    invalidForm: "Invalid form. Please check if you sent a non-photo file or your photo is sent as file.",
+    loading: "_Pouring some sauce on it..._",
+    zeroResult: "No sauce found. _Maybe try butter instead?_",
     help: "Send me an image or an image URL to find your SauceRightNao.",
-    tooManyRequests: "*<<Error>>*\nToo many requests. Please send one by one and take a time between requests.\n너무 많은 요청을 보내셨네요. 한번에 한 장씩 보내주세요.\n一回にあんなに多い処理はできないわ。一回に一枚づつ、ね？",
-    reachLimitation: "*<<Error>>*\nThe request limitation has been reached. Please wait for a moment and if the same error occurs, contact us.\n일일 요청한도를 초과하였습니다. 잠시 기다려주시고, 동일한 오류가 발생하면 연락주세요.\n一日要請限度を超えました。しばらくお待ちください。",
-    unknownError: "*<<Error>>*\nUnknown error occured. Please contact us if the same error appears repeatedly.\n알 수없는 오류가 발생하였습니다. 동일한 오류가 지속적으로 발생할 경우 연락주세요.\n何らかのエラーで処理できません。連絡お願いします。",
+    tooManyRequests: "Too many requests. Please send one by one and take a time between requests.",
+    reachLimitation: "The request limitation has been reached. Please wait for a few minutes.",
+    unknownError: "*Unknown error occured. Please contact @dangou if this happens repeatedly.",
+    invalidFileId: "_Invalid file id_",
     requestRating: "[★ Rate](https://telegram.me/storebot?start=reverseSearchBot)"
   },
   moduleSwitch: {

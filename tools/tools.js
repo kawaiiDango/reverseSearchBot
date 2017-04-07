@@ -8,15 +8,11 @@ module.exports = {
     }
     return false;
   },
-  existInArray: function(array, element) {
-    var result = false;
-    for (var i = 0; i < array.length; i++) {
-      if (array[i] === element) {
-        result = true;
-        break;
-      }
-    }
-    return result;
+  getId: function(msg) {
+    if (msg.inline_message_id)
+      return {inlineMsgId: msg.inline_message_id};
+    else
+      return {chatId: msg.chat.id, messageId: msg.message_id};
   },
   arraysInCommon: function(array1, array2) {
     // 두 어레이가 공통으로 가지는 원소를 추출하여 어레이로 출력
