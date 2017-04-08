@@ -98,7 +98,8 @@ module.exports = () => {
           callback: "noop"
         })
       ]]);
-    const answers = bot.answerList(msg.id, { cacheTime: 1000 });
+    var answers = bot.answerList(msg.id, { cacheTime: 1000,
+      switch_pm_text: "Search by an image instead" });
 
     if (tools.urlDetector(query)) { //url
         answers.addArticle({
@@ -110,7 +111,7 @@ module.exports = () => {
           parse_mode: 'Markdown'
         });
 
-    } else if (query.match(/^[A-Za-z0-9_\-]+$/)) { //file id
+    } else if (query.length > 40 && query.match(/^[A-Za-z0-9_\-]+$/)) { //file id
       answers.addArticle({
         id: 'share',
         title: 'Tap to share',
@@ -119,6 +120,9 @@ module.exports = () => {
         reply_markup: loadingKb,
         parse_mode: 'Markdown'
       });
+    } else { //invalid
+      answers = bot.answerList(msg.id, { cacheTime: 1000,
+        switch_pm_text: "Invalid URL", switch_pm_parameter: "noop" });
     }
 
     // Send answers
