@@ -25,7 +25,9 @@ var settings = {
     "anime-pictures_id": "View on Anime-Pictures",
     imdb_id: "View on IMDb",
     share: "↗️Share",
-    loading: "🍝"
+    loading: "🍝",
+    pageLink: "Source page",
+    picLink: "High res"
   },
   msg: {
     invalidUrl: "That doesn't look like a photo or a URL",
@@ -35,7 +37,7 @@ var settings = {
     help: "Send me an image or an image URL to find your SauceRightNao.",
     tooManyRequests: "Too many requests. Please send one by one and take a time between requests.",
     reachLimitation: "The request limitation has been reached. Please wait for a few minutes.",
-    unknownError: "*Unknown error occured. Please contact @dangou if this happens repeatedly.",
+    unknownError: "*Unknown error occured.* Please contact @dangou if this happens repeatedly.",
     invalidFileId: "_Invalid file id_",
     requestRating: "[★ Rate](https://telegram.me/storebot?start=reverseSearchBot)"
   },
@@ -60,7 +62,10 @@ var settings = {
     reportFileUrl: {on: true, notify: false}
   },
   keywords: ["sauce", "/sauce", "#sauce", "source"],
-  private: privateSettings
+  private: privateSettings,
+  userAgents: [
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12",
+  ]
 };
 
 settings.flooder.msg = settings.msg.tooManyRequests;

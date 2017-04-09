@@ -155,7 +155,7 @@ module.exports = () => {
     editMsg.fileId = msg.fileId;
     editMsg.url = msg.url;
     if(msg.url){
-      request(msg.url, bot, tokenSN, editMsg);
+      request(msg.url, bot, editMsg);
     } else {
       bot.getFile(msg.fileId)
         .then(file => {
@@ -163,34 +163,13 @@ module.exports = () => {
 
           reportToOwner.reportFileUrl(file, tokenBot, bot);
           var url = "https://api.telegram.org/file/bot" + tokenBot + "/" + file.file_path;
-          request(url, bot, tokenSN, editMsg);
+          request(url, bot, editMsg);
         })
         .catch( err => {
           bot.editText(tools.getId(editMsg), MESSAGE.invalidFileId, {parse: "Markdown"});
         });
     }
   };
-
-  var getTineye = msg => {
-    // bot.getFile(msg.photo[msg.photo.length-1].file_id)
-    //   .then(function(file) {
-        console.log("getTineye...");
-
-        // var url = "https://api.telegram.org/file/bot" + tokenBot + "/" + file.file_path;
-        var url = "http://wallpapers9.org/wp-content/uploads/2015/01/Cute-Girl.jpg";
-        axios.post("https://tineye.com/search", 
-          {url: url}
-        )
-        .then(function(res) {
-          console.log(res);
-        })
-        .catch(function (error) {
-          console.log("err: ", error);
-        });
-      // });
-  };
-
-  getTineye();
 
   bot.connect();
   console.log("bot: connected");
