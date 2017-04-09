@@ -40,17 +40,16 @@ module.exports = function(url, bot, editMsg) {
       return Promise.reject();
     }
     tmp = tmp.substring( start, tmp.indexOf('</div>', start)+6);
-    //console.log(tmp);
+    console.log(tmp);
     parseString(tmp, function (err, res) {
       res=res.div;
 
       var siteName = res.h4[0].$.title, 
+        imgName = res.p[0].a[0].$.title,
         highResUrl = res.p[0].a[0].$.href, 
         page = res.p[2].a[0].$.href;
 
-      
-      var displayText = highResUrl.substr(highResUrl.lastIndexOf('/')+1)
-        + " from " + siteName;
+      var displayText = imgName + " from " + siteName;
       var markup = bot.inlineKeyboard([[
           bot.inlineButton(idButtonName.picLink, {
             url: highResUrl

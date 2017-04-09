@@ -71,13 +71,15 @@ module.exports = () => {
         var rmsg = msg.reply_to_message;
         if (rmsg && rmsg.photo && rmsg.photo.length > 0)
           getSauceInit(rmsg);
+        else
+          bot.sendMessage(chat_id, MESSAGE.keywordHelp, {reply: reply, parse: "Markdown"});
       }
       else if (msg.chat.type == "private"){
         if (tools.urlDetector(msg.text)) {
           msg.url = msg.text;
           getSauceInit(msg);
         } else if(!msg.entities){
-          bot.sendMessage(chat_id, MESSAGE.invalidUrl, {reply: reply, parse: "Markdown"});
+          //bot.sendMessage(chat_id, MESSAGE.invalidUrl, {reply: reply, parse: "Markdown"});
         }
       }
     } else if (msg.photo && msg.photo.length > 0 && 
