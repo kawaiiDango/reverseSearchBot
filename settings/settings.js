@@ -26,8 +26,8 @@ var settings = {
     imdb_id: "View on IMDb",
     share: "↗️Share",
     loading: "🍝",
-    pageLink: "Source page",
-    picLink: "High res"
+    pageLink: "📃Source page",
+    picLink: "🖼️High res"
   },
   msg: {
     invalidUrl: "That doesn't look like a photo or a URL",
