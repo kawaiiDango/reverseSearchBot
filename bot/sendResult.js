@@ -66,8 +66,9 @@ var sendResult = function(results, totalLength, bot, editMsg) {
   // pixiv_id를 제외한 XXX_id 유형이 있는 경우,
   // settings/settings.js의 url property를 참조하여 지정된 id 항목을 추출
 
-    displayText = "*" + (data.title || "...") + "*" + " by _" + 
-      (data.member_name || data.creator || "..." ) + "_";
+    // displayText = "*" + (data.title || "...") + "*" + " by _" + 
+    //   (data.member_name || data.creator || "..." ) + "_";
+    displayText = text;
 
     for (var j = 0; j < restOfIds.length; j++) {
       buttonName = idButtonName[restOfIds[j]];
@@ -103,8 +104,7 @@ var sendResult = function(results, totalLength, bot, editMsg) {
       }
     }
   } else {
-    console.log("lol");
-    displayText = text;
+    displayText = createDetailedText(header, data, true);
     buttons = [
       [
         bot.inlineButton(idButtonName.share, {
@@ -127,18 +127,18 @@ var sendResult = function(results, totalLength, bot, editMsg) {
 */
 };
 
-var createDetailedText = (header, data) => {
+var createDetailedText = (header, data, showThumbnail) => {
       textarray = [
       //"*Similarity:*", header.similarity + "%", "|",
-      (data.title) ? "*Title:* " + data.title : null,
-      (data.member_name || data.creator) ? "*by:* " + data.member_name || data.creator : null,
+      (data.title ? "*" + data.title + "*" : "") + " " + 
+      ((data.member_name || data.creator) ? "*by:* " + (data.member_name || data.creator) : ""),
       (data.eng_name) ? "*Eng_title:* " + data.eng_name : null,
       (data.jp_name) ? "*Jp_title:* " + data.jp_name : null,
       (data.source) ? "*Source:* " + data.source : null,
-      (data.part) ? "*Part:* " + data.part : null,
+      (data.part) ? "*Episode:* " + data.part : null,
       (data.year) ? "*Year:* " + data.year : null,
       (data.est_time) ? "*Time: * " + data.est_time : null,
-      "[\u2063](" + header.thumbnail + ")"
+      (showThumbnail)? "[\u2063](" + header.thumbnail + ")" : null
     ];
     return textarray.join("\n");
 }

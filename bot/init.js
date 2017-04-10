@@ -119,8 +119,8 @@ module.exports = () => {
         parse_mode: 'Markdown'
       });
     } else { //invalid
-      answers = bot.answerList(msg.id, { cacheTime: 1000,
-        switch_pm_text: "Invalid URL", switch_pm_parameter: "noop" });
+      // answers = bot.answerList(msg.id, { cacheTime: 1000,
+      //   switch_pm_text: "Invalid URL", switch_pm_parameter: "noop" });
     }
 
     // Send answers

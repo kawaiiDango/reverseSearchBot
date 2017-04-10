@@ -16,7 +16,7 @@ var settings = {
     sankaku_id: "https://chan.sankakucomplex.com/post/show/",
     "anime-pictures_id": "https://anime-pictures.net/pictures/view_post/",
     imdb_id: "https://www.imdb.com/title/",
-    anidb_id: "https://anidb.net/perl-bin/animedb.pl?show=anime&aid="
+    anidb_aid: "https://anidb.net/perl-bin/animedb.pl?show=anime&aid="
   },
   id_buttonName: {
     pixiv_id: "View on Pixiv",
@@ -25,7 +25,7 @@ var settings = {
     sankaku_id: "View on Sankaku",
     "anime-pictures_id": "View on Anime-Pictures",
     imdb_id: "View on IMDb",
-    anidb_id: "View on AniDB",
+    anidb_aid: "View on AniDB",
     share: "↗️Share",
     loading: "🍝",
     pageLink: "📃Source",
@@ -38,7 +38,7 @@ var settings = {
     loading: "_Pouring some sauce on it..._",
     zeroResult: "No sauce found. _Maybe try butter instead?_",
     help: "Send me an image or an image URL to find your SauceRightNao.",
-    tooManyRequests: "Too many requests. Please send one by one and take a time between requests.",
+    tooManyRequests: "Too many requests. Please send one by one and take time between requests.",
     reachLimitation: "The request limitation has been reached. Please wait for a few minutes.",
     unknownError: "*Unknown error occured.* Please contact @dangou if this happens repeatedly.",
     invalidFileId: "_Invalid file id_",

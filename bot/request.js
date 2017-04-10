@@ -71,8 +71,9 @@ module.exports = function(url, bot, editMsg) {
     var params = urlbase.sauceNaoParams;
     params.url = url;
     params.api_key = tokenSN;
-
-    return fetch(urlbase.sauceNao + tools.json2query(params), {
+    sURL = urlbase.sauceNao + tools.json2query(params);
+    //console.log(sURL);
+    return fetch(sURL, {
       params: params
     })
     .then(res => res.text().then( res => {
