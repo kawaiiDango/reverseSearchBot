@@ -40,7 +40,7 @@ module.exports = function(url, bot, editMsg) {
       return Promise.reject();
     }
     tmp = tmp.substring( start, tmp.indexOf('</div>', start)+6);
-    console.log(tmp);
+    //console.log(tmp);
     parseString(tmp, function (err, res) {
       res=res.div;
 
@@ -83,7 +83,12 @@ module.exports = function(url, bot, editMsg) {
       // res.data가 string으로 반환되며, 앞에 <!-- 175.196.43 --> 가 붙어서
       // 오는 경우가 있어서 처리
       if (typeof res.data === "string" && res.data.includes("<!--") && res.data.includes("-->")) {
-        res.data = JSON.parse(res.data.slice(res.data.indexOf("-->")+3).trim());
+        try{
+          res.data = JSON.parse(res.data.slice(res.data.indexOf("-->")+3).trim());
+        } catch(e){
+          return Promise.reject(new Error(
+            res.data.substr(res.data.lastIndexOf('<br />') + 6)));
+        }
       }
 
       var header = res.data.header || {};
@@ -126,7 +131,7 @@ module.exports = function(url, bot, editMsg) {
       } else {
         // Something happened in setting up the request that triggered an Error
         console.log('-----error', err.message);
-        bot.editText(tools.getId(editMsg), MESSAGE.unknownError, {parse: "Markdown"});
+        bot.editText(tools.getId(editMsg), "*Error:* " + err.message, {parse: "Markdown"});
       }
       console.log(err.config);
       reportRequestError(err, bot);

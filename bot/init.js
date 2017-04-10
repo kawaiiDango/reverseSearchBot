@@ -163,7 +163,7 @@ module.exports = () => {
         .then(file => {
           if (global.debug) console.log("file is", file);
 
-          reportToOwner.reportFileUrl(file, tokenBot, bot);
+          reportToOwner.reportFileUrl(file.file_id, bot);
           var url = "https://api.telegram.org/file/bot" + tokenBot + "/" + file.file_path;
           request(url, bot, editMsg);
         })
