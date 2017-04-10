@@ -42,25 +42,14 @@ var sendResult = function(results, totalLength, bot, editMsg) {
   var buttonName, urlPrefix, id;
   var restOfIds = tools.arraysInCommon(idbaseArray, Object.keys(data));
 
+  var text = createDetailedText(header, data);
+
   if (data.pixiv_id !== undefined) {
     // 픽시브일 경우
     buttonName = idButtonName["pixiv_id"];
     urlPrefix = urlbase["pixiv_id"];
     id = data.pixiv_id;
 
-    textarray = [
-      number.toString() + "/" + totalLength.toString(), "|",
-      "*Similarity:*", header.similarity + "%", "|",
-      "*Title:*", data.title || "-", "|",
-      "*by:*", data.member_name || data.creator || "-", "|",
-      (data.eng_name) ? "*Eng_title:* " + data.eng_name + " |": "",
-      (data.jp_name) ? "*Jp_title:* " + data.jp_name + " |": "",
-      (data.source) ? "*Source:* " + data.source + " |": "",
-      (data.part) ? "*Part:* " + data.part + " |": "",
-      (data.year) ? "*Year:* " + data.year + " |": "",
-      "[<Thumnail>](" + header.thumbnail + ")"
-    ];
-    text = textarray.join(" ");
     displayText = "*" + (data.title || "...") + "*" + " by _" + 
       (data.member_name || data.creator || "..." ) + "_";
     buttons = [
@@ -76,19 +65,7 @@ var sendResult = function(results, totalLength, bot, editMsg) {
   } else if (restOfIds.length) {
   // pixiv_id를 제외한 XXX_id 유형이 있는 경우,
   // settings/settings.js의 url property를 참조하여 지정된 id 항목을 추출
-    textarray = [
-      number.toString() + "/" + totalLength.toString(), "|",
-      "*Similarity:*", header.similarity + "%", "|",
-      "*Title:*", data.title || "-", "|",
-      "*by:*", data.member_name || data.creator || "-", "|",
-      (data.eng_name) ? "*Eng_title:* " + data.eng_name + " |": "",
-      (data.jp_name) ? "*Jp_title:* " + data.jp_name + " |": "",
-      (data.source) ? "*Source:* " + data.source + " |": "",
-      (data.part) ? "*Part:* " + data.part + " |": "",
-      (data.year) ? "*Year:* " + data.year + " |": "",
-      "[<Thumnail>](" + header.thumbnail + ")"
-    ];
-    text = textarray.join(" ");
+
     displayText = "*" + (data.title || "...") + "*" + " by _" + 
       (data.member_name || data.creator || "..." ) + "_";
 
@@ -126,24 +103,17 @@ var sendResult = function(results, totalLength, bot, editMsg) {
       }
     }
   } else {
-    // skip the undetailed result
-    /*
-    textarray = [
-      number.toString() + "/" + totalLength.toString(), "|",
-      "*Similarity:*", header.similarity + "%", "|",
-      "*Title:*", data.title || "-", "|",
-      "*by:*", data.member_name || data.creator || "-", "|",
-      (data.eng_name) ? "*Eng_title:* " + data.eng_name + " |": "",
-      (data.jp_name) ? "*Jp_title:* " + data.jp_name + " |": "",
-      (data.source) ? "*Source:* " + data.source + " |": "",
-      (data.part) ? "*Part:* " + data.part + " |": "",
-      (data.year) ? "*Year:* " + data.year + " |": "",
-      "[<Thumnail>](" + header.thumbnail + ")"
+    console.log("lol");
+    displayText = text;
+    buttons = [
+      [
+        bot.inlineButton(idButtonName.share, {
+          inline: shareId
+        })
+      ]
     ];
-    text = textarray.join(" ");
-    displayText = "*" + data.title + "*" + " - by _" + data.member_name + "_";
-*/
-    return sendResult(results.slice(1), totalLength, bot, url, editMsg);
+
+    //return sendResult(results.slice(1), totalLength, bot, editMsg);
   }
 
   markup = bot.inlineKeyboard(buttons);
@@ -156,5 +126,21 @@ var sendResult = function(results, totalLength, bot, editMsg) {
   });
 */
 };
+
+var createDetailedText = (header, data) => {
+      textarray = [
+      //"*Similarity:*", header.similarity + "%", "|",
+      (data.title) ? "*Title:* " + data.title : null,
+      (data.member_name || data.creator) ? "*by:* " + data.member_name || data.creator : null,
+      (data.eng_name) ? "*Eng_title:* " + data.eng_name : null,
+      (data.jp_name) ? "*Jp_title:* " + data.jp_name : null,
+      (data.source) ? "*Source:* " + data.source : null,
+      (data.part) ? "*Part:* " + data.part : null,
+      (data.year) ? "*Year:* " + data.year : null,
+      (data.est_time) ? "*Time: * " + data.est_time : null,
+      "[\u2063](" + header.thumbnail + ")"
+    ];
+    return textarray.join("\n");
+}
 
 module.exports = sendResult;

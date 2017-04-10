@@ -2,7 +2,7 @@ var privateSettings = require("./private.js");
 
 var settings = {
   url: {
-    sauceNao: "https://saucenao.com/search.php",
+    sauceNao: "https://saucenao.com/search.php?",
     sauceNaoParams: {
       db: 999,
       output_type: 2,
@@ -15,7 +15,8 @@ var settings = {
     gelbooru_id: "https://gelbooru.com/index.php?page=post&s=view&id=",
     sankaku_id: "https://chan.sankakucomplex.com/post/show/",
     "anime-pictures_id": "https://anime-pictures.net/pictures/view_post/",
-    imdb_id: "https://www.imdb.com/title/"
+    imdb_id: "https://www.imdb.com/title/",
+    anidb_id: "https://anidb.net/perl-bin/animedb.pl?show=anime&aid="
   },
   id_buttonName: {
     pixiv_id: "View on Pixiv",
@@ -24,6 +25,7 @@ var settings = {
     sankaku_id: "View on Sankaku",
     "anime-pictures_id": "View on Anime-Pictures",
     imdb_id: "View on IMDb",
+    anidb_id: "View on AniDB",
     share: "↗️Share",
     loading: "🍝",
     pageLink: "📃Source",

@@ -2,7 +2,6 @@ const fetch = require('make-fetch-happen').defaults({
   cacheManager: './sCache',
   cache: 'force-cache'
 });
-var URLSearchParams = require('urlsearchparams');
 var parseString = require('xml2js').parseString;
 
 var urlbase = require("../settings/settings.js").url;
@@ -18,13 +17,10 @@ var tokenSN = require("../settings/settings.js").private.SNKey;
 var idButtonName = require("../settings/settings.js").id_buttonName;
 
 module.exports = function(url, bot, editMsg) {
-  var params = new URLSearchParams.URLSearchParams();
-      params.append('url', url);
-      params.append('sort', 'size');
-      params.append('order', 'desc');
+  var params = {url: url, sort: 'size', order: 'desc'};
   var shareId = editMsg.fileId || editMsg.url;
 
-  return fetch("https://tineye.com/search?"+params, 
+  return fetch("https://tineye.com/search?" + tools.json2query(params), 
     {headers:
       {
         "User-Agent": userAgents[
@@ -71,18 +67,18 @@ module.exports = function(url, bot, editMsg) {
     });
   }))
   .catch( err => {
-    console.dir(err);
+    //console.dir(err);
     var params = urlbase.sauceNaoParams;
     params.url = url;
     params.api_key = tokenSN;
 
-    return fetch(urlbase.sauceNao, {
+    return fetch(urlbase.sauceNao + tools.json2query(params), {
       params: params
     })
     .then(res => res.text().then( res => {
       console.log("get saucenao completed");
       // console.log("response is ", res);
-      if (global.debug) console.log("result is", res.results);
+      if (global.debug) console.log("result is", res);
 
       // res가 string으로 반환되며, 앞에 <!-- 175.196.43 --> 가 붙어서
       // 오는 경우가 있어서 처리
@@ -93,7 +89,8 @@ module.exports = function(url, bot, editMsg) {
           return Promise.reject(new Error(
             res.substring(res.lastIndexOf('<br />') + 6, res.lastIndexOf('</b'))));
         }
-      }
+      } else
+      		res = JSON.parse(res);
 
       var header = res.header || {};
       var results = res.results || [];
@@ -121,7 +118,7 @@ module.exports = function(url, bot, editMsg) {
     }))
     .catch(err => {
       console.log("Error: error in get request to saucenao");
-      //console.dir(err);
+      console.dir(err);
       if (err.response) {
         // The request was made, but the server responded with a status code
         // that falls out of the range of 2xx

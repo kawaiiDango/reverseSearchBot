@@ -1,5 +1,5 @@
 module.exports = {
-  urlDetector: function(text) {
+  urlDetector: text => {
     var urlR = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
     var regex = new RegExp(urlR);
     var url= text.match(regex);
@@ -8,13 +8,20 @@ module.exports = {
     }
     return false;
   },
-  getId: function(msg) {
+  getId: msg => {
     if (msg.inline_message_id)
       return {inlineMsgId: msg.inline_message_id};
     else
       return {chatId: msg.chat.id, messageId: msg.message_id};
   },
-  arraysInCommon: function(array1, array2) {
+  json2query: params => {
+    var esc = encodeURIComponent;
+    var query = Object.keys(params)
+    .map(k => esc(k) + '=' + esc(params[k]))
+    .join('&');
+    return query;
+  },
+  arraysInCommon: (array1, array2) => {
     // 두 어레이가 공통으로 가지는 원소를 추출하여 어레이로 출력
     array1 = array1 || [];
     array2 = array2 || [];
