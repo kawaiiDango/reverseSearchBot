@@ -1,4 +1,7 @@
-var axios = require("axios");
+const fetch = require('make-fetch-happen').defaults({
+  cacheManager: './sCache',
+  cache: 'force-cache'
+});
 var URLSearchParams = require('urlsearchparams');
 var parseString = require('xml2js').parseString;
 
@@ -21,7 +24,7 @@ module.exports = function(url, bot, editMsg) {
       params.append('order', 'desc');
   var shareId = editMsg.fileId || editMsg.url;
 
-  return axios.get("https://tineye.com/search?"+params, 
+  return fetch("https://tineye.com/search?"+params, 
     {headers:
       {
         "User-Agent": userAgents[
@@ -29,18 +32,19 @@ module.exports = function(url, bot, editMsg) {
         ],
       }}
   )
-  .then(res => {
+  .then(res => res.text().then( res => {
     console.log("get tineye completed");
 
-    var tmp = res.data;
+    var tmp = res;
     var start = tmp.indexOf('<div class="row match-row"');
     start = tmp.indexOf('<div class="match"', start);
     if (start == -1){
       console.log("not found");
       return Promise.reject();
     }
+    //TODO: if URL, load/head it, check if mime=pic types, say invalid url if not.
     tmp = tmp.substring( start, tmp.indexOf('</div>', start)+6);
-    //console.log(tmp);
+    //console.dir(tmp);
     parseString(tmp, function (err, res) {
       res=res.div;
 
@@ -65,34 +69,34 @@ module.exports = function(url, bot, editMsg) {
         disable_web_page_preview: true}).catch( err => console.dir(err));
 
     });
-  })
+  }))
   .catch( err => {
     console.dir(err);
     var params = urlbase.sauceNaoParams;
     params.url = url;
     params.api_key = tokenSN;
 
-    return axios.get(urlbase.sauceNao, {
+    return fetch(urlbase.sauceNao, {
       params: params
     })
-    .then(res => {
+    .then(res => res.text().then( res => {
       console.log("get saucenao completed");
       // console.log("response is ", res);
-      if (global.debug) console.log("result is", res.data.results);
+      if (global.debug) console.log("result is", res.results);
 
-      // res.data가 string으로 반환되며, 앞에 <!-- 175.196.43 --> 가 붙어서
+      // res가 string으로 반환되며, 앞에 <!-- 175.196.43 --> 가 붙어서
       // 오는 경우가 있어서 처리
-      if (typeof res.data === "string" && res.data.includes("<!--") && res.data.includes("-->")) {
+      if (typeof res === "string" && res.includes("<!--") && res.includes("-->")) {
         try{
-          res.data = JSON.parse(res.data.slice(res.data.indexOf("-->")+3).trim());
+          res = JSON.parse(res.slice(res.indexOf("-->")+3).trim());
         } catch(e){
           return Promise.reject(new Error(
-            res.data.substr(res.data.lastIndexOf('<br />') + 6)));
+            res.substring(res.lastIndexOf('<br />') + 6, res.lastIndexOf('</b'))));
         }
       }
 
-      var header = res.data.header || {};
-      var results = res.data.results || [];
+      var header = res.header || {};
+      var results = res.results || [];
 
       for (i=0; i< results.length; i++){
         console.log(results[i].header.similarity);
@@ -111,10 +115,10 @@ module.exports = function(url, bot, editMsg) {
         //else return null;
       }
 
-      ///console.log("res.data.results are ", results);
+      ///console.log("res.results are ", results);
 
       return sendResult(results, results.length, bot, editMsg);
-    })
+    }))
     .catch(err => {
       console.log("Error: error in get request to saucenao");
       //console.dir(err);
@@ -123,7 +127,7 @@ module.exports = function(url, bot, editMsg) {
         // that falls out of the range of 2xx
         console.log("-----error.status is", err.response.status);
         console.log("-----error.headers is", err.response.headers);
-        console.log("-----error.data is", err.response.data);
+        console.log("-----error.text is", err.response.text);
         if (err.response.status && err.response.status == 429) {
           bot.editText(tools.getId(editMsg), MESSAGE.reachLimitation, {parse: "Markdown"});
         } else
@@ -133,7 +137,7 @@ module.exports = function(url, bot, editMsg) {
         console.log('-----error', err.message);
         bot.editText(tools.getId(editMsg), "*Error:* " + err.message, {parse: "Markdown"});
       }
-      console.log(err.config);
+      console.dir(err);
       reportRequestError(err, bot);
     });
   });
@@ -142,9 +146,9 @@ module.exports = function(url, bot, editMsg) {
 
 /* When the request limitation occurs at the SauceNao, the error occurs as below */
 // Error: error in get request to saucenao { Error: Request failed with status code 429
-//     at createError (D:\Users\OneDrive\Work\saucenaobot\node_modules\axios\lib\core\createError.js:15:15)
-//     at settle (D:\Users\OneDrive\Work\saucenaobot\node_modules\axios\lib\core\settle.js:18:12)
-//     at IncomingMessage.handleStreamEnd (D:\Users\OneDrive\Work\saucenaobot\node_modules\axios\lib\adapters\http.js:186:11)
+//     at createError (D:\Users\OneDrive\Work\saucenaobot\node_modules\fetch\lib\core\createError.js:15:15)
+//     at settle (D:\Users\OneDrive\Work\saucenaobot\node_modules\fetch\lib\core\settle.js:18:12)
+//     at IncomingMessage.handleStreamEnd (D:\Users\OneDrive\Work\saucenaobot\node_modules\fetch\lib\adapters\http.js:186:11)
 //     at emitNone (events.js:91:20)
 //     at IncomingMessage.emit (events.js:185:7)
 //     at endReadableNT (_stream_readable.js:926:12)
@@ -161,7 +165,7 @@ module.exports = function(url, bot, editMsg) {
 //      validateStatus: [Function: validateStatus],
 //      headers:
 //       { Accept: 'application/json, text/plain, */*',
-//         'User-Agent': 'axios/0.15.3' },
+//         'User-Agent': 'fetch/0.15.3' },
 //      method: 'get',
 //      params:
 //       { db: 999,

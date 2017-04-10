@@ -8,13 +8,9 @@ var tokenBot = SETTINGS.private.botToken;
 // tokenBot should be the Telegram bot token
 var tokenSN = SETTINGS.private.SNKey;
 var KEYWORDS = require("../settings/settings.js").keywords;
-
 var TeleBot = require("telebot");
-var axios = require("axios");
 var request = require("./request.js");
-
 var tools = require("../tools/tools.js");
-
 
 var MESSAGE = SETTINGS.msg;
 /* moduleSwitch's property indicates whether to turn on/off the module */
@@ -71,7 +67,7 @@ module.exports = () => {
         var rmsg = msg.reply_to_message;
         if (rmsg && rmsg.photo && rmsg.photo.length > 0)
           getSauceInit(rmsg);
-        else
+        else if(msg.text.indexOf('/')==0)
           bot.sendMessage(chat_id, MESSAGE.keywordHelp, {reply: reply, parse: "Markdown"});
       }
       else if (msg.chat.type == "private"){
