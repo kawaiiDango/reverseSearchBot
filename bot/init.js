@@ -63,7 +63,7 @@ module.exports = () => {
     if (msg.text === "/help" || msg.text === "/start") {
       return;
     } else if (msg.text) {
-      if (KEYWORDS.indexOf(msg.text.toLowerCase()) >-1){
+      if (KEYWORDS.indexOf(msg.text.toLowerCase().split(/[@ ]/)[0]) > -1){
         var rmsg = msg.reply_to_message;
         if (rmsg && rmsg.photo && rmsg.photo.length > 0)
           getSauceInit(rmsg);
@@ -142,7 +142,12 @@ module.exports = () => {
     } else {
       if(msg.photo)
         msg.fileId = msg.photo[msg.photo.length-1].file_id;
-      bot.sendMessage(msg.chat.id, MESSAGE.loading, {reply: msg.message_id, parse: "HTML"})
+      var loadingKb = bot.inlineKeyboard([[
+        bot.inlineButton(SETTINGS.id_buttonName.loading, {
+          callback: "noop"
+        })
+      ]]);
+      bot.sendMessage(msg.chat.id, MESSAGE.loading, {reply: msg.message_id, reply_markup: loadingKb, parse: "HTML"})
       .then(res => {
         getSauce(msg, res.result);
       });

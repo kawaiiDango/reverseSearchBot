@@ -19,6 +19,7 @@ var settings = {
     anidb_aid: "https://anidb.net/perl-bin/animedb.pl?show=anime&aid=",
     e621_id : "https://e621.net/post/show/",
     yandere_id: "https://yande.re/post/show/",
+    drawr_id: "http://drawr.net/show.php?id=",
   },
   id_buttonName: {
     pixiv_id: "Pixiv",
@@ -30,6 +31,7 @@ var settings = {
     anidb_aid: "AniDB",
     e621_id: "e621.net",
     yandere_id: "yande.re",
+    drawr_id: "Drawr",
 
     share: "↗️Share",
     loading: "🍝",
