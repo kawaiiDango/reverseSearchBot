@@ -125,7 +125,7 @@ var createDetailedText = (header, data, showThumbnail) => {
       (data.year) ? "\n<b>Year:</b> " + data.year : null,
       (data.est_time) ? "\n<b>Time: </b> " + data.est_time : null
     ];
-    return textarray.join(" ");
+    return textarray.join("");
 }
 
 module.exports = sendResult;
