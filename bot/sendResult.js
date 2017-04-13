@@ -21,7 +21,7 @@ var sendResult = function(results, totalLength, bot, editMsg) {
       count = global.userCount[from_id.toString()];
 
       if ((count / 2) - Math.floor(count / 2) === 0) {
-        bot.sendMessage(from_id, MESSAGE.requestRating, {parse: "Markdown", preview: false});
+        bot.sendMessage(from_id, MESSAGE.requestRating, {parse: "HTML", preview: false});
       }
     }
     return;
@@ -48,7 +48,10 @@ var sendResult = function(results, totalLength, bot, editMsg) {
   // pixiv_id를 제외한 XXX_id 유형이 있는 경우,
   // settings/settings.js의 url property를 참조하여 지정된 id 항목을 추출
 
-    // displayText = "*" + (data.title || "...") + "*" + " by _" + 
+  if (restOfIds.length > 5)
+      restOfIds.splice(5); //keep only 5 items
+
+    // displayText = "<b>" + (data.title || "...") + "</b>" + " by _" + 
     //   (data.member_name || data.creator || "..." ) + "_";
     displayText = text;
 
@@ -100,7 +103,7 @@ var sendResult = function(results, totalLength, bot, editMsg) {
 
   markup = bot.inlineKeyboard(buttons);
 
-  return bot.editText(tools.getId(editMsg), displayText, {markup: markup, parse: "Markdown"});
+  return bot.editText(tools.getId(editMsg), displayText, {markup: markup, parse: "HTML"});
   /*
   .then(function() {
     if (global.debug) console.log('inner then');
@@ -110,20 +113,19 @@ var sendResult = function(results, totalLength, bot, editMsg) {
 };
 
 var createDetailedText = (header, data, showThumbnail) => {
-  console.dir(data);
       textarray = [
-      //"*Similarity:*", header.similarity + "%", "|",
-      (data.title ? "*" + data.title + "*" : "") + " " + 
-      ((data.member_name || data.creator) ? "*by:* " + (data.member_name || data.creator) : ""),
-      (data.eng_name) ? "*Eng_title:* " + data.eng_name : null,
-      (data.jp_name) ? "*Jp_title:* " + data.jp_name : null,
-      (data.source) ? "*Source:* " + data.source : null,
-      (data.part) ? "*Episode:* " + data.part : null,
-      (data.year) ? "*Year:* " + data.year : null,
-      (data.est_time) ? "*Time: * " + data.est_time : null,
-      (showThumbnail)? "[\u2063](" + header.thumbnail + ")" : null
+      //"<b>Similarity:</b>", header.similarity + "%", "|",
+      (showThumbnail)? "\n<a href=\"" + header.thumbnail + "\">\u2063</a>" : null,
+      (data.title ? "\n<b>" + data.title + "</b>" : "") + " " + 
+      ((data.member_name || data.creator) ? "<b>by:</b> " + (data.member_name || data.creator) : ""),
+      //(data.eng_name) ? "<b>Eng_title:</b> " + data.eng_name : null,
+      //(data.jp_name) ? "<b>Jp_title:</b> " + data.jp_name : null,
+      (data.source) ? "\n<b>Source:</b> " + data.source : null,
+      (data.part) ? "\n<b>Episode:</b> " + data.part : null,
+      (data.year) ? "\n<b>Year:</b> " + data.year : null,
+      (data.est_time) ? "\n<b>Time: </b> " + data.est_time : null
     ];
-    return textarray.join("\n");
+    return textarray.join(" ");
 }
 
 module.exports = sendResult;

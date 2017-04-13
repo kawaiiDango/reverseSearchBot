@@ -52,7 +52,7 @@ module.exports = () => {
     var reply = msg.message_id;
     if (global.debug) console.log("msg is ", msg);
 
-    bot.sendMessage(chat_id, MESSAGE.help, {reply: reply, parse: "Markdown"});
+    bot.sendMessage(chat_id, MESSAGE.help, {reply: reply, parse: "HTML"});
   });
 
   bot.on(["*"], msg => {
@@ -68,14 +68,14 @@ module.exports = () => {
         if (rmsg && rmsg.photo && rmsg.photo.length > 0)
           getSauceInit(rmsg);
         else if(msg.text.indexOf('/')==0)
-          bot.sendMessage(chat_id, MESSAGE.keywordHelp, {reply: reply, parse: "Markdown"});
+          bot.sendMessage(chat_id, MESSAGE.keywordHelp, {reply: reply, parse: "HTML"});
       }
       else if (msg.chat.type == "private"){
         if (tools.urlDetector(msg.text)) {
           msg.url = msg.text;
           getSauceInit(msg);
         } else if(!msg.entities){
-          //bot.sendMessage(chat_id, MESSAGE.invalidUrl, {reply: reply, parse: "Markdown"});
+          //bot.sendMessage(chat_id, MESSAGE.invalidUrl, {reply: reply, parse: "HTML"});
         }
       }
     } else if (msg.photo && msg.photo.length > 0 && 
@@ -83,7 +83,7 @@ module.exports = () => {
         msg.chat.type == "private")) {
       getSauceInit(msg);
     } else {
-      ///bot.sendMessage(chat_id, MESSAGE.invalidForm, {reply: reply, parse: "Markdown"});
+      ///bot.sendMessage(chat_id, MESSAGE.invalidForm, {reply: reply, parse: "HTML"});
     }
   });
 
@@ -106,7 +106,7 @@ module.exports = () => {
           description: query,
           message_text: MESSAGE.loading,
           reply_markup: loadingKb,
-          parse_mode: 'Markdown'
+          parse_mode: 'HTML'
         });
 
     } else if (query.length > 40 && query.match(/^[A-Za-z0-9_\-]+$/)) { //file id
@@ -116,7 +116,7 @@ module.exports = () => {
         description: "your sauce",
         message_text: MESSAGE.loading,
         reply_markup: loadingKb,
-        parse_mode: 'Markdown'
+        parse_mode: 'HTML'
       });
     } else { //invalid
       // answers = bot.answerList(msg.id, { cacheTime: 1000,
@@ -142,7 +142,7 @@ module.exports = () => {
     } else {
       if(msg.photo)
         msg.fileId = msg.photo[msg.photo.length-1].file_id;
-      bot.sendMessage(msg.chat.id, MESSAGE.loading, {reply: msg.message_id, parse: "Markdown"})
+      bot.sendMessage(msg.chat.id, MESSAGE.loading, {reply: msg.message_id, parse: "HTML"})
       .then(res => {
         getSauce(msg, res.result);
       });
@@ -164,7 +164,7 @@ module.exports = () => {
           request(url, bot, editMsg);
         })
         .catch( err => {
-          bot.editText(tools.getId(editMsg), MESSAGE.invalidFileId, {parse: "Markdown"});
+          bot.editText(tools.getId(editMsg), MESSAGE.invalidFileId, {parse: "HTML"});
         });
     }
   };

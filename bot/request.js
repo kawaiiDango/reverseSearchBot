@@ -109,7 +109,7 @@ module.exports = function(url, bot, editMsg) {
 
       if (results.length < 1) {
         //if (msg.chat.type == "private" || (msg.text && KEYWORDS.indexOf(msg.text.toLowerCase()) > -1))
-          return bot.editText(tools.getId(editMsg), MESSAGE.zeroResult, {parse: "Markdown"});
+          return bot.editText(tools.getId(editMsg), MESSAGE.zeroResult, {parse: "HTML"});
         //else return null;
       }
 
@@ -118,7 +118,7 @@ module.exports = function(url, bot, editMsg) {
       return sendResult(results, results.length, bot, editMsg);
     }))
     .catch(err => {
-      console.log("Error: error in get request to saucenao");
+      console.log("error in get request to saucenao");
       console.dir(err);
       if (err.response) {
         // The request was made, but the server responded with a status code
@@ -127,13 +127,13 @@ module.exports = function(url, bot, editMsg) {
         console.log("-----error.headers is", err.response.headers);
         console.log("-----error.text is", err.response.text);
         if (err.response.status && err.response.status == 429) {
-          bot.editText(tools.getId(editMsg), MESSAGE.reachLimitation, {parse: "Markdown"});
+          bot.editText(tools.getId(editMsg), MESSAGE.reachLimitation, {parse: "HTML"});
         } else
-          bot.editText(tools.getId(editMsg), MESSAGE.unknownError, {parse: "Markdown"});
+          bot.editText(tools.getId(editMsg), MESSAGE.unknownError, {parse: "HTML"});
       } else {
         // Something happened in setting up the request that triggered an Error
         console.log('-----error', err.message);
-        bot.editText(tools.getId(editMsg), "*Error:* " + err.message, {parse: "Markdown"});
+        bot.editText(tools.getId(editMsg), "<b>Error:</b> " + err.message, {parse: "HTML"});
       }
       console.dir(err);
       reportRequestError(err, bot);

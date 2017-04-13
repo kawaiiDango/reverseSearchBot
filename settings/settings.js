@@ -16,7 +16,9 @@ var settings = {
     sankaku_id: "https://chan.sankakucomplex.com/post/show/",
     "anime-pictures_id": "https://anime-pictures.net/pictures/view_post/",
     imdb_id: "https://www.imdb.com/title/",
-    anidb_aid: "https://anidb.net/perl-bin/animedb.pl?show=anime&aid="
+    anidb_aid: "https://anidb.net/perl-bin/animedb.pl?show=anime&aid=",
+    e621_id : "https://e621.net/post/show/",
+    yandere_id: "https://yande.re/post/show/",
   },
   id_buttonName: {
     pixiv_id: "Pixiv",
@@ -26,6 +28,9 @@ var settings = {
     "anime-pictures_id": "Anime-Pictures",
     imdb_id: "IMDb",
     anidb_aid: "AniDB",
+    e621_id: "e621.net",
+    yandere_id: "yande.re",
+
     share: "↗️Share",
     loading: "🍝",
     pageLink: "📃Source",
@@ -35,14 +40,14 @@ var settings = {
   msg: {
     invalidUrl: "That doesn't look like a photo or a URL",
     invalidForm: "Invalid form. Please check if you sent a non-photo file or your photo is sent as file.",
-    loading: "_Pouring some sauce on it..._",
-    zeroResult: "No sauce found. _Maybe try butter instead?_",
+    loading: "<i>Pouring some sauce on it...</i>",
+    zeroResult: "No sauce found. <i>Maybe try butter instead?</i>",
     help: "Send me an image or an image URL to find your SauceRightNao.",
     tooManyRequests: "Too many requests. Please send one by one and take time between requests.",
     reachLimitation: "The request limitation has been reached. Please wait for a few minutes.",
-    unknownError: "*Unknown error occured.* Please contact @dangou if this happens repeatedly.",
-    invalidFileId: "_Invalid file id_",
-    requestRating: "[★ Rate](https://telegram.me/storebot?start=reverseSearchBot)",
+    unknownError: "<b>Unknown error occured.</b> Please contact @dangou if this happens repeatedly.",
+    invalidFileId: "<i>Invalid file id</i>",
+    requestRating: "<a href=\"https://telegram.me/storebot?start=reverseSearchBot\">★ Rate</a>",
     keywordHelp: "Dont just click me like that. \n\nReply to a pic with /source or /sauce to find its source."
   },
   moduleSwitch: {
