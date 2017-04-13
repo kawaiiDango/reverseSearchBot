@@ -44,25 +44,7 @@ var sendResult = function(results, totalLength, bot, editMsg) {
 
   var text = createDetailedText(header, data);
 
-  if (data.pixiv_id !== undefined) {
-    // 픽시브일 경우
-    buttonName = idButtonName["pixiv_id"];
-    urlPrefix = urlbase["pixiv_id"];
-    id = data.pixiv_id;
-
-    displayText = "*" + (data.title || "...") + "*" + " by _" + 
-      (data.member_name || data.creator || "..." ) + "_";
-    buttons = [
-      [
-        bot.inlineButton(buttonName, {
-          url: urlbase.pixiv_id + data.pixiv_id
-        }),
-        bot.inlineButton(idButtonName.share, {
-          inline: shareId
-        })
-      ]
-    ];
-  } else if (restOfIds.length) {
+  if (restOfIds.length) {
   // pixiv_id를 제외한 XXX_id 유형이 있는 경우,
   // settings/settings.js의 url property를 참조하여 지정된 id 항목을 추출
 
@@ -75,8 +57,8 @@ var sendResult = function(results, totalLength, bot, editMsg) {
       urlPrefix = urlbase[restOfIds[j]];
       id = data[restOfIds[j]];
 
-      if (j)
-        buttonName = buttonName.substr(buttonName.indexOf("View on ") + 8);
+      if (j == 0)
+        buttonName = "View on " + buttonName;
 
       innerbuttonsContainer.push(
         bot.inlineButton(buttonName, {
@@ -128,6 +110,7 @@ var sendResult = function(results, totalLength, bot, editMsg) {
 };
 
 var createDetailedText = (header, data, showThumbnail) => {
+  console.dir(data);
       textarray = [
       //"*Similarity:*", header.similarity + "%", "|",
       (data.title ? "*" + data.title + "*" : "") + " " + 
