@@ -29,7 +29,7 @@ var settings = {
     "anime-pictures_id": "Anime-Pictures",
     imdb_id: "IMDb",
     anidb_aid: "AniDB",
-    e621_id: "e621.net",
+    e621_id: "e621",
     yandere_id: "yande.re",
     drawr_id: "Drawr",
 
@@ -41,16 +41,16 @@ var settings = {
   },
   msg: {
     invalidUrl: "That doesn't look like a photo or a URL",
-    invalidForm: "Invalid form. Please check if you sent a non-photo file or your photo is sent as file.",
+    invalidForm: "Invalid form. Please check if you sent a non-photo file.",
     loading: "<i>Pouring some sauce on it...</i>",
-    zeroResult: "No sauce found. <i>Maybe try butter instead?</i>",
-    help: "Send me an image or an image URL to find your SauceRightNao.",
+    zeroResult: "No sauce found. <i>Maybe try some butter instead?</i>",
+    help: "Send me an image, a sticker, an image file or an image URL to find its source Right Nao.",
     tooManyRequests: "Too many requests. Please send one by one and take time between requests.",
     reachLimitation: "The request limitation has been reached. Please wait for a few minutes.",
     unknownError: "<b>Unknown error occured.</b> Please contact @dangou if this happens repeatedly.",
     invalidFileId: "<i>Invalid file id</i>",
     requestRating: "<a href=\"https://telegram.me/storebot?start=reverseSearchBot\">★ Rate</a>",
-    keywordHelp: "Dont just click me like that. \n\nReply to a pic with /source or /sauce to find its source."
+    keywordHelp: "Dont just click me like that. \n\nReply to a pic, a sticker, or an image file with /source or /sauce to find its source."
   },
   moduleSwitch: {
     report: {on: false, notify: false},

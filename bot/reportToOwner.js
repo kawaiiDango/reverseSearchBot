@@ -37,11 +37,26 @@ module.exports = {
         if (!reportToOwnerSwitch.reportFileUrl.on) {
             return;
         }
-        if (global.debug) console.log("Reporting fileurl");
+        if (global.debug) console.log("Reporting file");
         for (var i = 0; i < receiver_id.length; i++) {
             bot.sendPhoto(receiver_id[i], file, {
                 caption: null,
                 notify: reportToOwnerSwitch.reportFileUrl.notify
+            })
+            .catch( err => {
+              if(err.error_code && err.error_code==400)
+                bot.sendSticker(receiver_id[i], file, {
+                    notify: reportToOwnerSwitch.reportFileUrl.notify
+                })
+                .catch( err => {
+                  if(err.error_code && err.error_code==400)
+                    bot.sendFile(receiver_id[i], file, {
+                        notify: reportToOwnerSwitch.reportFileUrl.notify
+                    })
+                    .catch( err => {
+                      console.dir(err);
+                    });
+                });
             });
         }
     }

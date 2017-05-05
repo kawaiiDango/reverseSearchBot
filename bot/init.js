@@ -65,7 +65,7 @@ module.exports = () => {
     } else if (msg.text) {
       if (KEYWORDS.indexOf(msg.text.toLowerCase().split(/[@ ]/)[0]) > -1){
         var rmsg = msg.reply_to_message;
-        if (rmsg && rmsg.photo && rmsg.photo.length > 0)
+        if (rmsg && (rmsg.photo || rmsg.document || rmsg.sticker))
           getSauceInit(rmsg);
         else if(msg.text.indexOf('/')==0)
           bot.sendMessage(chat_id, MESSAGE.keywordHelp, {reply: reply, parse: "HTML"});
@@ -78,10 +78,9 @@ module.exports = () => {
           //bot.sendMessage(chat_id, MESSAGE.invalidUrl, {reply: reply, parse: "HTML"});
         }
       }
-    } else if (msg.photo && msg.photo.length > 0 && 
-      (SETTINGS.private.favouriteGroups.indexOf(chat_id)>-1 || 
-        msg.chat.type == "private")) {
-      getSauceInit(msg);
+    } else if (SETTINGS.private.favouriteGroups.indexOf(chat_id)>-1 || msg.chat.type == "private") {
+	if (msg.photo || msg.document || msg.sticker)
+	   getSauceInit(msg);
     } else {
       ///bot.sendMessage(chat_id, MESSAGE.invalidForm, {reply: reply, parse: "HTML"});
     }
@@ -140,14 +139,20 @@ module.exports = () => {
         msg.fileId = msg.query;
       getSauce(msg, msg);
     } else {
-      if(msg.photo)
+      if(msg.photo && msg.photo.length >0)
         msg.fileId = msg.photo[msg.photo.length-1].file_id;
+      else if (msg.sticker)
+	msg.fileId = msg.sticker.file_id;
+      else if (msg.document && tools.isSupportedExt(msg.document.file_name))
+        msg.fileId = msg.document.file_id;
+      else
+	return;
       var loadingKb = bot.inlineKeyboard([[
         bot.inlineButton(SETTINGS.id_buttonName.loading, {
           callback: "noop"
         })
       ]]);
-      bot.sendMessage(msg.chat.id, MESSAGE.loading, {reply: msg.message_id, reply_markup: loadingKb, parse: "HTML"})
+      bot.sendMessage(msg.chat.id, MESSAGE.loading, {reply: msg.message_id, markup: loadingKb, parse: "HTML"})
       .then(res => {
         getSauce(msg, res.result);
       });
