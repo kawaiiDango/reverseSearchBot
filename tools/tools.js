@@ -43,7 +43,7 @@ module.exports = {
     return result;
   },
   isSupportedExt: (filename) => {
-	var ext = filename.substr(filename.lastIndexOf('.')+1);
+	var ext = filename.substr(filename.lastIndexOf('.')+1).toLowerCase();
 	if( ext == "jpg" || ext =="png" || ext == "webp" || ext == "bmp")
 		return true;
 	return false;
