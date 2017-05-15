@@ -23,7 +23,7 @@ module.exports = function(url, bot, editMsg) {
 
       // count user request and if it satisfies condition, print msg asking rating
     if (global.userCount.on && editMsg.chat && editMsg.chat.type == "private") {
-      console.log('hmm');
+      var from_id = editMsg.from.id;
       var count = global.userCount[from_id.toString()];
       if (count === undefined) global.userCount[from_id.toString()] = 0;
       global.userCount[from_id.toString()] += 1;
@@ -76,8 +76,8 @@ module.exports = function(url, bot, editMsg) {
             inline: shareId
           })
         ]]);
-      return bot.editText(tools.getId(editMsg), displayText, {markup: markup, 
-        disable_web_page_preview: true}).catch( err => console.dir(err));
+      return bot.editText(tools.getId(editMsg), displayText, {markup: markup, parse: "HTML",
+        preview: false}).catch( err => console.dir(err));
 
     });
   }))

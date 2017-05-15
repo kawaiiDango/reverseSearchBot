@@ -51,7 +51,7 @@ var settings = {
     reachLimitation: "The request limitation has been reached. Please wait for a few minutes.",
     unknownError: "<b>Unknown error occured.</b> Please contact @dangou if this happens repeatedly.",
     invalidFileId: "<i>Invalid file id</i>",
-    requestRating: "<a href=\"https://telegram.me/storebot?start=reverseSearchBot\">★ Rate</a>",
+    requestRating: "<a href=\"https://telegram.me/storebot?start=reverseSearchBot\">★ Rate this bot</a>",
     keywordHelp: "Dont just click me like that. \n\nReply to a pic, a sticker, or an image file with /source or /sauce to find its source."
   },
   moduleSwitch: {
