@@ -78,10 +78,10 @@ module.exports = () => {
           //bot.sendMessage(chat_id, MESSAGE.invalidUrl, {reply: reply, parse: "HTML"});
         }
       }
-    } else if (SETTINGS.private.favouriteGroups.indexOf(chat_id)>-1 || msg.chat.type == "private") {
-	if (msg.photo || msg.document || msg.sticker)
-	   getSauceInit(msg);
-    } else {
+    } else if (msg.chat.type == "private" && (msg.photo || msg.document || msg.sticker)) {
+        getSauceInit(msg);
+    } else if (SETTINGS.private.favouriteGroups.indexOf(chat_id)>-1  && (msg.photo)) {
+        getSauceInit(msg);
       ///bot.sendMessage(chat_id, MESSAGE.invalidForm, {reply: reply, parse: "HTML"});
     }
   });
@@ -174,6 +174,7 @@ module.exports = () => {
           request(url, bot, editMsg);
         })
         .catch( err => {
+          console.dir(err);
           bot.editText(tools.getId(editMsg), MESSAGE.invalidFileId, {parse: "HTML"});
         });
     }

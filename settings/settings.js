@@ -8,7 +8,7 @@ var settings = {
       output_type: 2,
       testmode: 1,
       numres: 5,
-      minSimilarity : 50
+      minSimilarity : 56
     },
     pixiv_id: "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=",
     danbooru_id: "https://danbooru.donmai.us/post/show/",
@@ -20,6 +20,7 @@ var settings = {
     e621_id : "https://e621.net/post/show/",
     yandere_id: "https://yande.re/post/show/",
     drawr_id: "http://drawr.net/show.php?id=",
+    da_id: "https://deviantart.com/view/",
   },
   id_buttonName: {
     pixiv_id: "Pixiv",
@@ -30,8 +31,9 @@ var settings = {
     imdb_id: "IMDb",
     anidb_aid: "AniDB",
     e621_id: "e621",
-    yandere_id: "yande.re",
+    yandere_id: "yandere",
     drawr_id: "Drawr",
+    da_id: "deviantArt",
 
     share: "↗️Share",
     loading: "🍝",

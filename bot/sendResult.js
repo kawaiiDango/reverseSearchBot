@@ -9,25 +9,9 @@ var sendResult = function(results, totalLength, bot, editMsg) {
   var from_id = editMsg.from.id;
   var shareId = editMsg.fileId || editMsg.url;
 
-  if (!results.length) {
-    // console.log("Processing: nokori 0");
-
-    // count user request and if it satisfies condition, print msg asking rating
-    if (global.userCount.on) {
-      var count = global.userCount[from_id.toString()];
-      if (count === undefined) global.userCount[from_id.toString()] = 0;
-      global.userCount[from_id.toString()] += 1;
-
-      count = global.userCount[from_id.toString()];
-
-      if ((count / 2) - Math.floor(count / 2) === 0) {
-        bot.sendMessage(from_id, MESSAGE.requestRating, {parse: "HTML", preview: false});
-      }
-    }
+  if (!results.length)
     return;
-  } else {
-    // console.log("Processing: nokori ", results.length);
-  }
+
   totalLength = totalLength || totalLength;
   var element = results[0];
   var header = element.header;
@@ -89,6 +73,7 @@ var sendResult = function(results, totalLength, bot, editMsg) {
       }
     }
   } else {
+    console.dir(data);
     displayText = createDetailedText(header, data, true);
     buttons = [
       [

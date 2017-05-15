@@ -19,6 +19,21 @@ var idButtonName = require("../settings/settings.js").id_buttonName;
 module.exports = function(url, bot, editMsg) {
   var params = {url: url, sort: 'size', order: 'desc'};
   var shareId = editMsg.fileId || editMsg.url;
+  var rateText = '';
+
+      // count user request and if it satisfies condition, print msg asking rating
+    if (global.userCount.on && editMsg.chat && editMsg.chat.type == "private") {
+      console.log('hmm');
+      var count = global.userCount[from_id.toString()];
+      if (count === undefined) global.userCount[from_id.toString()] = 0;
+      global.userCount[from_id.toString()] += 1;
+
+      count = global.userCount[from_id.toString()];
+
+      if ((count / 2) - Math.floor(count / 2) === 0) {
+        rateText = MESSAGE.requestRating;
+      }
+    }
 
   return fetch("https://tineye.com/search?" + tools.json2query(params), 
     {headers:
@@ -49,7 +64,7 @@ module.exports = function(url, bot, editMsg) {
         highResUrl = res.p[0].a[0].$.href, 
         page = res.p[2].a[0].$.href;
 
-      var displayText = imgName + " from " + siteName;
+      var displayText = imgName + " from " + siteName + "\n" + rateText;
       var markup = bot.inlineKeyboard([[
           bot.inlineButton(idButtonName.picLink, {
             url: highResUrl
@@ -108,9 +123,7 @@ module.exports = function(url, bot, editMsg) {
       reportLimitsOfSaucenao(header, bot);
 
       if (results.length < 1) {
-        //if (msg.chat.type == "private" || (msg.text && KEYWORDS.indexOf(msg.text.toLowerCase()) > -1))
           return bot.editText(tools.getId(editMsg), MESSAGE.zeroResult, {parse: "HTML"});
-        //else return null;
       }
 
       ///console.log("res.results are ", results);
