@@ -96,7 +96,7 @@ module.exports = () => {
         })
       ]]);
     var answers = bot.answerList(msg.id, { cacheTime: 1000,
-      switch_pm_text: "Search by an image instead" });
+      pmText: "Search by an image instead", pmParameter: "noop"});
 
     if (tools.urlDetector(query)) { //url
         answers.addArticle({
@@ -119,7 +119,7 @@ module.exports = () => {
       });
     } else { //invalid
       // answers = bot.answerList(msg.id, { cacheTime: 1000,
-      //   switch_pm_text: "Invalid URL", switch_pm_parameter: "noop" });
+      //   pmText: "Invalid URL", pmParameter: "noop" });
     }
 
     // Send answers

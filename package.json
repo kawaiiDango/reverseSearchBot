@@ -15,8 +15,8 @@
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "morgan": "^1.8.1",
-    "make-fetch-happen": "^2.2.1",
-    "telebot": "^1.0.7",
+    "make-fetch-happen": "^2.4.3",
+    "telebot": "^1.1.0",
     "xml2js": "^0.4.17"
   }
 }
