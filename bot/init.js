@@ -143,9 +143,11 @@ module.exports = () => {
         msg.fileId = msg.photo[msg.photo.length-1].file_id;
       else if (msg.sticker)
 	msg.fileId = msg.sticker.file_id;
-      else if (msg.document && tools.isSupportedExt(msg.document.file_name))
-        msg.fileId = msg.document.file_id;
-      else
+      else if (msg.document && tools.isSupportedExt(msg.document.file_name)){
+	 console.dir(msg.document);
+	 console.log("fn="+msg.document.file_name);
+	 msg.fileId = msg.document.file_id;
+      }else
 	return;
       var loadingKb = bot.inlineKeyboard([[
         bot.inlineButton(SETTINGS.id_buttonName.loading, {

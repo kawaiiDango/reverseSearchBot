@@ -42,8 +42,8 @@ var settings = {
 
   },
   msg: {
-    invalidUrl: "That doesn't look like a photo or a URL",
-    invalidForm: "Invalid form. Please check if you sent a non-photo file.",
+    invalidUrl: "That doesn't look like a photo or a URL.",
+    invalidForm: "That type of message is not supported yet.",
     loading: "<i>Pouring some sauce on it...</i>",
     zeroResult: "No sauce found. <i>Maybe try some butter instead?</i>",
     help: "Send me an image, a sticker, an image file or an image URL to find its source Right Nao.",
