@@ -12,11 +12,11 @@
   },
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.17.1",
-    "express": "^4.15.2",
-    "morgan": "^1.8.1",
-    "make-fetch-happen": "^2.4.3",
-    "telebot": "^1.1.0",
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "morgan": "^1.8.2",
+    "make-fetch-happen": "^2.4.9",
+    "telebot": "^1.2.0",
     "xml2js": "^0.4.17"
   }
 }
