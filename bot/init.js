@@ -162,6 +162,7 @@ module.exports = () => {
       }
       else
 	      return;
+
       var loadingKb = bot.inlineKeyboard([[
         bot.inlineButton(SETTINGS.id_buttonName.loading, {
           callback: "noop"

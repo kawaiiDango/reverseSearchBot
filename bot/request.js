@@ -65,7 +65,8 @@ module.exports = function(url, bot, editMsg) {
         highResUrl = res.p[0].a[0].$.href, 
         page = res.p[2].a[0].$.href;
 
-      var displayText = imgName + " from " + siteName + "\n" + rateText;
+      var displayText = "<a href=\"" + highResUrl + "\">" + imgName 
+		+ "</a> from <a href=\"" + page + "\">" + siteName + "</a>\n" + rateText;
       var markup = bot.inlineKeyboard([[
           bot.inlineButton(idButtonName.picLink, {
             url: highResUrl
@@ -84,7 +85,7 @@ module.exports = function(url, bot, editMsg) {
     });
   }))
   .catch( err => {
-    //console.dir(err);
+    console.dir(err);
     var params = urlbase.sauceNaoParams;
     params.url = url;
     params.api_key = tokenSN;
@@ -125,8 +126,8 @@ module.exports = function(url, bot, editMsg) {
       reportLimitsOfSaucenao(header, bot);
 
       if (results.length < 1) {
-          fetchNoCache(urlbase.analUrl + tools.json2query({ec: "sauce_found", ea: "not_found", uid: editMsg.from.id, ul: editMsg.from.language_code}));
-          return bot.editText(tools.getId(editMsg), MESSAGE.zeroResult, {parse: "HTML"});
+          return bot.editText(tools.getId(editMsg), MESSAGE.zeroResult.replace(
+		"some butter", "</i><a href=\"https://www.google.com/searchbyimage?&image_url=" + url + "\">Google</a><i>"), {parse: "HTML"});
       }
 
       ///console.log("res.results are ", results);
