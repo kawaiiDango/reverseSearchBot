@@ -126,7 +126,8 @@ module.exports = function(url, bot, editMsg) {
       reportLimitsOfSaucenao(header, bot);
 
       if (results.length < 1) {
-          return bot.editText(tools.getId(editMsg), MESSAGE.zeroResult.replace(
+        fetchNoCache(urlbase.analUrl + tools.json2query({ec: "sauce_found", ea: "not_found", uid: editMsg.from.id, ul: editMsg.from.language_code}));
+        return bot.editText(tools.getId(editMsg), MESSAGE.zeroResult.replace(
 		"some butter", "</i><a href=\"https://www.google.com/searchbyimage?&image_url=" + url + "\">Google</a><i>"), {parse: "HTML"});
       }
 
