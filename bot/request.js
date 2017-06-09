@@ -1,20 +1,21 @@
-const fetch = require('make-fetch-happen').defaults({
+const fetchNoCache = require('make-fetch-happen');
+const fetch = fetchNoCache.defaults({
   cacheManager: './sCache',
   cache: 'force-cache'
 });
 var parseString = require('xml2js').parseString;
 
-var urlbase = require("../settings/settings.js").url;
-var MESSAGE = require("../settings/settings.js").msg;
-var KEYWORDS = require("../settings/settings.js").keywords;
-var userAgents = require("../settings/settings.js").userAgents;
+var SETTINGS = require("../settings/settings.js");
+var urlbase = SETTINGS.url;
+var MESSAGE = SETTINGS.msg;
+var userAgents = SETTINGS.userAgents;
 var sendResult = require("./sendResult.js");
 var reportToOwner = require("./reportToOwner.js");
 var reportLimitsOfSaucenao = reportToOwner.reportLimitsOfSaucenao;
 var reportRequestError = reportToOwner.reportRequestError;
 var tools = require("../tools/tools.js");
-var tokenSN = require("../settings/settings.js").private.SNKey;
-var idButtonName = require("../settings/settings.js").id_buttonName;
+var tokenSN = SETTINGS.private.SNKey;
+var idButtonName = SETTINGS.id_buttonName;
 
 module.exports = function(url, bot, editMsg) {
   var params = {url: url, sort: 'size', order: 'desc'};
@@ -76,6 +77,7 @@ module.exports = function(url, bot, editMsg) {
             inline: shareId
           })
         ]]);
+      fetchNoCache(urlbase.analUrl + tools.json2query({ec: "sauce_found", ea: "tineye", uid: editMsg.from.id, ul: editMsg.from.language_code}));
       return bot.editText(tools.getId(editMsg), displayText, {markup: markup, parse: "HTML",
         preview: false}).catch( err => console.dir(err));
 
@@ -123,11 +125,12 @@ module.exports = function(url, bot, editMsg) {
       reportLimitsOfSaucenao(header, bot);
 
       if (results.length < 1) {
+          fetchNoCache(urlbase.analUrl + tools.json2query({ec: "sauce_found", ea: "not_found", uid: editMsg.from.id, ul: editMsg.from.language_code}));
           return bot.editText(tools.getId(editMsg), MESSAGE.zeroResult, {parse: "HTML"});
       }
 
       ///console.log("res.results are ", results);
-
+      fetchNoCache(urlbase.analUrl + tools.json2query({ec: "sauce_found", ea: "saucenao", uid: editMsg.from.id, ul: editMsg.from.language_code}));
       return sendResult(results, results.length, bot, editMsg);
     }))
     .catch(err => {

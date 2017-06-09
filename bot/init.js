@@ -7,10 +7,11 @@ var SETTINGS = require("../settings/settings.js");
 var tokenBot = SETTINGS.private.botToken;
 // tokenBot should be the Telegram bot token
 var tokenSN = SETTINGS.private.SNKey;
-var KEYWORDS = require("../settings/settings.js").keywords;
+var KEYWORDS = SETTINGS.keywords;
 var TeleBot = require("telebot");
 var request = require("./request.js");
 var tools = require("../tools/tools.js");
+const fetchNoCache = require('make-fetch-happen');
 
 var MESSAGE = SETTINGS.msg;
 /* moduleSwitch's property indicates whether to turn on/off the module */
@@ -65,10 +66,14 @@ module.exports = () => {
     } else if (msg.text) {
       if (KEYWORDS.indexOf(msg.text.toLowerCase().split(/[@ ]/)[0]) > -1){
         var rmsg = msg.reply_to_message;
-        if (rmsg && (rmsg.photo || rmsg.document || rmsg.sticker))
+        if (rmsg && (rmsg.photo || rmsg.document || rmsg.sticker)){
           getSauceInit(rmsg);
-        else if(msg.text.indexOf('/')==0)
+          fetchNoCache(SETTINGS.url.analUrl + tools.json2query({ec: "sauce", ea: msg.text, uid: msg.from.id, ul: msg.from.language_code}));
+        }
+        else if(msg.text.indexOf('/')==0){
           bot.sendMessage(chat_id, MESSAGE.keywordHelp, {reply: reply, parse: "HTML"});
+          fetchNoCache(SETTINGS.url.analUrl + tools.json2query({ec: "sauce", ea: "click_only", uid: msg.from.id, ul: msg.from.language_code}));
+        }
       }
       else if (msg.chat.type == "private"){
         if (tools.urlDetector(msg.text)) {
@@ -78,7 +83,7 @@ module.exports = () => {
           //bot.sendMessage(chat_id, MESSAGE.invalidUrl, {reply: reply, parse: "HTML"});
         }
       }
-    } else if (msg.chat.type == "private" && (msg.photo || msg.document || msg.sticker)) {
+    } else if (msg.chat.type == "private" && (msg.photo || msg.document || msg.sticker)){
         getSauceInit(msg);
     } else if (SETTINGS.private.favouriteGroups.indexOf(chat_id)>-1  && (msg.photo)) {
         getSauceInit(msg);
@@ -133,20 +138,30 @@ module.exports = () => {
 
   var getSauceInit = msg => {
     if(msg.inline_message_id){
-      if (tools.urlDetector(msg.query))
+      if (tools.urlDetector(msg.query)){
         msg.url = msg.query;
-      else
+        fetchNoCache(SETTINGS.url.analUrl + tools.json2query({ec: "msg", ea: "url_inline", dl: msg.url, uid: msg.from.id, ul: msg.from.language_code}));
+      }
+      else{
         msg.fileId = msg.query;
+        fetchNoCache(SETTINGS.url.analUrl + tools.json2query({ec: "share", ea: "_", uid: msg.from.id, ul: msg.from.language_code}));
+      }
       getSauce(msg, msg);
     } else {
-      if(msg.photo && msg.photo.length >0)
+      if(msg.photo && msg.photo.length >0){
         msg.fileId = msg.photo[msg.photo.length-1].file_id;
-      else if (msg.sticker)
-	msg.fileId = msg.sticker.file_id;
-      else if (msg.document && tools.isSupportedExt(msg.document.file_name))
+        fetchNoCache(SETTINGS.url.analUrl + tools.json2query({ec: "msg", ea: "photo", uid: msg.from.id, ul: msg.from.language_code}));
+      }
+      else if (msg.sticker){
+	      msg.fileId = msg.sticker.file_id;
+        fetchNoCache(SETTINGS.url.analUrl + tools.json2query({ec: "msg", ea: "sticker", uid: msg.from.id, ul: msg.from.language_code}));
+      }
+      else if (msg.document && tools.isSupportedExt(msg.document.file_name)){
         msg.fileId = msg.document.file_id;
+        fetchNoCache(SETTINGS.url.analUrl + tools.json2query({ec: "msg", ea: "file", uid: msg.from.id, ul: msg.from.language_code}));
+      }
       else
-	return;
+	      return;
       var loadingKb = bot.inlineKeyboard([[
         bot.inlineButton(SETTINGS.id_buttonName.loading, {
           callback: "noop"

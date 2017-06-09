@@ -3,6 +3,7 @@ var privateSettings = require("./private.js");
 var settings = {
   url: {
     sauceNao: "https://saucenao.com/search.php?",
+    analUrl: "http://www.google-analytics.com/collect?v=1&t=event&tid="+ privateSettings.analTid + "&an=" + privateSettings.botName + "&",
     sauceNaoParams: {
       db: 999,
       output_type: 2,
