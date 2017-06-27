@@ -22,6 +22,7 @@ var settings = {
     yandere_id: "https://yande.re/post/show/",
     drawr_id: "http://drawr.net/show.php?id=",
     da_id: "https://deviantart.com/view/",
+    pawoo_id: "https://pawoo.net/@",
   },
   id_buttonName: {
     pixiv_id: "Pixiv",
@@ -35,6 +36,7 @@ var settings = {
     yandere_id: "yandere",
     drawr_id: "Drawr",
     da_id: "deviantArt",
+    pawoo_id: "Pawoo",
 
     share: "↗️Share",
     loading: "🍝",

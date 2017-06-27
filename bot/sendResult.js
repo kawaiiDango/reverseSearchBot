@@ -44,6 +44,9 @@ var sendResult = function(results, totalLength, bot, editMsg) {
       urlPrefix = urlbase[restOfIds[j]];
       id = data[restOfIds[j]];
 
+      if (restOfIds[j] == "pawoo_id")
+        id = data['pawoo_user_acct'] + '/' + id;
+
       if (j == 0)
         buttonName = "View on " + buttonName;
 
@@ -110,7 +113,10 @@ var createDetailedText = (header, data, showThumbnail) => {
       (data.year) ? "\n<b>Year:</b> " + data.year : null,
       (data.est_time) ? "\n<b>Time: </b> " + data.est_time : null
     ];
-    return textarray.join("");
+    txt = textarray.join("");
+    if (txt.length<2)
+      txt = ' (no metadata)';
+    return txt;
 }
 
 module.exports = sendResult;
