@@ -3,15 +3,27 @@ var MESSAGE = require("../settings/settings.js").msg;
 var idButtonName = require("../settings/settings.js").id_buttonName;
 var idbaseArray = Object.keys(idButtonName);
 var tools = require("../tools/tools.js");
+const analytics = require('./analytics.js');
 
-var sendResult = function(results, totalLength, bot, editMsg) {
+var parseSauceNao = function(results, totalLength, bot, editMsg) {
   results = results || [];
   var from_id = editMsg.from.id;
   var shareId = editMsg.fileId || editMsg.url;
 
-  if (!results.length)
-    return;
+  for (i=0; i< results.length; i++){
+    console.log(results[i].header.similarity);
+    if(results[i].header.similarity < urlbase.sauceNaoParams.minSimilarity){
+      results.splice(i, 1);
+      i--;
+    }
+  }
 
+  if (!results.length){
+      analytics.track(editMsg.origFrom, "sauce_not_found", {url: editMsg.url});
+    return [MESSAGE.zeroResult.replace(
+      "google", "</i><a href=\"https://www.google.com/searchbyimage?&image_url=" + editMsg.url + "\">Google</a><i>")];
+  }
+  analytics.track(editMsg.origFrom, "sauce_found_saucenao");
   totalLength = totalLength || totalLength;
   var element = results[0];
   var header = element.header;
@@ -85,19 +97,11 @@ var sendResult = function(results, totalLength, bot, editMsg) {
         })
       ]
     ];
-
-    //return sendResult(results.slice(1), totalLength, bot, editMsg);
   }
 
   markup = bot.inlineKeyboard(buttons);
+  return [displayText, markup];
 
-  return bot.editText(tools.getId(editMsg), displayText, {markup: markup, parse: "HTML"});
-  /*
-  .then(function() {
-    if (global.debug) console.log('inner then');
-    return sendResult(results.slice(1), totalLength, bot, msg);
-  });
-*/
 };
 
 var createDetailedText = (header, data, showThumbnail) => {
@@ -119,4 +123,4 @@ var createDetailedText = (header, data, showThumbnail) => {
     return txt;
 }
 
-module.exports = sendResult;
+module.exports = parseSauceNao;

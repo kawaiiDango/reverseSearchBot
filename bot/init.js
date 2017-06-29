@@ -5,13 +5,14 @@ global.userCount = {
 
 var SETTINGS = require("../settings/settings.js");
 var tokenBot = SETTINGS.private.botToken;
-// tokenBot should be the Telegram bot token
+
 var tokenSN = SETTINGS.private.SNKey;
 var KEYWORDS = SETTINGS.keywords;
 var TeleBot = require("telebot");
-var request = require("./request.js");
+var reqs = require("./request.js");
 var tools = require("../tools/tools.js");
-const fetchNoCache = require('make-fetch-happen');
+const fetch = require('node-fetch');
+const analytics = require('./analytics.js');
 
 var MESSAGE = SETTINGS.msg;
 /* moduleSwitch's property indicates whether to turn on/off the module */
@@ -44,7 +45,7 @@ module.exports = () => {
   var modules = Object.keys(moduleSwitch);
   for (var i = 0; i < modules.length; i ++) {
     if (moduleSwitch[modules[i]]) {
-      bot.use(require("../modules/" + modules[i] + ".js"));
+      bot.plug(require("../modules/" + modules[i] + ".js"));
     }
   }
 
@@ -68,11 +69,11 @@ module.exports = () => {
         var rmsg = msg.reply_to_message;
         if (rmsg && (rmsg.photo || rmsg.document || rmsg.sticker)){
           getSauceInit(rmsg);
-          fetchNoCache(SETTINGS.url.analUrl + tools.json2query({ec: "sauce", ea: msg.text, uid: msg.from.id, ul: msg.from.language_code}));
+          analytics.track(msg.from, "sauce_keyword", {text:msg.text});
         }
         else if(msg.text.indexOf('/')==0){
           bot.sendMessage(chat_id, MESSAGE.keywordHelp, {reply: reply, parse: "HTML"});
-          fetchNoCache(SETTINGS.url.analUrl + tools.json2query({ec: "sauce", ea: "click_only", uid: msg.from.id, ul: msg.from.language_code}));
+          analytics.track(msg.from, "sauce_click_only");
         }
       }
       else if (msg.chat.type == "private"){
@@ -140,25 +141,25 @@ module.exports = () => {
     if(msg.inline_message_id){
       if (tools.urlDetector(msg.query)){
         msg.url = msg.query;
-        fetchNoCache(SETTINGS.url.analUrl + tools.json2query({ec: "msg", ea: "url_inline", dl: msg.url, uid: msg.from.id, ul: msg.from.language_code}));
+        analytics.track(msg.from, "query", {type: "url_inline"});
       }
       else{
         msg.fileId = msg.query;
-        fetchNoCache(SETTINGS.url.analUrl + tools.json2query({ec: "share", ea: "_", uid: msg.from.id, ul: msg.from.language_code}));
+        analytics.track(msg.from, "share");
       }
       getSauce(msg, msg);
     } else {
       if(msg.photo && msg.photo.length >0){
         msg.fileId = msg.photo[msg.photo.length-1].file_id;
-        fetchNoCache(SETTINGS.url.analUrl + tools.json2query({ec: "msg", ea: "photo", uid: msg.from.id, ul: msg.from.language_code}));
+        analytics.track(msg.from, "query", {type: "photo"});
       }
       else if (msg.sticker){
 	      msg.fileId = msg.sticker.file_id;
-        fetchNoCache(SETTINGS.url.analUrl + tools.json2query({ec: "msg", ea: "sticker", uid: msg.from.id, ul: msg.from.language_code}));
+        analytics.track(msg.from, "query", {type: "sticker"});
       }
       else if (msg.document && tools.isSupportedExt(msg.document.file_name)){
         msg.fileId = msg.document.file_id;
-        fetchNoCache(SETTINGS.url.analUrl + tools.json2query({ec: "msg", ea: "file", uid: msg.from.id, ul: msg.from.language_code}));
+        analytics.track(msg.from, "query", {type: "file"});
       }
       else
 	      return;
@@ -178,6 +179,7 @@ module.exports = () => {
   var getSauce = (msg, editMsg) => {
     editMsg.fileId = msg.fileId;
     editMsg.url = msg.url;
+    editMsg.origFrom = msg.from;
     if(msg.url){
       request(msg.url, bot, editMsg);
     } else {
@@ -196,7 +198,46 @@ module.exports = () => {
     }
   };
 
+  var request = (url, bot, editMsg) => {
+    reqs.fetchTineye(url)
+      .catch(reqs.errInFetch)
+      .then(res => reqs.parseTineye(res, bot, editMsg))
+      .catch((err) => {
+        return reqs.fetchSauceNao(url)
+          .catch(reqs.errInFetch)
+          .then((res) => reqs.cleanSauceNao(res, bot, editMsg))
+      })
+      .catch(reqs.errInFetch)
+      .then(msg => {
+        // console.dir(msg);
+        if (msg && msg[0]){
+          bot.editText(tools.getId(editMsg), msg[0] + getRateText(editMsg)
+            , {parse: "HTML", markup: msg[1]});
+        }
+      })
+          // .catch(reqs.errInFetch)
+  };
+
+  var getRateText = editMsg => {                        
+    var rateText = '';
+
+      // count user request and if it satisfies condition, print msg asking rating
+    if (global.userCount.on && editMsg.chat && editMsg.chat.type == "private") {
+      var from_id = editMsg.from.id;
+      var count = global.userCount[from_id.toString()];
+      if (count === undefined) global.userCount[from_id.toString()] = 0;
+      global.userCount[from_id.toString()] += 1;
+
+      count = global.userCount[from_id.toString()];
+
+      if ((count / 2) - Math.floor(count / 2) === 0) {
+        rateText = MESSAGE.requestRating;
+      }
+    }
+    return rateText;
+  };
+
   bot.connect();
   console.log("bot: connected");
-
+  analytics.init(bot);
 };

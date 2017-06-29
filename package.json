@@ -1,7 +1,7 @@
 {
   "name": "saucenaobot",
   "version": "1.0.0",
-  "description": "Telegram bot. This bot uses Saucenao api. You should make 'account' folder in the same depth with server.js and need 2 files in the folder. bot.js and saucenao.js are modules which export each token of them.",
+  "description": "Reverse Image Search bot for Telegram. Check settings/private.js for the api keys and tokens required.",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,8 +14,9 @@
   "dependencies": {
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
+    "lru-cache": "^4.1.1",
     "morgan": "^1.8.2",
-    "make-fetch-happen": "^2.4.12",
+    "node-fetch": "^1.7.1",
     "telebot": "^1.2.2",
     "xml2js": "^0.4.17"
   }

@@ -1,9 +1,10 @@
 var privateSettings = require("./private.js");
 
 var settings = {
+  botName : "reverseSearchBot",
   url: {
     sauceNao: "https://saucenao.com/search.php?",
-    analUrl: "http://www.google-analytics.com/collect?v=1&t=event&tid="+ privateSettings.analTid + "&an=" + privateSettings.botName + "&",
+    analUrl: "http://api.amplitude.com/httpapi?api_key=" + privateSettings.analKey,
     sauceNaoParams: {
       db: 999,
       output_type: 2,
@@ -48,13 +49,13 @@ var settings = {
     invalidUrl: "That doesn't look like a photo or a URL.",
     invalidForm: "That type of message is not supported yet.",
     loading: "<i>Pouring some sauce on it...</i>",
-    zeroResult: "No sauce found. <i>Maybe try some butter instead?</i>",
+    zeroResult: "No sauce found. <i>Maybe try google instead?</i>",
     help: "Send me an image, a sticker, an image file or an image URL to find its source Right Nao.",
     tooManyRequests: "Too many requests. Please send one by one and take time between requests.",
     reachLimitation: "The request limitation has been reached. Please wait for a few minutes.",
     unknownError: "<b>Unknown error occured.</b> Please contact @dangou if this happens repeatedly.",
     invalidFileId: "<i>Invalid file id</i>",
-    requestRating: "<a href=\"https://telegram.me/storebot?start=reverseSearchBot\">★ Rate this bot</a>",
+    requestRating: "<a href=\"https://telegram.me/storebot?start=" + this.botName + "\">★ Rate this bot</a>",
     keywordHelp: "Dont just click me like that. \n\nReply to a pic, a sticker, or an image file with /source or /sauce to find its source."
   },
   moduleSwitch: {

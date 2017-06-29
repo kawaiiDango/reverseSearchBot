@@ -4,11 +4,7 @@ Search the origin of image through Telegram bot using SauceNao api(by Xamayon, h
 # Preparation
 - 1. Install node modules in package.json.
 - 2. Get your own tokens from telegram bot and SauceNao(by Xamayon).
-- 3. Make a directory "account" in the same depth with server.js and make 2 files "bot.js", and "saucenao.js" which contain each of tokens. Each file should be "module.exports = YOURTOKEN". Also, make a file with your telegram account id(num type) for report module of telebot in the same folder.
-- Example
-  - account/bot.js <--- module.exports = "YOUR_TELEGRAM_BOT_TOKEN";
-  - account/saucenao.js <--- module.exports = "YOUR_SAUCENAO_TOKEN";
-  - account/receiveId.js <--- module.exports = ["TELEGRAM_ACCOUNT_ID_NUM_WHO_RECEIVES_REPORT"];
+- 3. Update settings/private.js for the api keys and tokens required.
 
 # How to start
 ## Settings
@@ -34,7 +30,7 @@ Search the origin of image through Telegram bot using SauceNao api(by Xamayon, h
   - regex for detecting url among text.
 
 ## Structure
-- CASE1. Send photo.
+- CASE1. Send photo/sticker/image file.
   - The photo will be sent to the telegram server and your bot will get the url of the photo from telegram server. Then bot will send request to SauceNao with the url. Finally, the results gotten from Saucenao will be printed as the message to the chat room.
 - CASE2. Send image url.
   - Same as CASE1 except sending photo to the telegram server to get the url of it.
@@ -48,6 +44,3 @@ Search the origin of image through Telegram bot using SauceNao api(by Xamayon, h
 
 ## Aware
 - SauceNao api has limitations on search frequency per day. Consider pay for upgrade your account at SauceNao.
-
-## No ES6
--This codes do not have any ES6.
