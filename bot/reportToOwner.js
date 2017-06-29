@@ -1,7 +1,7 @@
 var receiver_id = require("../settings/settings.js").private.adminId;
 var reportToOwnerSwitch = require("../settings/settings.js").reportToOwnerSwitch;
 module.exports = {
-    reportLimitsOfSaucenao: function(header, bot) {
+    reportLimitsOfSaucenao: (header, bot) => {
         if (!reportToOwnerSwitch.reportLimitsOfSaucenao.on) {
             return;
         }
@@ -9,6 +9,8 @@ module.exports = {
         var shortLimit = header.short_limit.toString();
         var longRemaining = header.long_remaining.toString();
         var shortRemaining = header.short_remaining.toString();
+        if (longLimit> 10 || shortLimit > 10)
+            return;
         var textArray = ["⏰ <b>Saucenao Req Limitation: (Remain/Limit)</b>\n", "<b>Short(30s):</b>", shortRemaining, "/", shortLimit + "\n", "<b>Long(24h):</b>", longRemaining, "/", longLimit];
         var text = textArray.join(" ");
         bot.sendMessage(receiver_id[0], text, {
@@ -16,7 +18,7 @@ module.exports = {
             notify: reportToOwnerSwitch.reportLimitsOfSaucenao.notify
         });
     },
-    reportRequestError: function(errorObj, bot) {
+    reportRequestError: (errorObj, bot) => {
         if (!reportToOwnerSwitch.reportRequestError.on) {
             return;
         }
@@ -33,7 +35,11 @@ module.exports = {
             });
         }
     },
-    reportFileUrl: function(file, bot) {
+    unsupportedData: (result, bot) => {
+        bot.sendMessage(receiver_id[i], 
+            "Unsupported data:\n\n" + JSON.stringify(result));
+    },
+    reportFileUrl: (file, bot) => {
         if (!reportToOwnerSwitch.reportFileUrl.on) {
             return;
         }
@@ -51,9 +57,7 @@ module.exports = {
                 .catch( err => {console.dir(err);
                   if(err.error_code && err.error_code==400)
                     bot.sendFile(receiver, file)
-                    .catch( err => {
-                      console.dir(err);
-                    });
+                    .catch( err => console.dir(err));
                 });
             }
             });

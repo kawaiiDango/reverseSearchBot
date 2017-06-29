@@ -17,35 +17,28 @@ const analytics = require('./analytics.js');
 var MESSAGE = SETTINGS.msg;
 /* moduleSwitch's property indicates whether to turn on/off the module */
 var moduleSwitch = SETTINGS.moduleSwitch;
-var reportOpt = SETTINGS.report;
+var reportOpt = SETTINGS.reporter;
 /* overwrite reportOpt.receiver_id with your telegram user id(numtype) in array form*/
-reportOpt.receiver_id = SETTINGS.private.adminId;
 var flooderOpt = SETTINGS.flooder;
 var reportToOwner = require("./reportToOwner.js");
 
 var bot = new TeleBot({
   token: tokenBot,
-  modules: {
-    flooder: {
-      interval: flooderOpt.interval,
-      message: flooderOpt.msg,
-      numMsgs: flooderOpt.numMsgs
-    },
-    report: {
-      events: reportOpt.condition,
-      to: reportOpt.receiver_id
-    }
+  usePlugins: ['reporter'],
+  pluginConfig: {
+    flooder: flooderOpt,
+    reporter: reportOpt,
   }
 });
-// console.log("bot obj is ", bot);
 
 module.exports = () => {
   /* Switch on/off the modules according to preset in moduleSwitch above */
   /* On/off settings of modules are at settings/settings.js */
   var modules = Object.keys(moduleSwitch);
+  
   for (var i = 0; i < modules.length; i ++) {
     if (moduleSwitch[modules[i]]) {
-      bot.plug(require("../modules/" + modules[i] + ".js"));
+      bot.plug(require("../plugins/" + modules[i] + ".js"));
     }
   }
 
@@ -211,8 +204,9 @@ module.exports = () => {
       .then(msg => {
         // console.dir(msg);
         if (msg && msg[0]){
+          msg[2] = msg[2] || false;
           bot.editText(tools.getId(editMsg), msg[0] + getRateText(editMsg)
-            , {parse: "HTML", markup: msg[1]});
+            , {parse: "HTML", markup: msg[1], webPreview: msg[2]});
         }
       })
           // .catch(reqs.errInFetch)
@@ -231,7 +225,7 @@ module.exports = () => {
       count = global.userCount[from_id.toString()];
 
       if ((count / 2) - Math.floor(count / 2) === 0) {
-        rateText = MESSAGE.requestRating;
+        rateText = "\n\n" + MESSAGE.requestRating;
       }
     }
     return rateText;

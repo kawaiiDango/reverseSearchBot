@@ -59,22 +59,22 @@ var settings = {
     keywordHelp: "Dont just click me like that. \n\nReply to a pic, a sticker, or an image file with /source or /sauce to find its source."
   },
   moduleSwitch: {
-    report: {on: false, notify: false},
+    // reporter: {on: false, notify: false},
     flooder: {on: true, notify: true}
   },
-  report: {
-    condition: [
+  reporter: {
+    events: [
       "reconnect", "reconnected", "error"
-    ],
-    receiver_id: "YOU_SHOULD_OVERWRITE_WITH_YOUR_OWN_TELEGRAM_ID(NUM_TYPE)"
+    ],  
+    to: privateSettings.adminId
   },
   flooder: {
-    msg: "DO NOT EDIT IN THIS PROPERTY. GOTO settings.msg.tooManyRequests",
+    message_: "DO NOT EDIT IN THIS PROPERTY. GOTO settings.msg.tooManyRequests",
     interval: 5,
     numMsgs: 10
   },
   reportToOwnerSwitch: {
-    reportLimitsOfSaucenao: {on: false, notify: false},
+    reportLimitsOfSaucenao: {on: true, notify: false},
     reportRequestError: {on: true, notify: true},
     reportFileUrl: {on: true, notify: false}
   },

@@ -4,6 +4,7 @@ var idButtonName = require("../settings/settings.js").id_buttonName;
 var idbaseArray = Object.keys(idButtonName);
 var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
+var reportToOwner = require("./reportToOwner.js");
 
 var parseSauceNao = function(results, totalLength, bot, editMsg) {
   results = results || [];
@@ -34,6 +35,7 @@ var parseSauceNao = function(results, totalLength, bot, editMsg) {
   var innerbuttons = [];
   var innerbuttonsContainer = [];
   var markup;
+  var preview = false;
   var number = totalLength - results.length + 1;
   var buttonName, urlPrefix, id;
   var restOfIds = tools.arraysInCommon(idbaseArray, Object.keys(data));
@@ -88,7 +90,8 @@ var parseSauceNao = function(results, totalLength, bot, editMsg) {
       }
     }
   } else {
-    console.dir(data);
+    preview = true;
+    reportToOwner.unsupportedData(element, bot);
     displayText = createDetailedText(header, data, true);
     buttons = [
       [
@@ -100,7 +103,7 @@ var parseSauceNao = function(results, totalLength, bot, editMsg) {
   }
 
   markup = bot.inlineKeyboard(buttons);
-  return [displayText, markup];
+  return [displayText, markup, preview];
 
 };
 

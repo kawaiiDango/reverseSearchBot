@@ -1,10 +1,13 @@
 const fetch = require('node-fetch');
 var SETTINGS = require("../settings/settings.js");
+var reportToOwner = require("./reportToOwner.js");
 
 var ip = '0.0.0.0'
 var ctr = 887
+var bot;
 
-var init = (bot) => {
+var init = (botp) => {
+    bot = botp;
     fetch('http://api.ipify.org/')
     .then(res => res.text())
     .then( res => { ip = res } )
@@ -33,9 +36,8 @@ var track = (msgFrom, eventType, eventProps) => {
         body: "event=[" + JSON.stringify(tdata) + "]"
     })
     .catch(res => {
-        console.log("#ANAL_FAILED: " +res);
-        console.log(eventType);
-        console.dir(eventProps);
+        reportToOwner.unsupportedData(
+            {eventType:eventType, eventProps:eventProps, res:res}, bot);
         } );
 };
 
