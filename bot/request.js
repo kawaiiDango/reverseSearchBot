@@ -12,6 +12,18 @@ var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
 var idButtonName = SETTINGS.id_buttonName;
 
+var getTineyeButtons = (bot, pic, page, shareId) => 
+  [
+    bot.inlineButton(idButtonName.picLink, {
+      url: pic
+    }),
+    bot.inlineButton(idButtonName.pageLink, {
+      url: page
+    }),
+    bot.inlineButton(idButtonName.share, {
+      inline: shareId
+    })
+  ];
 module.exports = {
   fetchTineye: (url, editMsg) => {
     var params = {url: url, sort: 'size', order: 'desc'};
@@ -36,6 +48,7 @@ module.exports = {
         return txt;
       });
   },
+  getTineyeButtons: getTineyeButtons,
   parseTineye: (res, bot, editMsg) => {
     console.log("get tineye completed");
 
@@ -61,17 +74,14 @@ module.exports = {
         var displayText = "<a href=\"" + highResUrl + "\">" + imgName 
   		    + "</a> from <a href=\"" + page + "\">" + siteName + "</a>\n";
         var shareId = editMsg.fileId || editMsg.url;
-        var markup = bot.inlineKeyboard([[
-            bot.inlineButton(idButtonName.picLink, {
-              url: highResUrl
-            }),
-            bot.inlineButton(idButtonName.pageLink, {
-              url: page
-            }),
-            bot.inlineButton(idButtonName.share, {
-              inline: shareId
-            })
-          ]]);
+        var bList = getTineyeButtons(bot, highResUrl, page, shareId);
+        if (!editMsg.inline_message_id)
+          bList.splice(2, 0, bot.inlineButton(idButtonName.searchSauceNao, {
+              callback: "sn|"+ editMsg.origFrom.id //+"|" + shareId
+            }));
+        var markup = bot.inlineKeyboard(
+          tools.buttonsGridify(bList));
+        
         analytics.track(editMsg.origFrom, "sauce_found_tineye");
         resolve([displayText, markup]);
       })

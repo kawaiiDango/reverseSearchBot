@@ -29,14 +29,10 @@ var parseSauceNao = function(results, totalLength, bot, editMsg) {
   var element = results[0];
   var header = element.header;
   var data = element.data;
-  var textarray = [];
   var text = "", displayText = "";
   var buttons = [];
-  var innerbuttons = [];
-  var innerbuttonsContainer = [];
-  var markup;
+  var bList = [];
   var preview = false;
-  var number = totalLength - results.length + 1;
   var buttonName, urlPrefix, id;
   var restOfIds = tools.arraysInCommon(idbaseArray, Object.keys(data));
 
@@ -64,31 +60,18 @@ var parseSauceNao = function(results, totalLength, bot, editMsg) {
       if (j == 0)
         buttonName = "View on " + buttonName;
 
-      innerbuttonsContainer.push(
+      bList.push(
         bot.inlineButton(buttonName, {
           url: urlPrefix + id
         })
       );
     }
-    innerbuttonsContainer.push(
+    bList.push(
         bot.inlineButton(idButtonName.share, {
           inline: shareId
         })
       );
-      
-    for (var i = 0; i < innerbuttonsContainer.length; i++) {
-      if (innerbuttons.length < 2){
-        innerbuttons.push(innerbuttonsContainer[i]);
-      } else {
-        var target = innerbuttons;
-        innerbuttons = [];
-        innerbuttons.push(innerbuttonsContainer[i]);
-        buttons.push(target);
-      }
-      if (i === innerbuttonsContainer.length - 1) {
-        buttons.push(innerbuttons);
-      }
-    }
+    buttons = tools.buttonsGridify(bList);
   } else {
     preview = true;
     reportToOwner.unsupportedData(element, bot);
@@ -102,7 +85,7 @@ var parseSauceNao = function(results, totalLength, bot, editMsg) {
     ];
   }
 
-  markup = bot.inlineKeyboard(buttons);
+  var markup = bot.inlineKeyboard(buttons);
   return [displayText, markup, preview];
 
 };

@@ -47,5 +47,18 @@ module.exports = {
 	if( ext == "jpg" || ext =="png" || ext == "webp" || ext == "bmp")
 		return true;
 	return false;
-	}
+	},
+  buttonsGridify: (bList) => {
+    var buttons = [[]];
+    for (var i = 0, j=0; i < bList.length; i++) {
+      if (buttons[j].length < 2 || (i == bList.length - 1 && buttons[j].length<3)){
+        //the last line can have 3 buttons
+      } else {
+        buttons.push([]);
+        j++;
+      }
+      buttons[j].push(bList[i]);
+    }
+  return buttons;
+  }
 };

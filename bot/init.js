@@ -126,8 +126,24 @@ module.exports = () => {
 
   });
 
-  bot.on('inlineChoice', msg => {
+  bot.on('chosenInlineResult', msg => {
     getSauceInit(msg);
+  });
+
+  bot.on('callbackQuery', msg => {
+    if (msg.data && msg.message){
+      var splits = msg.data.split("|");
+      // if(splits[1] != msg.from.id)
+      //   bot.answerCallbackQuery(msg.id, {text: "Only the sender can click that."});
+
+      if(splits[0] == "sn"){
+        var p = msg.message.reply_to_message.photo;
+        msg.fileId = p[p.length-1].file_id;
+        msg.origFrom = msg.from;
+        getSauce(msg, msg);
+        analytics.track(msg.from, "saucenao_callback");
+      }
+    }
   });
 
   var getSauceInit = msg => {
@@ -192,24 +208,46 @@ module.exports = () => {
   };
 
   var request = (url, bot, editMsg) => {
-    reqs.fetchTineye(url, editMsg)
-      .catch(reqs.errInFetch)
-      .then(res => reqs.parseTineye(res, bot, editMsg))
-      .catch((err) => {
-        return reqs.fetchSauceNao(url, editMsg)
-          .catch(reqs.errInFetch)
-          .then((res) => reqs.cleanSauceNao(res, bot, editMsg))
-      })
-      .catch(reqs.errInFetch)
-      .then(msg => {
-        // console.dir(msg);
+    if (editMsg.data)
+      reqs.fetchSauceNao(url, editMsg)
+        .catch(reqs.errInFetch)
+        .then((res) => reqs.cleanSauceNao(res, bot, editMsg))
+        .then(msg => {
         if (msg && msg[0]){
+          if(!msg[1]){ // sauce not found
+            var ent = editMsg.message.entities;
+            bot.editMessageReplyMarkup(tools.getId(editMsg.message), 
+              {markup: bot.inlineKeyboard([
+                reqs.getTineyeButtons(bot, ent[0].url, ent[1].url, editMsg.fileId)
+                ])}
+              );
+            bot.answerCallbackQuery(editMsg.id, 
+              {text: "SauceNao returned no results.", showAlert: true})
+            return;
+          }
           msg[2] = msg[2] || false;
-          bot.editText(tools.getId(editMsg, msg[1]), msg[0] + getRateText(editMsg)
+          bot.editText(tools.getId(editMsg.message), msg[0] + getRateText(editMsg, msg[1])
             , {parse: "HTML", markup: msg[1], webPreview: msg[2]});
         }
       })
-          // .catch(reqs.errInFetch)
+      .catch(reqs.errInFetch);
+    else 
+      reqs.fetchTineye(url, editMsg)
+        .catch(reqs.errInFetch)
+        .then(res => reqs.parseTineye(res, bot, editMsg))
+        .catch((err) => {
+          return reqs.fetchSauceNao(url, editMsg)
+            .then((res) => reqs.cleanSauceNao(res, bot, editMsg))
+        })
+        .catch(reqs.errInFetch)
+        .then(msg => {
+          if (msg && msg[0]){
+            msg[2] = msg[2] || false;
+            bot.editText(tools.getId(editMsg), msg[0] + getRateText(editMsg, msg[1])
+              , {parse: "HTML", markup: msg[1], webPreview: msg[2]});
+          }
+        })
+      .catch(reqs.errInFetch)
   };
 
   var getRateText = (editMsg, markupPresent) => {                        
