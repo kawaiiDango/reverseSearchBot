@@ -205,18 +205,18 @@ module.exports = () => {
         // console.dir(msg);
         if (msg && msg[0]){
           msg[2] = msg[2] || false;
-          bot.editText(tools.getId(editMsg), msg[0] + getRateText(editMsg)
+          bot.editText(tools.getId(editMsg, msg[1]), msg[0] + getRateText(editMsg)
             , {parse: "HTML", markup: msg[1], webPreview: msg[2]});
         }
       })
           // .catch(reqs.errInFetch)
   };
 
-  var getRateText = editMsg => {                        
+  var getRateText = (editMsg, markupPresent) => {                        
     var rateText = '';
 
       // count user request and if it satisfies condition, print msg asking rating
-    if (global.userCount.on && editMsg.chat && editMsg.chat.type == "private") {
+    if (markupPresent && global.userCount.on && editMsg.chat && editMsg.chat.type == "private") {
       var from_id = editMsg.from.id;
       var count = global.userCount[from_id.toString()];
       if (count === undefined) global.userCount[from_id.toString()] = 0;

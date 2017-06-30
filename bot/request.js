@@ -32,7 +32,7 @@ module.exports = {
       }
     ).then(res => {
         var txt = res.text();
-        console.log(cache.set(url, txt));
+        cache.set(url, txt);
         return txt;
       });
   },
@@ -88,7 +88,7 @@ module.exports = {
 
     if (hit){
       analytics.track(0, "cache_hit");
-      return new Promise.resolve(hit);
+      return Promise.resolve(hit);
     }
     else
       return fetch(url, {
