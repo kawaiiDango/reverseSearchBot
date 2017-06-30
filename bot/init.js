@@ -192,11 +192,11 @@ module.exports = () => {
   };
 
   var request = (url, bot, editMsg) => {
-    reqs.fetchTineye(url)
+    reqs.fetchTineye(url, editMsg)
       .catch(reqs.errInFetch)
       .then(res => reqs.parseTineye(res, bot, editMsg))
       .catch((err) => {
-        return reqs.fetchSauceNao(url)
+        return reqs.fetchSauceNao(url, editMsg)
           .catch(reqs.errInFetch)
           .then((res) => reqs.cleanSauceNao(res, bot, editMsg))
       })

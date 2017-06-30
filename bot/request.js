@@ -13,13 +13,13 @@ const analytics = require('./analytics.js');
 var idButtonName = SETTINGS.id_buttonName;
 
 module.exports = {
-  fetchTineye: (url) => {
+  fetchTineye: (url, editMsg) => {
     var params = {url: url, sort: 'size', order: 'desc'};
     url = "https://tineye.com/search?" + tools.json2query(params);
     var hit = cache.get(url);
 
     if (hit){
-      analytics.track(0, "cache_hit");
+      analytics.track(editMsg.origFrom, "cache_hit");
       return Promise.resolve(hit);
     }
     else return fetch(url, 
@@ -77,7 +77,7 @@ module.exports = {
       })
     });
   },
-  fetchSauceNao: (url) => {
+  fetchSauceNao: (url, editMsg) => {
     var params = urlbase.sauceNaoParams;
 
     params.url = url;
@@ -87,7 +87,7 @@ module.exports = {
     var hit = cache.get(url);
 
     if (hit){
-      analytics.track(0, "cache_hit");
+      analytics.track(editMsg.origFrom, "cache_hit");
       return Promise.resolve(hit);
     }
     else
