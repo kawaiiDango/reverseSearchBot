@@ -36,8 +36,9 @@ module.exports = {
         }
     },
     unsupportedData: (result, bot) => {
-        bot.sendMessage(receiver_id[i], 
-            "Unsupported data:\n\n" + JSON.stringify(result));
+        for (var i = 0; i < receiver_id.length; i++)
+            bot.sendMessage(receiver_id[i], 
+                "Unsupported data:\n\n" + JSON.stringify(result));
     },
     reportFileUrl: (file, bot) => {
         if (!reportToOwnerSwitch.reportFileUrl.on) {
