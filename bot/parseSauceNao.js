@@ -1,6 +1,7 @@
 var urlbase = require("../settings/settings.js").url;
 var MESSAGE = require("../settings/settings.js").msg;
 var idButtonName = require("../settings/settings.js").id_buttonName;
+var proxyUrl = require("../settings/settings.js").private.proxyUrl;
 var idbaseArray = Object.keys(idButtonName);
 var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
@@ -21,8 +22,11 @@ var parseSauceNao = function(results, totalLength, bot, editMsg) {
 
   if (!results.length){
       analytics.track(editMsg.origFrom, "sauce_not_found", {url: editMsg.url});
-    return [MESSAGE.zeroResult.replace(
-      "google", "</i><a href=\"https://www.google.com/searchbyimage?&image_url=" + editMsg.url + "\">Google</a><i>")];
+      var idx = editMsg.url.indexOf('bot');
+      idx = editMsg.url.indexOf('/', idx) +1;
+      var pURL = proxyUrl + editMsg.url.substr(idx);
+    return [MESSAGE.zeroResult.replace("google", 
+      "</i><a href=\"https://www.google.com/searchbyimage?&image_url=" + pURL + "\">Google</a><i>")];
   }
   analytics.track(editMsg.origFrom, "sauce_found_saucenao");
   totalLength = totalLength || totalLength;

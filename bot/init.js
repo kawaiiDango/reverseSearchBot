@@ -208,6 +208,7 @@ module.exports = () => {
   };
 
   var request = (url, bot, editMsg) => {
+    editMsg.url = url;
     if (editMsg.data)
       reqs.fetchSauceNao(url, editMsg)
         .catch(reqs.errInFetch)
