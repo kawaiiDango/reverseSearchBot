@@ -137,9 +137,15 @@ module.exports = () => {
       //   bot.answerCallbackQuery(msg.id, {text: "Only the sender can click that."});
 
       if(splits[0] == "sn"){
-        var p = msg.message.reply_to_message.photo;
-        msg.fileId = p[p.length-1].file_id;
         msg.origFrom = msg.from;
+        var rm = msg.message.reply_to_message;
+        if(rm.photo && rm.photo.length >0)
+          msg.fileId = rm.photo[msg.photo.length-1].file_id;
+        else if (rm.sticker)
+          msg.fileId = rm.sticker.file_id;
+        else if (rm.document && tools.isSupportedExt(rm.document.file_name))
+          msg.fileId = rm.document.file_id;
+        
         getSauce(msg, msg);
         analytics.track(msg.from, "saucenao_callback");
       }
