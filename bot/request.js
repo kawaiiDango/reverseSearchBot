@@ -71,7 +71,7 @@ module.exports = {
           highResUrl = res.p[0].a[0].$.href, 
           page = res.p[2].a[0].$.href;
 
-        var displayText = "<a href=\"" + highResUrl + "\">" + imgName 
+        var displayText = "Image source was found at: <a href=\"" + highResUrl + "\">" + imgName 
   		    + "</a> from <a href=\"" + page + "\">" + siteName + "</a>\n";
         var shareId = editMsg.fileId || editMsg.url;
         var bList = getTineyeButtons(bot, highResUrl, page, shareId);

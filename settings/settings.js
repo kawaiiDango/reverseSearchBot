@@ -59,7 +59,6 @@ var settings = {
     keywordHelp: "Dont just click me like that. \n\nReply to a pic, a sticker, or an image file with /source or /sauce to find its source."
   },
   moduleSwitch: {
-    // reporter: {on: false, notify: false},
     flooder: {on: true, notify: true}
   },
   reporter: {
@@ -71,7 +70,7 @@ var settings = {
   flooder: {
     message_: "DO NOT EDIT IN THIS PROPERTY. GOTO settings.msg.tooManyRequests",
     interval: 5,
-    numMsgs: 10
+    numMsgs: 20
   },
   reportToOwnerSwitch: {
     reportLimitsOfSaucenao: {on: true, notify: false},

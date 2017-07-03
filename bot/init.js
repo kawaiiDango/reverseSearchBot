@@ -140,7 +140,7 @@ module.exports = () => {
         msg.origFrom = msg.from;
         var rm = msg.message.reply_to_message;
         if(rm.photo && rm.photo.length >0)
-          msg.fileId = rm.photo[msg.photo.length-1].file_id;
+          msg.fileId = rm.photo[rm.photo.length-1].file_id;
         else if (rm.sticker)
           msg.fileId = rm.sticker.file_id;
         else if (rm.document && tools.isSupportedExt(rm.document.file_name))
