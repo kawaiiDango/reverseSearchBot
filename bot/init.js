@@ -107,7 +107,7 @@ module.exports = () => {
           parse_mode: 'HTML'
         });
 
-    } else if (query.length > 40 && query.match(/^[A-Za-z0-9_\-]+$/)) { //file id
+    } else if (query.length > 25 && query.match(/^[A-Za-z0-9_\-]+$/)) { //file id
       answers.addArticle({
         id: 'share',
         title: 'Tap to share',
