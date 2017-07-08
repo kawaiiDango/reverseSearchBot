@@ -107,7 +107,8 @@ module.exports = () => {
           parse_mode: 'HTML'
         });
 
-    } else if (query.length > 25 && query.match(/^[A-Za-z0-9_\-]+$/)) { //file id
+    } else if (query.length > 25 && query.indexOf('|') == 2 &&
+       query.substr(3).match(/^[A-Za-z0-9_\-]+$/)) { //file id
       answers.addArticle({
         id: 'share',
         title: 'Tap to share',
@@ -125,12 +126,14 @@ module.exports = () => {
     return bot.answerQuery(answers);
 
   });
-
+  
+// format for inline share: sn|fileID or te|fileID
   bot.on('chosenInlineResult', msg => {
     getSauceInit(msg);
   });
 
-  bot.on('callbackQuery', msg => {
+// format for callback query: sn|fromUserId
+  bot.on('callbackQuery', msg => { 
     if (msg.data && msg.message){
       var splits = msg.data.split("|");
       // if(splits[1] != msg.from.id)
@@ -146,6 +149,7 @@ module.exports = () => {
         else if (rm.document && tools.isSupportedExt(rm.document.file_name))
           msg.fileId = rm.document.file_id;
         
+        msg.site = splits[0];
         getSauce(msg, msg);
         analytics.track(msg.from, "saucenao_callback");
       }
@@ -159,7 +163,8 @@ module.exports = () => {
         analytics.track(msg.from, "query", {type: "url_inline"});
       }
       else{
-        msg.fileId = msg.query;
+        msg.fileId = msg.query.substr(3);
+        msg.site = msg.query.substring(0,2);
         analytics.track(msg.from, "share");
       }
       getSauce(msg, msg);
@@ -215,25 +220,30 @@ module.exports = () => {
 
   var request = (url, bot, editMsg) => {
     editMsg.url = url;
-    if (editMsg.data)
+    if (editMsg.site == "sn")
       reqs.fetchSauceNao(url, editMsg)
         .catch(reqs.errInFetch)
         .then((res) => reqs.cleanSauceNao(res, bot, editMsg))
         .then(msg => {
         if (msg && msg[0]){
           if(!msg[1]){ // sauce not found
-            var ent = editMsg.message.entities;
-            bot.editMessageReplyMarkup(tools.getId(editMsg.message), 
-              {markup: bot.inlineKeyboard([
-                reqs.getTineyeButtons(bot, ent[0].url, ent[1].url, editMsg.fileId)
-                ])}
-              );
-            bot.answerCallbackQuery(editMsg.id, 
-              {text: "SauceNao returned no results.", showAlert: true})
-            return;
+            if (editMsg.message){ // callback query
+              var ent = editMsg.message.entities;
+              bot.editMessageReplyMarkup(tools.getId(editMsg.message), 
+                {markup: bot.inlineKeyboard([
+                  reqs.getTineyeButtons(bot, ent[0].url, ent[1].url, editMsg.fileId)
+                  ])}
+                );
+              bot.answerCallbackQuery(editMsg.id, 
+                {text: "SauceNao returned no results.", showAlert: true})
+              return;
+            } else { // inline share
+              bot.editText(tools.getId(editMsg), MESSAGE.zeroResult
+                , {parse: "HTML", webPreview: false});
+            }
           }
           msg[2] = msg[2] || false;
-          bot.editText(tools.getId(editMsg.message), msg[0] + getRateText(editMsg, msg[1])
+          bot.editText(tools.getId(editMsg.message || editMsg), msg[0] + getRateText(editMsg, msg[1])
             , {parse: "HTML", markup: msg[1], webPreview: msg[2]});
         }
       })

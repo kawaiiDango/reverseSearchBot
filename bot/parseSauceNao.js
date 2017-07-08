@@ -72,7 +72,7 @@ var parseSauceNao = function(results, totalLength, bot, editMsg) {
     }
     bList.push(
         bot.inlineButton(idButtonName.share, {
-          inline: shareId
+          inline: "sn|" + shareId
         })
       );
     buttons = tools.buttonsGridify(bList);
@@ -83,7 +83,7 @@ var parseSauceNao = function(results, totalLength, bot, editMsg) {
     buttons = [
       [
         bot.inlineButton(idButtonName.share, {
-          inline: shareId
+          inline: "sn|" + shareId
         })
       ]
     ];

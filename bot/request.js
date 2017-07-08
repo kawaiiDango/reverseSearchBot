@@ -21,7 +21,7 @@ var getTineyeButtons = (bot, pic, page, shareId) =>
       url: page
     }),
     bot.inlineButton(idButtonName.share, {
-      inline: shareId
+      inline: "te|" + shareId
     })
   ];
 module.exports = {
