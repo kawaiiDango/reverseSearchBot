@@ -29,9 +29,10 @@ var myFetch = (url, options) => {
           return txt;
       // return Promise.resolve(txt)
     } else {
-      var error = new Error(res.statusText || res.status)
-      error.response = res
-      return Promise.reject(error)
+      var error = new Error(res.statusText || res.status);
+      error.response = res;
+      error.url = url;
+      return Promise.reject(error);
     }
   })
 };
@@ -145,7 +146,7 @@ module.exports = {
       // console.log("-----error.text is", err.response.text);
       if (err.response.status && err.response.status == 429) {
         return [MESSAGE.reachLimitation.replace("google", 
-      "</i><a href=\"https://www.google.com/searchbyimage?&image_url=" + pURL + "\">Google Reverse Search</a><i>")];
+      "</i><a href=\"https://www.google.com/searchbyimage?&image_url=" + getProxiedUrl(err.url) + "\">Google Reverse Search</a><i>")];
       } else
         return [MESSAGE.unknownError];
     } else {

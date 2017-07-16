@@ -48,6 +48,12 @@ module.exports = {
 		return true;
 	return false;
 	},
+  getProxiedUrl: (url) => {
+    var idx = url.indexOf('bot');
+    idx = url.indexOf('/', idx) +1;
+    var proxyUrl = require("../settings/private.js").proxyUrl;
+    return proxyUrl + url.substr(idx);
+  },
   buttonsGridify: (bList) => {
     var buttons = [[]];
     for (var i = 0, j=0; i < bList.length; i++) {
