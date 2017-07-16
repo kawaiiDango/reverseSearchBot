@@ -52,7 +52,7 @@ var settings = {
     zeroResult: "No sauce found. <i>Maybe try google instead?</i>",
     help: "Send me an image, a sticker, an image file or an image URL to find its source Right Nao.",
     tooManyRequests: "Too many requests. Please send one by one and take time between requests.",
-    reachLimitation: "The request limitation has been reached. Please wait for a few minutes or use google",
+    reachLimitation: "The request limit has been reached. <i>Please wait for a few minutes or use google instead</i>",
     unknownError: "<b>Unknown error occured.</b> Please contact @dangou if this happens repeatedly.",
     invalidFileId: "<i>Invalid file id</i>",
     requestRating: "<a href=\"https://telegram.me/storebot?start=" + this.botName + "\">★ Rate this bot</a>",

@@ -223,7 +223,8 @@ module.exports = () => {
     if (editMsg.site == "sn")
       reqs.fetchSauceNao(url, editMsg)
         .catch(reqs.errInFetch)
-        .then((res) => reqs.cleanSauceNao(res, bot, editMsg))
+        .then(res => reqs.parseSauceNao(res, bot, editMsg))
+        .catch(reqs.errInFetch)
         .then(msg => {
         if (msg && msg[0]){
           if(!msg[1]){ // sauce not found
@@ -252,9 +253,9 @@ module.exports = () => {
       reqs.fetchTineye(url, editMsg)
         .catch(reqs.errInFetch)
         .then(res => reqs.parseTineye(res, bot, editMsg))
-        .catch((err) => {
+        .catch(err => {
           return reqs.fetchSauceNao(url, editMsg)
-            .then((res) => reqs.cleanSauceNao(res, bot, editMsg))
+            .then(res => reqs.parseSauceNao(res, bot, editMsg))
         })
         .catch(reqs.errInFetch)
         .then(msg => {

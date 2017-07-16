@@ -7,8 +7,25 @@ var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
 var reportToOwner = require("./reportToOwner.js");
 
-var parseSauceNao = function(results, totalLength, bot, editMsg) {
-  results = results || [];
+var parseSauceNao = function(response, bot, editMsg) {
+  console.log("get saucenao completed");
+
+  if (typeof res === "string" && res.includes("<!--") && res.includes("-->")) {
+    try{
+      res = JSON.parse(res.slice(res.indexOf("-->")+3).trim());
+    } catch(e){
+      return Promise.reject(new Error(
+        res.substring(res.lastIndexOf('<br />') + 6, res.lastIndexOf('</b'))));
+    }
+  } else
+      response = JSON.parse(response);
+
+  var header = response.header || {};
+  var results = response.results || [];
+
+  reportToOwner.reportLimitsOfSaucenao(header, bot);
+
+  // results = results || [];
   var from_id = editMsg.from.id;
   var shareId = editMsg.fileId || editMsg.url;
 
@@ -26,7 +43,6 @@ var parseSauceNao = function(results, totalLength, bot, editMsg) {
     return [tools.getGoogleSearch(MESSAGE.zeroResult, editMsg.url)];
   }
   analytics.track(editMsg.origFrom, "sauce_found_saucenao");
-  totalLength = totalLength || totalLength;
   var element = results[0];
   var header = element.header;
   var data = element.data;
