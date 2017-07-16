@@ -23,8 +23,7 @@ var parseSauceNao = function(results, totalLength, bot, editMsg) {
   if (!results.length){
       analytics.track(editMsg.origFrom, "sauce_not_found", {url: editMsg.url});
 
-    return [MESSAGE.zeroResult.replace("google", 
-      "</i><a href=\"https://www.google.com/searchbyimage?&image_url=" + getProxiedUrl(editMsg.url) + "\">Google Reverse Search</a><i>")];
+    return [tools.getGoogleSearch(MESSAGE.zeroResult, editMsg.url)];
   }
   analytics.track(editMsg.origFrom, "sauce_found_saucenao");
   totalLength = totalLength || totalLength;

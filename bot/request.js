@@ -145,8 +145,7 @@ module.exports = {
       console.log("-----error.headers is", err.response.headers);
       // console.log("-----error.text is", err.response.text);
       if (err.response.status && err.response.status == 429) {
-        return [MESSAGE.reachLimitation.replace("google", 
-      "</i><a href=\"https://www.google.com/searchbyimage?&image_url=" + getProxiedUrl(err.url) + "\">Google Reverse Search</a><i>")];
+        return [tools.getGoogleSearch(MESSAGE.reachLimitation, err.url)];
       } else
         return [MESSAGE.unknownError];
     } else {

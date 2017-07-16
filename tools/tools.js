@@ -48,11 +48,14 @@ module.exports = {
 		return true;
 	return false;
 	},
-  getProxiedUrl: (url) => {
+  getGoogleSearch: (text, url) => {
     var idx = url.indexOf('bot');
     idx = url.indexOf('/', idx) +1;
     var proxyUrl = require("../settings/private.js").proxyUrl;
-    return proxyUrl + url.substr(idx);
+    proxyUrl += url.substr(idx);
+    return text.replace("google", 
+      "</i><a href=\"https://www.google.com/searchbyimage?&image_url=" + 
+      proxyUrl + "\">Google Reverse Search</a><i>");
   },
   buttonsGridify: (bList) => {
     var buttons = [[]];
