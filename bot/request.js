@@ -12,7 +12,7 @@ var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
 var idButtonName = SETTINGS.id_buttonName;
 
-var myFetch = (url, options) => {
+var myFetch = (url, editMsg, options) => {
   var hit = cache.get(url);
 
   if (hit){
@@ -55,7 +55,7 @@ module.exports = {
     var params = {url: url, sort: 'size', order: 'desc'};
     uurl = "https://tineye.com/search?" + tools.json2query(params);
     
-    return myFetch(uurl, 
+    return myFetch(uurl, editMsg,
       {headers:
         {
           "User-Agent": SETTINGS.userAgents[
@@ -113,7 +113,7 @@ module.exports = {
     params.api_key = SETTINGS.private.SNKey;
     uurl = urlbase.sauceNao + tools.json2query(params);
     
-    return myFetch(uurl, { params: params });
+    return myFetch(uurl, editMsg, { params: params });
   },
   errInFetch: err => {
     console.log("errInFetch");
