@@ -26,7 +26,7 @@ var parseSauceNao = function(results, totalLength, bot, editMsg) {
       idx = editMsg.url.indexOf('/', idx) +1;
       var pURL = proxyUrl + editMsg.url.substr(idx);
     return [MESSAGE.zeroResult.replace("google", 
-      "</i><a href=\"https://www.google.com/searchbyimage?&image_url=" + pURL + "\">Google</a><i>")];
+      "</i><a href=\"https://www.google.com/searchbyimage?&image_url=" + pURL + "\">Google Reverse Search</a><i>")];
   }
   analytics.track(editMsg.origFrom, "sauce_found_saucenao");
   totalLength = totalLength || totalLength;

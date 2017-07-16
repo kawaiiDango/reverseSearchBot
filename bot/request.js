@@ -12,6 +12,30 @@ var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
 var idButtonName = SETTINGS.id_buttonName;
 
+var myFetch = (url, options) => {
+  var hit = cache.get(url);
+
+  if (hit){
+    analytics.track(editMsg.origFrom, "cache_hit");
+    return Promise.resolve(hit);
+  }
+
+  if (options == null) options = {}
+  if (options.credentials == null) options.credentials = 'same-origin'
+  return fetch(url, options).then(function(res) {
+    if (res.status >= 200 && res.status < 300) {
+      var txt = res.text();
+          cache.set(url, txt);
+          return txt;
+      // return Promise.resolve(txt)
+    } else {
+      var error = new Error(res.statusText || res.status)
+      error.response = res
+      return Promise.reject(error)
+    }
+  })
+};
+
 var getTineyeButtons = (bot, pic, page, shareId) => 
   [
     bot.inlineButton(idButtonName.picLink, {
@@ -28,13 +52,8 @@ module.exports = {
   fetchTineye: (url, editMsg) => {
     var params = {url: url, sort: 'size', order: 'desc'};
     url = "https://tineye.com/search?" + tools.json2query(params);
-    var hit = cache.get(url);
-
-    if (hit){
-      analytics.track(editMsg.origFrom, "cache_hit");
-      return Promise.resolve(hit);
-    }
-    else return fetch(url, 
+    
+    return myFetch(url, 
       {headers:
         {
           "User-Agent": SETTINGS.userAgents[
@@ -42,11 +61,7 @@ module.exports = {
           ],
         }
       }
-    ).then(res => {
-        var txt = res.text();
-        cache.set(url, txt);
-        return txt;
-      });
+    );
   },
   getTineyeButtons: getTineyeButtons,
   parseTineye: (res, bot, editMsg) => {
@@ -93,25 +108,13 @@ module.exports = {
     params.url = url;
     params.api_key = SETTINGS.private.SNKey;
     url = urlbase.sauceNao + tools.json2query(params);
-
-    var hit = cache.get(url);
-
-    if (hit){
-      analytics.track(editMsg.origFrom, "cache_hit");
-      return Promise.resolve(hit);
-    }
-    else
-      return fetch(url, {
-        params: params
-    }).then(res => {
-        var txt = res.text();
-        cache.set(url, txt);
-        return txt;
-      });
+    
+    return myFetch(url, { params: params });
   },
   cleanSauceNao: (res, bot, editMsg) => {
       console.log("get saucenao completed");
-      if (global.debug) console.log("result is", res);
+      // if (global.debug) 
+        // console.log("result is", res);
       // res가 string으로 반환되며, 앞에 <!-- 175.196.43 --> 가 붙어서
       // 오는 경우가 있어서 처리
       if (typeof res === "string" && res.includes("<!--") && res.includes("-->")) {
@@ -141,7 +144,8 @@ module.exports = {
       console.log("-----error.headers is", err.response.headers);
       // console.log("-----error.text is", err.response.text);
       if (err.response.status && err.response.status == 429) {
-        return [MESSAGE.reachLimitation];
+        return [MESSAGE.reachLimitation.replace("google", 
+      "</i><a href=\"https://www.google.com/searchbyimage?&image_url=" + pURL + "\">Google Reverse Search</a><i>")];
       } else
         return [MESSAGE.unknownError];
     } else {
