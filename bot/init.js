@@ -177,9 +177,14 @@ module.exports = () => {
 	      msg.fileId = msg.sticker.file_id;
         analytics.track(msg.from, "query", {type: "sticker"});
       }
-      else if (msg.document && tools.isSupportedExt(msg.document.file_name)){
-        msg.fileId = msg.document.file_id;
-        analytics.track(msg.from, "query", {type: "file"});
+      else if (msg.document){
+        if (tools.isSupportedExt(msg.document.file_name)){
+          msg.fileId = msg.document.file_id;
+          analytics.track(msg.from, "query", {type: "file"});
+        } else if (msg.document.mime_type == "video/mp4") {
+          msg.fileId = msg.document.thumb.file_id;
+          analytics.track(msg.from, "query", {type: "video"});
+        }
       }
       else
 	      return;
@@ -206,8 +211,10 @@ module.exports = () => {
       bot.getFile(msg.fileId)
         .then(file => {
           if (global.debug) console.log("file is", file);
-
-          reportToOwner.reportFileUrl(file.file_id, bot);
+          if (msg.document) //handles gifs
+            reportToOwner.reportFileUrl(msg.document.file_id, bot);
+          else
+            reportToOwner.reportFileUrl(file.file_id, bot);
           var url = "https://api.telegram.org/file/bot" + tokenBot + "/" + file.file_path;
           request(url, bot, editMsg);
         })
