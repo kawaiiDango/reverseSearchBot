@@ -43,10 +43,12 @@ module.exports = {
     return result;
   },
   isSupportedExt: (filename) => {
-	var ext = filename.substr(filename.lastIndexOf('.')+1).toLowerCase();
-	if( ext == "jpg" || ext =="png" || ext == "webp" || ext == "bmp")
-		return true;
-	return false;
+    if (!filename)
+      return false;
+  	var ext = filename.substr(filename.lastIndexOf('.')+1).toLowerCase();
+  	if( ext == "jpg" || ext =="png" || ext == "webp" || ext == "bmp")
+  		return true;
+  	return false;
 	},
   getGoogleSearch: (text, url) => {
     var idx = url.indexOf('bot');
