@@ -73,6 +73,11 @@ var parseSauceNao = function(response, bot, editMsg) {
 
       if (restOfIds[j] == "pawoo_id")
         id = data['pawoo_user_acct'] + '/' + id;
+      else if (restOfIds[j] == "bcy_id")
+        id = data['bcy_type'] + '/detail/' + 
+          data['member_link_id'] + '/' + id;
+      else if (restOfIds[j] == "url")
+        id = data['url'];
 
       if (j == 0)
         buttonName = "View on " + buttonName;

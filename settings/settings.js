@@ -24,6 +24,11 @@ var settings = {
     drawr_id: "http://drawr.net/show.php?id=",
     da_id: "https://deviantart.com/view/",
     pawoo_id: "https://pawoo.net/@",
+    bcy_id: "https://bcy.net/",
+    url: "",
+    /* wont add:
+    seiga_id
+    */
   },
   id_buttonName: {
     pixiv_id: "Pixiv",
@@ -38,6 +43,8 @@ var settings = {
     drawr_id: "Drawr",
     da_id: "deviantArt",
     pawoo_id: "Pawoo",
+    bcy_id: "BCY",
+    url: "",
 
     share: "↗️Share",
     loading: "🍝",
