@@ -13,10 +13,10 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.2",
+    "cheerio": "^1.0.0-rc.2",
     "express": "^4.15.3",
     "lru-cache": "^4.1.1",
     "node-fetch": "^1.7.1",
-    "telebot": "^1.2.2",
-    "xml2js": "^0.4.17"
+    "telebot": "^1.2.3"
   }
 }

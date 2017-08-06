@@ -7,10 +7,11 @@ var settings = {
     analUrl: "http://api.amplitude.com/httpapi?api_key=" + privateSettings.analKey,
     sauceNaoParams: {
       db: 999,
-      output_type: 2,
+      // output_type: 2,
       testmode: 1,
       numres: 5,
-      minSimilarity : 56
+      minSimilarity: 56,
+      tolerance: 7
     },
     pixiv_id: "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=",
     danbooru_id: "https://danbooru.donmai.us/post/show/",
@@ -50,17 +51,17 @@ var settings = {
     loading: "🍝",
     pageLink: "📃Source",
     picLink: "🖼️High res",
-    searchSauceNao: "🔍SauceNao",
+    searchSauceNao: "🔍ArtSearch",
   },
   msg: {
     invalidUrl: "That doesn't look like a photo or a URL.",
     invalidForm: "That type of message is not supported yet.",
     loading: "<i>Pouring some sauce on it...</i>",
     zeroResult: "No sauce found. <i>Maybe try google instead?</i>",
-    help: "Send me an image, a sticker, an image file or an image URL to find its source Right Nao.",
+    help: "Send me an image, a sticker, an image file or a GIF to find its source Right Nao.",
     tooManyRequests: "Too many requests. Please send one by one and take time between requests.",
     reachLimitation: "The request limit has been reached. <i>Please wait for a few minutes or use google instead</i>",
-    unknownError: "<b>Unknown error occured.</b> Please contact @dangou if this happens repeatedly.",
+    unknownError: "<b>Unknown error occured.</b> Please report this to @dangou if it happens repeatedly.",
     invalidFileId: "<i>Invalid file id</i>",
     requestRating: "<a href=\"https://telegram.me/storebot?start=" + this.botName + "\">★ Rate this bot</a>",
     keywordHelp: "Dont just click me like that. \n\nReply to a pic, a sticker, or an image file with /source or /sauce to find its source."

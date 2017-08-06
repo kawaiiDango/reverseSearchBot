@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 var LRU = require("lru-cache");
 var cache = LRU({ max: 50, maxAge: 1000 * 60 * 60 * 24 });
-var parseString = require('xml2js').parseString;
+const cheerio = require('cheerio');
 
 var SETTINGS = require("../settings/settings.js");
 var urlbase = SETTINGS.url;
@@ -51,7 +51,7 @@ var getTineyeButtons = (bot, pic, page, shareId) =>
     })
   ];
 module.exports = {
-  fetchTineye: (url, editMsg) => {
+  fetchTineye: (url, editMsg) => {return Promise.reject(new Error("not found"));
     var params = {url: url, sort: 'size', order: 'desc'};
     uurl = "https://tineye.com/search?" + tools.json2query(params);
     
@@ -82,13 +82,12 @@ module.exports = {
     tmp = tmp.substring( start, tmp.indexOf('</div>', start)+6);
     //console.dir(tmp);
     return new Promise ( (resolve, reject) => {
-      parseString(tmp, (err, res) => {
-        res=res.div;
+      const $ =cheerio.load(tmp);
 
-        var siteName = res.h4[0].$.title, 
-          imgName = res.p[0].a[0].$.title,
-          highResUrl = res.p[0].a[0].$.href, 
-          page = res.p[2].a[0].$.href;
+        var siteName = $("h4").attr('title'), 
+          imgName = $(".image-link > a").attr('title'),
+          highResUrl = $(".image-link > a").attr('href'), 
+          page = $("span.hidden-xs").next().attr('href');
 
         var displayText = "Image source was found at: <a href=\"" + highResUrl + "\">" + imgName 
   		    + "</a> from <a href=\"" + page + "\">" + siteName + "</a>\n";
@@ -103,15 +102,16 @@ module.exports = {
         
         analytics.track(editMsg.origFrom, "sauce_found_tineye");
         resolve([displayText, markup]);
-      })
     });
   },
   fetchSauceNao: (url, editMsg) => {
     var params = urlbase.sauceNaoParams;
 
     params.url = url;
-    params.api_key = SETTINGS.private.SNKey;
+    // params.api_key = SETTINGS.private.SNKey;
     uurl = urlbase.sauceNao + tools.json2query(params);
+
+    console.log(uurl)
     
     return myFetch(uurl, editMsg, { params: params });
   },

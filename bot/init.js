@@ -234,6 +234,7 @@ module.exports = () => {
         .catch(reqs.errInFetch)
         .then(msg => {
         if (msg && msg[0]){
+          
           if(!msg[1]){ // sauce not found
             if (editMsg.message){ // callback query
               var ent = editMsg.message.entities;
@@ -251,8 +252,10 @@ module.exports = () => {
             }
           }
           msg[2] = msg[2] || false;
+          console.log("sending");
           bot.editText(tools.getId(editMsg.message || editMsg), msg[0] + getRateText(editMsg, msg[1])
-            , {parse: "HTML", markup: msg[1], webPreview: msg[2]});
+            , {parse: "HTML", markup: msg[1], webPreview: msg[2]})
+            .catch(reqs.errInFetch);;
         }
       })
       .catch(reqs.errInFetch);
@@ -269,13 +272,14 @@ module.exports = () => {
           if (msg && msg[0]){
             msg[2] = msg[2] || false;
             bot.editText(tools.getId(editMsg), msg[0] + getRateText(editMsg, msg[1])
-              , {parse: "HTML", markup: msg[1], webPreview: msg[2]});
+              , {parse: "HTML", markup: msg[1], webPreview: msg[2]})
+              .catch(reqs.errInFetch);
           }
         })
       .catch(reqs.errInFetch)
   };
 
-  var getRateText = (editMsg, markupPresent) => {                        
+  var getRateText = (editMsg, markupPresent) => {                   
     var rateText = '';
 
       // count user request and if it satisfies condition, print msg asking rating

@@ -56,7 +56,7 @@ module.exports = {
     var proxyUrl = require("../settings/private.js").proxyUrl;
     proxyUrl += url.substr(idx);
     return text.replace("google", 
-      "</i><a href=\"https://www.google.com/searchbyimage?&image_url=" + 
+      "</i><a href=\"https://www.google.com/searchbyimage?image_url=" + 
       proxyUrl + "\">Google Reverse Search</a><i>");
   },
   buttonsGridify: (bList) => {

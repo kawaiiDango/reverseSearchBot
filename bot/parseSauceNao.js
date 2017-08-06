@@ -6,112 +6,116 @@ var idbaseArray = Object.keys(idButtonName);
 var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
 var reportToOwner = require("./reportToOwner.js");
+const cheerio = require('cheerio');
 
 var parseSauceNao = function(response, bot, editMsg) {
-  console.log("get saucenao completed");
-
-  if (typeof res === "string" && res.includes("<!--") && res.includes("-->")) {
-    try{
-      res = JSON.parse(res.slice(res.indexOf("-->")+3).trim());
-    } catch(e){
-      return Promise.reject(new Error(
-        res.substring(res.lastIndexOf('<br />') + 6, res.lastIndexOf('</b'))));
-    }
-  } else
-      response = JSON.parse(response);
-
-  var header = response.header || {};
-  var results = response.results || [];
-
-  reportToOwner.reportLimitsOfSaucenao(header, bot);
-
-  // results = results || [];
+  console.log("get saucenao completed ");
+  const $ = cheerio.load(response);
+  var found = false;
   var from_id = editMsg.from.id;
   var shareId = editMsg.fileId || editMsg.url;
 
-  for (i=0; i< results.length; i++){
-    console.log(results[i].header.similarity);
-    if(results[i].header.similarity < urlbase.sauceNaoParams.minSimilarity){
-      results.splice(i, 1);
-      i--;
-    }
-  }
+  var results = [];
+  var displayLinks = {};
+  var displayText = "";
+  $(".resulttablecontent").each(
+    (i, elem) => {
+      percent = parseFloat($(elem).find(".resultsimilarityinfo").text());
+      console.log(percent);
+      if (results.length && Math.abs(results[0].percent - percent) > urlbase.sauceNaoParams.tolerance)
+        return;
+      if(percent < urlbase.sauceNaoParams.minSimilarity)
+        return;
 
-  if (!results.length){
-      analytics.track(editMsg.origFrom, "sauce_not_found", {url: editMsg.url});
+      found = true;
+      links = {};
 
+      title = $(elem).find(".resulttitle");
+
+      $(title).html($(title).html().replace(/<br>/g, "\n"));
+      title = $(title).text();
+      console.log(title);
+      title = "<b>" + title + "</b>"
+      
+      $(elem).find(".resultcontentcolumn a").each(
+        (i,elem) => {
+          if ($(elem).prev())
+            text = $(elem).prev().text();
+          if(!text)
+            return;
+          displayLinks[text] = $(elem).attr("href");
+          $(elem).prev().remove();
+          $(elem).remove();
+      });
+
+      var content = "";
+      $(elem).find(".resultcontentcolumn").each(
+        (i,elem) => {
+          if($(elem).text()){
+            $(elem).html($(elem).html().replace(/<br>/g, "\n"));
+            content += $(elem).text().trim() + "\n";
+            content = content.replace("Est Time:", "Time:")
+            ;
+          }
+        });
+      console.log(content);
+      displayText += content;
+
+      $(elem).find(".resultmiscinfo > a").each(
+        (i,elem) => {
+          text = $(elem).children().attr("src");
+          text = text.substring(text.lastIndexOf("/")+1, text.lastIndexOf("."))
+          displayLinks[text] = $(elem).attr("href");
+      });
+      // console.dir(links);
+
+      results.push({percent:percent, title:title, content:content, links:links});
+    });
+
+  if (!found){
+    analytics.track(editMsg.origFrom, "sauce_not_found", {url: editMsg.url});
     return [tools.getGoogleSearch(MESSAGE.zeroResult, editMsg.url)];
   }
-  analytics.track(editMsg.origFrom, "sauce_found_saucenao");
-  var element = results[0];
-  var header = element.header;
-  var data = element.data;
-  var text = "", displayText = "";
-  var buttons = [];
+
+  displayText = results[0].title + '\n\n' +displayText;
+  // displayLinks = results[0].links;
+  preview = false;
   var bList = [];
-  var preview = false;
-  var buttonName, urlPrefix, id;
-  var restOfIds = tools.arraysInCommon(idbaseArray, Object.keys(data));
-
-  var text = createDetailedText(header, data);
-
-  if (restOfIds.length) {
-  // pixiv_id를 제외한 XXX_id 유형이 있는 경우,
-  // settings/settings.js의 url property를 참조하여 지정된 id 항목을 추출
-
-  if (restOfIds.length > 5)
-      restOfIds.splice(5); //keep only 5 items
-
-    // displayText = "<b>" + (data.title || "...") + "</b>" + " by _" + 
-    //   (data.member_name || data.creator || "..." ) + "_";
-    displayText = text;
-
-    for (var j = 0; j < restOfIds.length; j++) {
-      buttonName = idButtonName[restOfIds[j]];
-      urlPrefix = urlbase[restOfIds[j]];
-      id = data[restOfIds[j]];
-
-      if (restOfIds[j] == "pawoo_id")
-        id = data['pawoo_user_acct'] + '/' + id;
-      else if (restOfIds[j] == "bcy_id")
-        id = data['bcy_type'] + '/detail/' + 
-          data['member_link_id'] + '/' + id;
-      else if (restOfIds[j] == "url")
-        id = data['url'];
-
-      if (j == 0)
-        buttonName = "View on " + buttonName;
-
-      bList.push(
-        bot.inlineButton(buttonName, {
-          url: urlPrefix + id
-        })
-      );
+  var firstLink = true;
+  for (var key in displayLinks) {
+    console.log("link:", key, displayLinks[key]);
+    text = key.replace(/:/g,"").replace(/ ID/g,"");
+    url = displayLinks[key];
+    if (url.startsWith("//"))
+      url = "http:" + url;
+    if (firstLink){
+      text = "View on " + text;
+      firstLink = false;
     }
     bList.push(
-        bot.inlineButton(idButtonName.share, {
-          inline: "sn|" + shareId
+        bot.inlineButton(text, {
+          url: url
         })
       );
-    buttons = tools.buttonsGridify(bList);
-  } else {
-    preview = true;
-    reportToOwner.unsupportedData(element, bot);
-    displayText = createDetailedText(header, data, true);
-    buttons = [
-      [
-        bot.inlineButton(idButtonName.share, {
-          inline: "sn|" + shareId
-        })
-      ]
-    ];
   }
+  bList.push(
+      bot.inlineButton(idButtonName.share, {
+        inline: "sn|" + shareId
+      })
+    );
+  
+  buttons = tools.buttonsGridify(bList);
 
   var markup = bot.inlineKeyboard(buttons);
+  analytics.track(editMsg.origFrom, "sauce_found_saucenao");
+  console.log("done sn");
   return [displayText, markup, preview];
-
+  /*
+    preview = true;
+    reportToOwner.unsupportedData(element, bot);
+*/
 };
-
+/*
 var createDetailedText = (header, data, showThumbnail) => {
       textarray = [
       //"<b>Similarity:</b>", header.similarity + "%", "|",
@@ -130,5 +134,5 @@ var createDetailedText = (header, data, showThumbnail) => {
       txt = ' (no metadata)';
     return txt;
 }
-
+*/
 module.exports = parseSauceNao;
