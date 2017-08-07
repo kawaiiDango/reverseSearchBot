@@ -6,10 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "arn",
+  "author": "kawaiiDango",
   "bugs": {
     "url": "http://github.com/owner/project/issues"
   },
+  "repository": "kawaiiDango/reverseSearchBot",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.2",
