@@ -148,6 +148,8 @@ module.exports = () => {
           msg.fileId = rm.sticker.file_id;
         else if (rm.document && tools.isSupportedExt(rm.document.file_name))
           msg.fileId = rm.document.file_id;
+        else if (rm.document.mime_type == "video/mp4")
+          msg.fileId = rm.document.thumb.file_id;
         
         msg.site = splits[0];
         getSauce(msg, msg);
@@ -212,9 +214,9 @@ module.exports = () => {
         .then(file => {
           if (global.debug) console.log("file is", file);
           if (msg.document) //handles gifs
-            reportToOwner.reportFileUrl(msg.document.file_id, bot);
+            reportToOwner.reportFile(msg.document.file_id, bot);
           else
-            reportToOwner.reportFileUrl(file.file_id, bot);
+            reportToOwner.reportFile(file.file_id, bot);
           var url = "https://api.telegram.org/file/bot" + tokenBot + "/" + file.file_path;
           request(url, bot, editMsg);
         })
@@ -252,7 +254,6 @@ module.exports = () => {
             }
           }
           msg[2] = msg[2] || false;
-          console.log("sending");
           bot.editText(tools.getId(editMsg.message || editMsg), msg[0] + getRateText(editMsg, msg[1])
             , {parse: "HTML", markup: msg[1], webPreview: msg[2]})
             .catch(reqs.errInFetch);;

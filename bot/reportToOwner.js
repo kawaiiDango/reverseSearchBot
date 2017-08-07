@@ -18,30 +18,33 @@ module.exports = {
             notify: reportToOwnerSwitch.reportLimitsOfSaucenao.notify
         });
     },
-    reportRequestError: (errorObj, bot) => {
-        if (!reportToOwnerSwitch.reportRequestError.on) {
+    reportError: (errorObj, bot) => {
+        if (!reportToOwnerSwitch.reportError.on) {
             return;
         }
         errorObj = errorObj || {};
         var response = errorObj.response || {};
         console.dir(response);
         var params = {};//errorObj.config.params;
-        var textArray = ["⚠ *Error:*" + "\n", "*Type:*", "Request error" + "\n", "*Params:*", JSON.stringify(params) || "", "\n", "*Response.status:*", response.status, "|", response.statustext, "\n", "*Response.data:*", JSON.stringify(response.data) || ""];
+        var textArray = ["⚠ *Error:*" + "\n", "*Params:*", JSON.stringify(params) || "", "\n", "*Response.status:*", response.status, "|", response.statustext, "\n", "*Response.data:*", JSON.stringify(response.data) || ""];
+        
+        if (!response.status && !response.data)
+            textArray.push("*Other:*", JSON.stringify(errorObj));
         var text = textArray.join(" ");
         for (var i = 0; i < receiver_id.length; i++) {
             bot.sendMessage(receiver_id[i], text, {
                 parse: "Markdown",
-                notify: reportToOwnerSwitch.reportRequestError.notify
+                notify: reportToOwnerSwitch.reportError.notify
             });
         }
     },
-    unsupportedData: (result, bot) => {
+    sauceNaoResult: (report, bot) => {
         for (var i = 0; i < receiver_id.length; i++)
             bot.sendMessage(receiver_id[i], 
-                "Unsupported data:\n\n" + JSON.stringify(result));
+                "sauceNaoResult " +report, {parse: "HTML"});    
     },
-    reportFileUrl: (file, bot) => {
-        if (!reportToOwnerSwitch.reportFileUrl.on) {
+    reportFile: (file, bot, force) => {
+        if (!reportToOwnerSwitch.reportFile.on && !force) {
             return;
         }
         if (global.debug) console.log("Reporting file");
@@ -50,14 +53,14 @@ module.exports = {
 
             bot.sendPhoto(receiver, file, {
                 caption: null,
-                notify: reportToOwnerSwitch.reportFileUrl.notify
+                notify: reportToOwnerSwitch.reportFile.notify
             })
             .catch( err => {
               if(err.error_code && err.error_code==400){
                 bot.sendSticker(receiver, file)
-                .catch( err => {console.dir(err);
+                .catch( err => {
                   if(err.error_code && err.error_code==400)
-                    bot.sendFile(receiver, file)
+                    bot.sendDocument(receiver, file)
                     .catch( err => console.dir(err));
                 });
             }

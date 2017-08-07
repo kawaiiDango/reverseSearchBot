@@ -1,8 +1,6 @@
 var urlbase = require("../settings/settings.js").url;
 var MESSAGE = require("../settings/settings.js").msg;
 var idButtonName = require("../settings/settings.js").id_buttonName;
-var proxyUrl = require("../settings/settings.js").private.proxyUrl;
-var idbaseArray = Object.keys(idButtonName);
 var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
 var reportToOwner = require("./reportToOwner.js");
@@ -14,62 +12,100 @@ var parseSauceNao = function(response, bot, editMsg) {
   var found = false;
   var from_id = editMsg.from.id;
   var shareId = editMsg.fileId || editMsg.url;
+  var preview = false;
+  var bList = [];
 
   var results = [];
-  var displayLinks = {};
+  var links = {};
+  var content = {_title:'', _text:''};
   var displayText = "";
+
   $(".resulttablecontent").each(
     (i, elem) => {
       percent = parseFloat($(elem).find(".resultsimilarityinfo").text());
-      console.log(percent);
       if (results.length && Math.abs(results[0].percent - percent) > urlbase.sauceNaoParams.tolerance)
         return;
       if(percent < urlbase.sauceNaoParams.minSimilarity)
         return;
 
       found = true;
-      links = {};
-
-      title = $(elem).find(".resulttitle");
-
-      $(title).html($(title).html().replace(/<br>/g, "\n"));
-      title = $(title).text();
-      console.log(title);
-      title = "<b>" + title + "</b>"
       
       $(elem).find(".resultcontentcolumn a").each(
         (i,elem) => {
           if ($(elem).prev())
-            text = $(elem).prev().text();
+            text = $(elem).prev().text()
+            .replace("Member", "Artist");
           if(!text)
             return;
-          displayLinks[text] = $(elem).attr("href");
+          links[text] = $(elem).attr("href");
           $(elem).prev().remove();
           $(elem).remove();
       });
 
-      var content = "";
-      $(elem).find(".resultcontentcolumn").each(
+      $(elem).find(".resulttitle, .resultcontentcolumn").each(
         (i,elem) => {
-          if($(elem).text()){
-            $(elem).html($(elem).html().replace(/<br>/g, "\n"));
-            content += $(elem).text().trim() + "\n";
-            content = content.replace("Est Time:", "Time:")
-            ;
+          var isCharactersDiv = false;
+
+          var lines = $(elem).html().replace(/<br \/>|<br>/g, "\n").trim();
+          lines = $(lines).text();
+
+          if(lines){
+            lines = lines.split("\n");
+            for(i in lines){
+              if (!lines[i].trim())
+                continue;
+              splits = lines[i].split(": ");
+              key = splits[0].trim();
+              if (splits.length==2 && splits[1]){
+                key = key.replace("Est Time", "Time")
+                    .replace("Creator", "By");
+                if (content[key])
+                  console.log("key " + key + " was occupied");
+                else
+                  content[key] = splits[1].trim()
+              } else if (key) {
+                //a character block has multiple characters 
+                //seperated by \n and nothing else (i think)
+                if (key == "Characters"){
+                  isCharactersDiv = true;
+                  content.Characters = '';
+                } else if (isCharactersDiv){
+                  content.Characters += key;
+                  if (i != lines.length - 1)
+                    content.Characters += ", ";
+                }
+                else if ($(elem).is(".resulttitle") && !content._title)
+                  content._title += lines[i].trim()+"\n";
+                else
+                  content._text += "    "+lines[i].trim() +"\n";
+              }
+            }
           }
         });
-      console.log(content);
-      displayText += content;
 
       $(elem).find(".resultmiscinfo > a").each(
         (i,elem) => {
-          text = $(elem).children().attr("src");
-          text = text.substring(text.lastIndexOf("/")+1, text.lastIndexOf("."))
-          displayLinks[text] = $(elem).attr("href");
-      });
-      // console.dir(links);
+          text = $(elem).children().attr("src")
+          text = text.substring(text.lastIndexOf("/")+1, text.lastIndexOf("."));
+          if (links[text]){
+            console.log("key " + key + " was occupied");
+            return;
+          }
+          links[text] = $(elem).attr("href");
+          if (text == "anidb"){
+            // extract episode number
+            matches = content._title.match(/(.+) - ([\d]+)\n$/);
+            if (matches && matches.length == 3){
+              title = matches[1];
+              content._title = title + " (Ep. " + matches[2] + ")\n";
+            } else
+              title = content._title;
 
-      results.push({percent:percent, title:title, content:content, links:links});
+            links["MAL"] = urlbase.mal + title;
+          }
+      });
+
+      results.push({percent:percent});
     });
 
   if (!found){
@@ -77,62 +113,57 @@ var parseSauceNao = function(response, bot, editMsg) {
     return [tools.getGoogleSearch(MESSAGE.zeroResult, editMsg.url)];
   }
 
-  displayText = results[0].title + '\n\n' +displayText;
-  // displayLinks = results[0].links;
-  preview = false;
-  var bList = [];
-  var firstLink = true;
-  for (var key in displayLinks) {
-    console.log("link:", key, displayLinks[key]);
+  displayText = "<b>" + content._title + "</b>"+ '\n' ;
+  delete content._title;
+
+  if (content.Characters){
+    displayText += "<b>Character: </b>"+ content.Characters + "\n";
+    delete content.Characters;
+  }
+  if (content.Material){
+    displayText += "<b>Material: </b>"+ content.Material + "\n";
+    delete content.Material;
+  }
+
+  for (var key in content) {
+    if (!( key == "_text" || key == "JPTitle"))
+        displayText += "<b>" + key + ": </b>"+content[key]+ '\n';
+  }
+  // put blank line if > 1 line
+  if ((content._text.match(/\n/g) || []).length > 1)
+    content._text = "\n" + content._text;
+
+  displayText += content._text;
+
+  var ctr = 0;
+  for (var key in links) {
+    if (ctr>=6) //max 6 buttons or 3 lines 
+      break;
+    console.log("link:", key, links[key]);
     text = key.replace(/:/g,"").replace(/ ID/g,"");
-    url = displayLinks[key];
+    url = links[key];
     if (url.startsWith("//"))
       url = "http:" + url;
-    if (firstLink){
+    if (ctr == 0)
       text = "View on " + text;
-      firstLink = false;
-    }
-    bList.push(
-        bot.inlineButton(text, {
-          url: url
-        })
-      );
+    bList.push( bot.inlineButton(text, { url: url }) );
+    ctr++;
   }
   bList.push(
-      bot.inlineButton(idButtonName.share, {
-        inline: "sn|" + shareId
-      })
-    );
+    bot.inlineButton(idButtonName.share, {
+      inline: "sn|" + shareId
+    })
+  );
   
-  buttons = tools.buttonsGridify(bList);
+  markup = bot.inlineKeyboard(tools.buttonsGridify(bList));
 
-  var markup = bot.inlineKeyboard(buttons);
   analytics.track(editMsg.origFrom, "sauce_found_saucenao");
-  console.log("done sn");
+
+  report = "<a href=\"" + urlbase.sauceNao + "url=" + 
+    editMsg.url + "\">link</a>\n\n" + displayText;
+  reportToOwner.sauceNaoResult(report, bot);
+  reportToOwner.reportFile(editMsg.fileId, bot, 1);
   return [displayText, markup, preview];
-  /*
-    preview = true;
-    reportToOwner.unsupportedData(element, bot);
-*/
 };
-/*
-var createDetailedText = (header, data, showThumbnail) => {
-      textarray = [
-      //"<b>Similarity:</b>", header.similarity + "%", "|",
-      (showThumbnail)? "\n<a href=\"" + header.thumbnail + "\">\u2063</a>" : null,
-      (data.title ? "\n<b>" + data.title + "</b>" : "") + " " + 
-      ((data.member_name || data.creator) ? "<b>by:</b> " + (data.member_name || data.creator) : ""),
-      //(data.eng_name) ? "<b>Eng_title:</b> " + data.eng_name : null,
-      //(data.jp_name) ? "<b>Jp_title:</b> " + data.jp_name : null,
-      (data.source) ? "\n<b>Source:</b> " + data.source : null,
-      (data.part) ? "\n<b>Episode:</b> " + data.part : null,
-      (data.year) ? "\n<b>Year:</b> " + data.year : null,
-      (data.est_time) ? "\n<b>Time: </b> " + data.est_time : null
-    ];
-    txt = textarray.join("");
-    if (txt.length<2)
-      txt = ' (no metadata)';
-    return txt;
-}
-*/
+
 module.exports = parseSauceNao;

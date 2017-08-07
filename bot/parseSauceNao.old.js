@@ -1,7 +1,6 @@
 var urlbase = require("../settings/settings.js").url;
 var MESSAGE = require("../settings/settings.js").msg;
 var idButtonName = require("../settings/settings.js").id_buttonName;
-var proxyUrl = require("../settings/settings.js").private.proxyUrl;
 var idbaseArray = Object.keys(idButtonName);
 var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');

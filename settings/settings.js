@@ -4,6 +4,7 @@ var settings = {
   botName : "reverseSearchBot",
   url: {
     sauceNao: "https://saucenao.com/search.php?",
+    mal: "http://myanimelist.net/anime.php?q=",
     analUrl: "http://api.amplitude.com/httpapi?api_key=" + privateSettings.analKey,
     sauceNaoParams: {
       db: 999,
@@ -81,11 +82,11 @@ var settings = {
     numMsgs: 20
   },
   reportToOwnerSwitch: {
-    reportLimitsOfSaucenao: {on: true, notify: false},
-    reportRequestError: {on: true, notify: true},
-    reportFileUrl: {on: true, notify: false}
+    reportLimitsOfSaucenao: {on: false, notify: false},
+    reportError: {on: true, notify: true},
+    reportFile: {on: false, notify: false}
   },
-  keywords: ["sauce", "/sauce", "#sauce", "source", "/source", "#source"],
+  keywords: ["sauce", "/sauce", "#sauce", "source", "/source", "#source", "what", "what?"],
   private: privateSettings,
   userAgents: [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12",

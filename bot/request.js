@@ -51,7 +51,7 @@ var getTineyeButtons = (bot, pic, page, shareId) =>
     })
   ];
 module.exports = {
-  fetchTineye: (url, editMsg) => {return Promise.reject(new Error("not found"));
+  fetchTineye: (url, editMsg) => {
     var params = {url: url, sort: 'size', order: 'desc'};
     uurl = "https://tineye.com/search?" + tools.json2query(params);
     
@@ -106,12 +106,9 @@ module.exports = {
   },
   fetchSauceNao: (url, editMsg) => {
     var params = urlbase.sauceNaoParams;
-
     params.url = url;
     // params.api_key = SETTINGS.private.SNKey;
     uurl = urlbase.sauceNao + tools.json2query(params);
-
-    console.log(uurl)
     
     return myFetch(uurl, editMsg, { params: params });
   },
@@ -134,6 +131,6 @@ module.exports = {
       console.log('-----error', err.message);
       return ["<b>Error:</b> " + err.message];
     }
-    // reportToOwner.reportRequestError(err, bot);
+    reportToOwner.reportError(err, bot);
   }
 };
