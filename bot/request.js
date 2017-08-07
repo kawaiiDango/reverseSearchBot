@@ -72,7 +72,7 @@ module.exports = {
     console.log("get tineye completed");
 
     var tmp = res;
-    var start = tmp.indexOf('<div class="row match-row"');
+    var start = tmp.indexOf('match-row"');
     start = tmp.indexOf('<div class="match"', start);
     if (start == -1){
       console.log("not found");
@@ -84,11 +84,17 @@ module.exports = {
     return new Promise ( (resolve, reject) => {
       const $ =cheerio.load(tmp);
 
-        var siteName = $("h4").attr('title'), 
-          imgName = $(".image-link > a").attr('title'),
+        var siteName = $("h4").text(), 
+          imgName = $(".image-link > a").text(),
           highResUrl = $(".image-link > a").attr('href'), 
           page = $("span.hidden-xs").next().attr('href');
 
+        //"collections"
+        if (!(imgName && highResUrl && page) ){
+          imgName = $("p.top-padding > a").text();
+          highResUrl = page = $("p.top-padding > a").attr('href');
+        }
+        console.log(siteName, imgName, highResUrl, page);
         var displayText = "Image source was found at: <a href=\"" + highResUrl + "\">" + imgName 
   		    + "</a> from <a href=\"" + page + "\">" + siteName + "</a>\n";
         var shareId = editMsg.fileId || editMsg.url;
@@ -97,9 +103,8 @@ module.exports = {
           bList.splice(2, 0, bot.inlineButton(idButtonName.searchSauceNao, {
               callback: "sn|"+ editMsg.origFrom.id //+"|" + shareId
             }));
-        var markup = bot.inlineKeyboard(
-          tools.buttonsGridify(bList));
-        
+        var markup = bot.inlineKeyboard(tools.buttonsGridify(bList));
+
         analytics.track(editMsg.origFrom, "sauce_found_tineye");
         resolve([displayText, markup]);
     });
