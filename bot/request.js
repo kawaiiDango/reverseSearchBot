@@ -95,7 +95,7 @@ module.exports = {
       const $ =cheerio.load(tmp);
 
       var siteName = $("h4").text(), 
-        imgName = $("p > a").text(),
+        imgName = $("p > a").first().text(),
         highResUrl = $("p > a").attr('href'), 
         page = $("p > span").next().attr('href');
       console.log("tineyeUrls", imgName , highResUrl , page);
