@@ -38,6 +38,7 @@ jspm_packages
 
 # private
 settings/private.js
+phpProxy
 
 # trash
 **/*.js~

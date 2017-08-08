@@ -1,0 +1,13 @@
+var private = {
+	botToken: "tg bot token",
+	adminId: [""],
+	SNKey: "saucenao key",
+	analKey: "amplitude analytics key",
+    botName: "tg bot username",
+    proxyUrl: "proxy url prefix",
+    socksProxyUrl: "socks://url:port",
+	favouriteGroups: [
+    -0,
+  ]
+}
+module.exports = private;
