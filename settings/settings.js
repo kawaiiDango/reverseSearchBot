@@ -82,11 +82,11 @@ var settings = {
     numMsgs: 20
   },
   reportToOwnerSwitch: {
-    reportLimitsOfSaucenao: {on: false, notify: false},
+    reportLimitsOfSaucenao: {on: true, notify: false},
     reportError: {on: true, notify: true},
     reportFile: {on: false, notify: false}
   },
-  keywords: ["sauce", "/sauce", "#sauce", "source", "/source", "#source", "what", "what?"],
+  keywords: ["sauce", "/sauce", "#sauce", "source", "/source", "#source", "what?"],
   private: privateSettings,
   userAgents: [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12",
