@@ -33,11 +33,14 @@ var parseSauceNao = function(response, bot, editMsg) {
       $(elem).find(".resultcontentcolumn a").each(
         (i,elem) => {
           if ($(elem).prev())
-            text = $(elem).prev().text()
-            .replace("Member", "Artist");
+            text = $(elem).prev().text();
           if(!text)
             return;
+          text = text.replace("Member", "Artist");
+          
           links[text] = $(elem).attr("href");
+          if (text =="Artist" && !content._byUsername)
+            content._byUsername = $(elem).text();
           $(elem).prev().remove();
           $(elem).remove();
       });
@@ -115,6 +118,9 @@ var parseSauceNao = function(response, bot, editMsg) {
 
   displayText = "<b>" + content._title + "</b>"+ '\n' ;
   delete content._title;
+
+  if (!content.By && content._byUsername)
+    content._byUsername = content.By;
 
   if (content.Characters){
     displayText += "<b>Character: </b>"+ content.Characters + "\n";

@@ -18,6 +18,13 @@ module.exports = {
             notify: reportToOwnerSwitch.reportLimitsOfSaucenao.notify
         });
     },
+    reportLimitReached: (whichApi, bot) => {
+        if (!reportToOwnerSwitch.reportLimitsOfSaucenao.on)
+            return;
+        text = whichApi + " rate limit reached.";
+        for (var i = 0; i < receiver_id.length; i++)
+            bot.sendMessage(receiver_id[i], text);
+    },
     reportError: (errorObj, bot) => {
         if (!reportToOwnerSwitch.reportError.on) {
             return;

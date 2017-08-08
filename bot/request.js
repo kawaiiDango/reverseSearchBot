@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+var socksProxyAgent = require('socks-proxy-agent');
 var LRU = require("lru-cache");
 var cache = LRU({ max: 50, maxAge: 1000 * 60 * 60 * 24 });
 const cheerio = require('cheerio');
@@ -11,6 +12,7 @@ var reportToOwner = require("./reportToOwner.js");
 var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
 var idButtonName = SETTINGS.id_buttonName;
+var agents = {idx:1, list:[null, new socksProxyAgent(SETTINGS.private.socksProxyUrl)]};
 
 var myFetch = (url, editMsg, options) => {
   var hit = cache.get(url);
@@ -20,7 +22,9 @@ var myFetch = (url, editMsg, options) => {
     return Promise.resolve(hit);
   }
 
-  if (options == null) options = {}
+  if (options == null)
+    options = {};
+  options.agent = agents.list[agents.idx];
   if (options.credentials == null) options.credentials = 'same-origin'
   return fetch(url, options).then(function(res) {
     if (res.status >= 200 && res.status < 300) {
@@ -75,7 +79,13 @@ module.exports = {
     var start = tmp.indexOf('match-row"');
     start = tmp.indexOf('<div class="match"', start);
     if (start == -1){
-      console.log("not found");
+      
+      if (tmp.indexOf("/faq#search_limit")>-1){
+        reportToOwner.reportLimitReached("tineye", bot);
+        agents.idx = (agents.idx + 1)% agents.list.length;
+        console.log("idx set to " + agents.idx);
+      } else 
+        console.log("not found");
       return Promise.reject(new Error("not found"));
     }
     //TODO: if URL, load/head it, check if mime=pic types, say invalid url if not.
@@ -124,6 +134,7 @@ module.exports = {
       console.log("-----error.headers is", err.response.headers);
       // console.log("-----error.text is", err.response.text);
       if (err.response.status && err.response.status == 429) {
+        reportToOwner.reportLimitReached("sauceNao", bot);
         return [tools.getGoogleSearch(MESSAGE.reachLimitation, err.url)];
       } else
         return [MESSAGE.unknownError];
