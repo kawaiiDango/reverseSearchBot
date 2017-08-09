@@ -82,7 +82,7 @@ var settings = {
     numMsgs: 20
   },
   reportToOwnerSwitch: {
-    reportLimitsOfSaucenao: {on: true, notify: false},
+    reportLimitsOfSaucenao: {on: true, notify: true},
     reportError: {on: true, notify: true},
     reportFile: {on: false, notify: false}
   },
