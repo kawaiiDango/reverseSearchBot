@@ -59,7 +59,8 @@ var settings = {
     invalidForm: "That type of message is not supported yet.",
     loading: "<i>Pouring some sauce on it...</i>",
     zeroResult: "No sauce found. <i>Maybe try google instead?</i>",
-    help: "Send me an image, a sticker, an image file or a GIF to find its source Right Nao.",
+    help: "Send me an image, a sticker, an image file or a GIF to find its source Right Nao."+
+          "\n\n<i>Tip: Click the 🔍ArtSearch button if it is an artwork or cosplay, for character, show episode and artist identification.</i>",
     tooManyRequests: "Too many requests. Please send one by one and take time between requests.",
     reachLimitation: "The request limit has been reached. <i>Please wait for a few minutes or use google instead</i>",
     unknownError: "<b>Unknown error occured.</b> Please report this to @dangou if it happens repeatedly.",
