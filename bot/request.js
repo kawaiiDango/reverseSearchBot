@@ -12,9 +12,28 @@ var reportToOwner = require("./reportToOwner.js");
 var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
 var idButtonName = SETTINGS.id_buttonName;
-var agents = {idx:1, list:[null, new socksProxyAgent(SETTINGS.private.socksProxyUrl)]};
+var proxy = {idx:0, agent:null};
 
-var myFetch = (url, editMsg, options) => {
+var changeProxy = () => {
+  var idx = (proxy.idx + 1) % SETTINGS.private.socksProxyUrls.length;
+  proxy.idx = idx;
+  var url = SETTINGS.private.socksProxyUrls[idx];
+
+  var params = {anonymityLevel: 1, protocol: "socks5",
+     maxCheckPeriod:300, cookies:true, get:true, }
+
+  fetch(urlbase.gimmeproxy + tools.json2query(params))
+    .then((res) => res.json()
+      .then(
+        (res) => {
+          url = res.protocol + "://" + res.ipPort;
+          proxy.agent = url ? new socksProxyAgent(url) : null;
+          console.log("proxy set to " + url);
+        }
+      ));
+};
+
+var myFetch = (url, editMsg, options) => {//changeProxy();
   var hit = cache.get(url);
 
   if (hit){
@@ -24,9 +43,9 @@ var myFetch = (url, editMsg, options) => {
 
   if (options == null)
     options = {};
-  options.agent = agents.list[agents.idx];
+  options.agent = proxy.agent;
   if (options.credentials == null) options.credentials = 'same-origin'
-  return fetch(url, options).then(function(res) {
+  return fetch(url, options).then((res) => {
     if (res.status >= 200 && res.status < 300) {
       var txt = res.text();
           cache.set(url, txt);
@@ -57,7 +76,7 @@ var getTineyeButtons = (bot, pic, page, shareId) =>
 module.exports = {
   fetchTineye: (url, editMsg) => {
     var params = {url: url, sort: 'size', order: 'desc'};
-    uurl = "https://tineye.com/search?" + tools.json2query(params);
+    uurl = urlbase.tinEye + tools.json2query(params);
     
     return myFetch(uurl, editMsg,
       {headers:
@@ -82,8 +101,7 @@ module.exports = {
       
       if (tmp.indexOf("/faq#search_limit")>-1){
         reportToOwner.reportLimitReached("tineye", bot);
-        agents.idx = (agents.idx + 1)% agents.list.length;
-        console.log("idx set to " + agents.idx);
+        changeProxy();
       } else 
         console.log("not found");
       return Promise.reject(new Error("not found"));
@@ -126,6 +144,9 @@ module.exports = {
   },
   errInFetch: err => {
     console.log("errInFetch");
+
+    if (err.name == "FetchError")
+      changeProxy();
     
     if (err.response) {
       // The request was made, but the server responded with a status code
