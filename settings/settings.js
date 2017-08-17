@@ -6,7 +6,7 @@ var settings = {
     sauceNao: "http://saucenao.com/search.php?",
     tinEye: "http://tineye.com/search?",
     gimmeproxy: "http://gimmeproxy.com/api/getProxy?",
-    mal: "http://myanimelist.net/anime.php?q=",
+    mal: "http://myanimelist.net/anime.php?",
     analUrl: "http://api.amplitude.com/httpapi?api_key=" + privateSettings.analKey,
     sauceNaoParams: {
       db: 999,

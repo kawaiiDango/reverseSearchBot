@@ -145,7 +145,7 @@ module.exports = {
   errInFetch: err => {
     console.log("errInFetch");
 
-    if (err.name == "FetchError")
+    if (err.name == "FetchError" || err.status != 200)
       changeProxy();
     reportToOwner.reportError(err, bot);
     if (err.response) {
@@ -161,9 +161,9 @@ module.exports = {
         return [MESSAGE.unknownError];
     } else {
       console.dir(err);
-      // Something happened in setting up the request that triggered an Error
+
       console.log('-----error', err.message);
-      return ["<b>Error:</b> " + err.name + " | " + err.message];
+      return ["<b>Error:</b> " + err.name ];
     }
     
   }

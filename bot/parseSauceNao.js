@@ -104,7 +104,7 @@ var parseSauceNao = function(response, bot, editMsg) {
             } else
               title = content._title;
 
-            links["MAL"] = urlbase.mal + title;
+            links["MAL"] = urlbase.mal + tools.json2query({q: title});
           }
       });
 
