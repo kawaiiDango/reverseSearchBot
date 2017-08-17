@@ -147,7 +147,7 @@ module.exports = {
 
     if (err.name == "FetchError")
       changeProxy();
-    
+    reportToOwner.reportError(err, bot);
     if (err.response) {
       // The request was made, but the server responded with a status code
       // that falls out of the range of 2xx
@@ -163,8 +163,8 @@ module.exports = {
       console.dir(err);
       // Something happened in setting up the request that triggered an Error
       console.log('-----error', err.message);
-      return ["<b>Error:</b> " + err.message];
+      return ["<b>Error:</b> " + err.name + " | " + err.message];
     }
-    reportToOwner.reportError(err, bot);
+    
   }
 };
