@@ -67,8 +67,8 @@ var settings = {
     reachLimitation: "The request limit has been reached. <i>Please wait for a few minutes or use google instead</i>",
     unknownError: "<b>Unknown error occured.</b> Please report this to @dangou if it happens repeatedly.",
     invalidFileId: "<i>Invalid file id</i>",
-    requestRating: "<a href=\"https://telegram.me/storebot?start=" + this.botName + "\">★ Rate this bot</a>",
-    keywordHelp: "Dont just click me like that. \n\nReply to a pic, a sticker, or an image file with /source or /sauce to find its source."
+    requestRating: "<a href=\"https://telegram.me/storebot?start=" + this.botName + "\">★ Rate this result</a>",
+    keywordHelp: "Dont just click me like that. \n\n PM me a pic, GIF, a sticker, or an image file\n\n If I'm in a group, reply with /source or /sauce to find its source."
   },
   moduleSwitch: {
     flooder: {on: true, notify: true}

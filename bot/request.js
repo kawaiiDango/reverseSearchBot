@@ -26,7 +26,7 @@ var changeProxy = () => {
     .then((res) => res.json()
       .then(
         (res) => {
-          url = res.protocol + "://" + res.ipPort;
+          url = (res.protocol || "socks5") + "://" + res.ipPort;
           proxy.agent = url ? new socksProxyAgent(url) : null;
           console.log("proxy set to " + url);
         }
