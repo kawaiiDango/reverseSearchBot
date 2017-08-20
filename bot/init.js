@@ -28,6 +28,12 @@ var bot = new TeleBot({
   pluginConfig: {
     flooder: flooderOpt,
     reporter: reportOpt,
+  },
+  webhook: {
+    url: SETTINGS.private.webhookEndpoint,
+    host: '127.0.0.1',
+    port: SETTINGS.private.webhookPort,
+    // maxConnections: 40 // Optional
   }
 });
 
