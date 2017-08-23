@@ -37,6 +37,7 @@ var bot = new TeleBot({
   }
 });
 
+reqs.setBot(bot);
 module.exports = () => {
   /* Switch on/off the modules according to preset in moduleSwitch above */
   /* On/off settings of modules are at settings/settings.js */
@@ -238,7 +239,7 @@ module.exports = () => {
     if (editMsg.site == "sn")
       reqs.fetchSauceNao(url, editMsg)
         .catch(reqs.errInFetch)
-        .then(res => reqs.parseSauceNao(res, bot, editMsg))
+        .then(res => reqs.parseSauceNao(res, editMsg))
         .catch(reqs.errInFetch)
         .then(msg => {
         if (msg && msg[0]){
@@ -248,7 +249,7 @@ module.exports = () => {
               var ent = editMsg.message.entities;
               bot.editMessageReplyMarkup(tools.getId(editMsg.message), 
                 {markup: bot.inlineKeyboard([
-                  reqs.getTineyeButtons(bot, ent[0].url, ent[1].url, editMsg.fileId)
+                  reqs.getTineyeButtons(ent[0].url, ent[1].url, editMsg.fileId)
                   ])}
                 );
               bot.answerCallbackQuery(editMsg.id, 
@@ -269,10 +270,10 @@ module.exports = () => {
     else 
       reqs.fetchTineye(url, editMsg)
         .catch(reqs.errInFetch)
-        .then(res => reqs.parseTineye(res, bot, editMsg))
+        .then(res => reqs.parseTineye(res, editMsg))
         .catch(err => {
           return reqs.fetchSauceNao(url, editMsg)
-            .then(res => reqs.parseSauceNao(res, bot, editMsg))
+            .then(res => reqs.parseSauceNao(res, editMsg))
         })
         .catch(reqs.errInFetch)
         .then(msg => {

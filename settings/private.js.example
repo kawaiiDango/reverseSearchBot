@@ -1,13 +1,18 @@
 var private = {
-	botToken: "tg bot token",
-	adminId: [""],
-	SNKey: "saucenao key",
-	analKey: "amplitude analytics key",
+    botToken: "tg bot token",
+    adminId: [""],
+    SNKey: "saucenao key",
+    analKey: "amplitude analytics key",
     botName: "tg bot username",
     proxyUrl: "proxy url prefix",
-    socksProxyUrl: "socks://url:port",
-	favouriteGroups: [
-    -0,
-  ]
+    webhookPort:443,
+    webhookEndpoint: "https://some.thing:8443",
+    socksProxyUrls: [
+        null, 
+        "socks://url:port"
+    ],
+    favouriteGroups: [
+        -0,
+    ]
 }
 module.exports = private;

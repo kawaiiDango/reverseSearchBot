@@ -6,7 +6,7 @@ const analytics = require('./analytics.js');
 var reportToOwner = require("./reportToOwner.js");
 const cheerio = require('cheerio');
 
-var parseSauceNao = function(response, bot, editMsg) {
+var parseSauceNao = (response, bot, editMsg) => {
   console.log("get saucenao completed ");
   const $ = cheerio.load(response);
   var found = false;

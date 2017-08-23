@@ -13,6 +13,7 @@ var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
 var idButtonName = SETTINGS.id_buttonName;
 var proxy = {idx:0, agent:null};
+var bot;
 
 var changeProxy = () => {
   var idx = (proxy.idx + 1) % SETTINGS.private.socksProxyUrls.length;
@@ -61,7 +62,7 @@ var myFetch = (url, editMsg, options) => {//changeProxy();
   })
 };
 
-var getTineyeButtons = (bot, pic, page, shareId) => 
+var getTineyeButtons = (pic, page, shareId) => 
   [
     bot.inlineButton(idButtonName.picLink, {
       url: pic
@@ -90,8 +91,11 @@ module.exports = {
     );
   },
   getTineyeButtons: getTineyeButtons,
-  parseSauceNao: parseSauceNao,
-  parseTineye: (res, bot, editMsg) => {
+  parseSauceNao: (response, editMsg) => parseSauceNao(response, bot, editMsg),
+  setBot: botp => {
+    bot = botp;
+  },
+  parseTineye: (res, editMsg) => {
     console.log("get tineye completed");
 
     var tmp = res;
@@ -123,7 +127,7 @@ module.exports = {
       var displayText = "Image source was found at: <a href=\"" + highResUrl + "\">" + imgName 
 		    + "</a> from <a href=\"" + page + "\">" + siteName + "</a>\n";
       var shareId = editMsg.fileId || editMsg.url;
-      var bList = getTineyeButtons(bot, highResUrl, page, shareId);
+      var bList = getTineyeButtons(highResUrl, page, shareId);
       if (!editMsg.inline_message_id)
         bList.splice(2, 0, bot.inlineButton(idButtonName.searchSauceNao, {
             callback: "sn|"+ editMsg.origFrom.id //+"|" + shareId
