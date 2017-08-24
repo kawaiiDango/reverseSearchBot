@@ -16,10 +16,10 @@ var proxy = {idx:0, agent:null};
 var bot;
 
 var changeProxy = () => {
-  var idx = (proxy.idx + 1) % SETTINGS.private.socksProxyUrls.length;
-  proxy.idx = idx;
-  var url = SETTINGS.private.socksProxyUrls[idx];
-
+  // var idx = (proxy.idx + 1) % SETTINGS.private.socksProxyUrls.length;
+  // proxy.idx = idx;
+  // var url = SETTINGS.private.socksProxyUrls[idx];
+  proxy.agent = null;
   var params = {anonymityLevel: 1, protocol: "socks5",
      maxCheckPeriod:300, cookies:true, get:true, }
 
@@ -37,7 +37,7 @@ var changeProxy = () => {
 var myFetch = (url, editMsg, options) => {//changeProxy();
   var hit = cache.get(url);
 
-  if (hit){
+  if (hit && editMsg && editMsg.origFrom){
     analytics.track(editMsg.origFrom, "cache_hit");
     return Promise.resolve(hit);
   }

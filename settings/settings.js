@@ -50,7 +50,7 @@ var settings = {
     bcy_id: "BCY",
     url: "",
 
-    share: "↗️Share",
+    share: "↗️Forward",
     loading: "🍝",
     pageLink: "📃Source",
     picLink: "🖼️High res",
