@@ -94,6 +94,7 @@ module.exports = {
   parseSauceNao: (response, editMsg) => parseSauceNao(response, bot, editMsg),
   setBot: botp => {
     bot = botp;
+    changeProxy();
   },
   parseTineye: (res, editMsg) => {
     console.log("get tineye completed");
