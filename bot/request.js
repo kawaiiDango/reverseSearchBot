@@ -24,17 +24,19 @@ var changeProxy = () => {
      maxCheckPeriod:300, cookies:true, get:true, }
 
   fetch(urlbase.gimmeproxy + tools.json2query(params))
-    .then((res) => res.json()
-      .then(
-        (res) => {
-          url = (res.protocol || "socks5") + "://" + res.ipPort;
-          proxy.agent = url ? new socksProxyAgent(url) : null;
-          console.log("proxy set to " + url);
-        }
-      ));
+    .then(res => res.json())
+    .then(res => {
+      if (res.ipPort){
+        url = (res.protocol || "socks5") + "://" + res.ipPort;
+        proxy.agent = url ? new socksProxyAgent(url) : null;
+        console.log("proxy set to " + url);
+      } else
+          console.dir(res);
+    }
+  );
 };
 
-var myFetch = (url, editMsg, options) => {//changeProxy();
+var myFetch = (url, editMsg, options) => {
   var hit = cache.get(url);
 
   if (hit && editMsg && editMsg.origFrom){

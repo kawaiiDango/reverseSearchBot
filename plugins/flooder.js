@@ -23,18 +23,15 @@ var userList = {};
 module.exports = {
     id: 'floodProtection',
     defaultConfig: {
-        interval: 1,
+        interval: 5,
         message: 'Too many messages, relax!',
-        numMsgs: 1
+        numMsgs: 10
     },
     plugin(bot, cfg) {
       // Load config data
-      var opt = cfg.flooder || {};
-      var interval = Number(opt.interval) || 1;
-      var numMsgs = Number(opt.numMsgs) || 1;
-      var text = opt.message === undefined ?
-        'Too many messages from you. Please, try later...' :
-          opt.message;
+      var interval = Number(cfg.interval) || 1;
+      var numMsgs = Number(cfg.numMsgs) || 1;
+      var text = cfg.message;
 
       // Create message modifier
       bot.mod('message', function(data) {
@@ -61,8 +58,7 @@ module.exports = {
                 bot.sendMessage(id, text, {notify: moduleSwitch.flooder.notify});
               user.flood = true;
             }
-            msg = {};
-            data.photo = undefined;
+            data.message = {};
           } else {
             user.flood = false;
           }
