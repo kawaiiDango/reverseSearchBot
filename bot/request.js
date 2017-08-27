@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
-var socksProxyAgent = require('socks-proxy-agent');
+const socksProxyAgent = require('socks-proxy-agent');
+const httpsProxyAgent = require('https-proxy-agent');
 var LRU = require("lru-cache");
 var cache = LRU({ max: 50, maxAge: 1000 * 60 * 60 * 24 });
 const cheerio = require('cheerio');
@@ -20,15 +21,18 @@ var changeProxy = () => {
   // proxy.idx = idx;
   // var url = SETTINGS.private.socksProxyUrls[idx];
   proxy.agent = null;
-  var params = {anonymityLevel: 1, protocol: "socks5",
-     maxCheckPeriod:300, cookies:true, get:true, }
-
-  fetch(urlbase.gimmeproxy + tools.json2query(params))
+  fetch(urlbase.proxyList + tools.json2query(urlbase.proxyListParams))
     .then(res => res.json())
     .then(res => {
-      if (res.ipPort){
-        url = (res.protocol || "socks5") + "://" + res.ipPort;
-        proxy.agent = url ? new socksProxyAgent(url) : null;
+      if (res.ip && res.port){
+        var protocol = res.protocol || res.type;
+        url = protocol + "://" +res.ip+ ":" + res.port;
+        if (protocol == 'http'){
+          proxy.agent = new httpsProxyAgent(url);
+        } else if (protocol.startsWith('socks')){
+          proxy.agent = new socksProxyAgent(url);
+        } //else stay null
+        
         console.log("proxy set to " + url);
       } else
           console.dir(res);
@@ -152,8 +156,8 @@ module.exports = {
   errInFetch: err => {
     console.log("errInFetch");
 
-    if (err.name == "FetchError" || err.status != 200)
-      changeProxy();
+    // if (err.name == "FetchError" || err.status != 200)
+    //   changeProxy();
     reportToOwner.reportError(err, bot);
     if (err.response) {
       // The request was made, but the server responded with a status code

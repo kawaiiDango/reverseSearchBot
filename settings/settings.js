@@ -5,7 +5,17 @@ var settings = {
   url: {
     sauceNao: "http://saucenao.com/search.php?",
     tinEye: "http://tineye.com/search?",
-    gimmeproxy: "http://gimmeproxy.com/api/getProxy?",
+    proxyList: "http://lights.maare.ga:8883/proxy/https://gimmeproxy.com/api/getProxy?",
+    proxyListParams: {
+      anonymityLevel: 1,
+      minSpeed: 50,
+      // protocol:"socks5",
+      // type:"socks5",
+      maxCheckPeriod:300,
+      cookies:true,
+      get:true,
+      // level: "elite",
+    },
     mal: "http://myanimelist.net/anime.php?",
     analUrl: "http://api.amplitude.com/httpapi?api_key=" + privateSettings.analKey,
     sauceNaoParams: {
