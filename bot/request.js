@@ -156,8 +156,8 @@ module.exports = {
   errInFetch: err => {
     console.log("errInFetch");
 
-    // if (err.name == "FetchError" || err.status != 200)
-    //   changeProxy();
+    if (err.name == "FetchError" || err.status != 200)
+      changeProxy();
     reportToOwner.reportError(err, bot);
     if (err.response) {
       // The request was made, but the server responded with a status code
