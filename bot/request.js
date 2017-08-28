@@ -13,14 +13,15 @@ var reportToOwner = require("./reportToOwner.js");
 var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
 var idButtonName = SETTINGS.id_buttonName;
-var proxy = {idx:0, agent:null};
+var proxy = {lock:false, agent:null};
 var bot;
 
 var changeProxy = () => {
-  // var idx = (proxy.idx + 1) % SETTINGS.private.socksProxyUrls.length;
-  // proxy.idx = idx;
-  // var url = SETTINGS.private.socksProxyUrls[idx];
+  if (proxy.lock)
+    return;
+  // var url = SETTINGS.private.socksProxyUrls[1];
   proxy.agent = null;
+  proxy.lock = true;
   fetch(urlbase.proxyList + tools.json2query(urlbase.proxyListParams))
     .then(res => res.json())
     .then(res => {
@@ -32,10 +33,10 @@ var changeProxy = () => {
         } else if (protocol.startsWith('socks')){
           proxy.agent = new socksProxyAgent(url);
         } //else stay null
-        
         console.log("proxy set to " + url);
       } else
-          console.dir(res);
+        console.dir(res);
+      proxy.lock = false;
     }
   );
 };
