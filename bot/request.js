@@ -22,9 +22,11 @@ var changeProxy = () => {
   if (now - proxy.lastReqTime < 10*60*1000)
    //allow only one proxy req within x mins
     return;
-  var url = SETTINGS.private.socksProxyUrls[1];
+  var url = SETTINGS.private.socksProxyUrls[0];
   if (url)
     proxy.agent = new socksProxyAgent(url);
+  else
+    proxy.agent = null;
   proxy.lastReqTime = now;
 /*
   const gettingProxies = proxyLists.getProxies(urlbase.proxyListParams);
