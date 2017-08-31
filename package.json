@@ -19,6 +19,7 @@
     "https-proxy-agent": "^2.1.0",
     "lru-cache": "^4.1.1",
     "node-fetch": "^1.7.1",
+    "proxy-lists": "^1.14.1",
     "socks-proxy-agent": "^3.0.0",
     "telebot": "^1.2.3"
   }

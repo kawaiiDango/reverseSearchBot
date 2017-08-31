@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const socksProxyAgent = require('socks-proxy-agent');
 const httpsProxyAgent = require('https-proxy-agent');
+// var proxyLists = require('proxy-lists');
 var LRU = require("lru-cache");
 var cache = LRU({ max: 50, maxAge: 1000 * 60 * 60 * 24 });
 const cheerio = require('cheerio');
@@ -13,16 +14,40 @@ var reportToOwner = require("./reportToOwner.js");
 var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
 var idButtonName = SETTINGS.id_buttonName;
-var proxy = {lock:false, agent:null};
+var proxy = {lastReqTime:0, agent:null};
 var bot;
 
 var changeProxy = () => {
-  if (proxy.lock)
+  const now = (new Date).getTime();
+  if (now - proxy.lastReqTime < 10*60*1000)
+   //allow only one proxy req within x mins
     return;
-  // var url = SETTINGS.private.socksProxyUrls[1];
-  proxy.agent = null;
-  proxy.lock = true;
-  fetch(urlbase.proxyList + tools.json2query(urlbase.proxyListParams))
+  var url = SETTINGS.private.socksProxyUrls[1];
+  if (url)
+    proxy.agent = new socksProxyAgent(url);
+  proxy.lastReqTime = now;
+/*
+  const gettingProxies = proxyLists.getProxies(urlbase.proxyListParams);
+
+  gettingProxies.on('data', function(proxies) {
+    if (proxies && proxies.length && proxy.agent == null){
+      
+      const res = proxies[0];
+      console.dir(res);
+      const protocol = res.protocols[0];
+      const url = protocol + "://" +res.ipAddress+ ":" + res.port;
+      if (protocol == 'http'){
+        proxy.agent = new httpsProxyAgent(url);
+      } else if (protocol.startsWith('socks')){
+        proxy.agent = new socksProxyAgent(url);
+      } //else stay null
+      console.log("proxy set to " + url);
+    }
+    
+  });
+*/
+  console.log(urlbase.proxyList + tools.json2query(urlbase.proxyListParams));
+  fetch(urlbase.proxyList+ tools.json2query(urlbase.proxyListParams))
     .then(res => res.json())
     .then(res => {
       if (res.ip && res.port){
@@ -36,7 +61,6 @@ var changeProxy = () => {
         console.log("proxy set to " + url);
       } else
         console.dir(res);
-      proxy.lock = false;
     }
   );
 };

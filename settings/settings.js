@@ -5,10 +5,10 @@ var settings = {
   url: {
     sauceNao: "http://saucenao.com/search.php?",
     tinEye: "http://tineye.com/search?",
-    proxyList: "http://lights.maare.ga:8883/proxy/https://gimmeproxy.com/api/getProxy?",
+    proxyList: "https://gimmeproxy.com/api/getProxy?",
     proxyListParams: {
       anonymityLevel: 1,
-      minSpeed: 50,
+      minSpeed: 10,
       // protocol:"socks5",
       // type:"socks5",
       maxCheckPeriod:300,
