@@ -48,7 +48,6 @@ var changeProxy = () => {
     
   });
 */
-  console.log(urlbase.proxyList + tools.json2query(urlbase.proxyListParams));
   fetch(urlbase.proxyList+ tools.json2query(urlbase.proxyListParams))
     .then(res => res.json())
     .then(res => {
