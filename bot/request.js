@@ -14,7 +14,7 @@ var reportToOwner = require("./reportToOwner.js");
 var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
 var idButtonName = SETTINGS.id_buttonName;
-var proxy = {lastReqTime:0, agent:null};
+var proxy = {idx:0, lastReqTime:0, agent:null};
 var bot;
 
 var changeProxy = () => {
@@ -22,7 +22,8 @@ var changeProxy = () => {
   if (now - proxy.lastReqTime < 10*60*1000)
    //allow only one proxy req within x mins
     return;
-  var url = SETTINGS.private.socksProxyUrls[0];
+  proxy.idx = (proxy.idx + 1 ) % SETTINGS.private.socksProxyUrls.length;
+  var url = SETTINGS.private.socksProxyUrls[proxy.idx];
   if (url)
     proxy.agent = new socksProxyAgent(url);
   else

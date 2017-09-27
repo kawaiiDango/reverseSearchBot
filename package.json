@@ -13,14 +13,14 @@
   "repository": "kawaiiDango/reverseSearchBot",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.17.2",
+    "body-parser": "^1.18.2",
     "cheerio": "^1.0.0-rc.2",
-    "express": "^4.15.3",
+    "express": "^4.15.5",
     "https-proxy-agent": "^2.1.0",
     "lru-cache": "^4.1.1",
-    "node-fetch": "^1.7.1",
+    "node-fetch": "^1.7.3",
     "proxy-lists": "^1.14.1",
-    "socks-proxy-agent": "^3.0.0",
+    "socks-proxy-agent": "^3.0.1",
     "telebot": "^1.2.3"
   }
 }
