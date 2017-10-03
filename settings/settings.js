@@ -64,7 +64,7 @@ var settings = {
     loading: "🍝",
     pageLink: "📃Source",
     picLink: "🖼️High res",
-    searchSauceNao: "🔍ArtSearch",
+    searchSauceNao: "🎨🔍ArtSearch",
   },
   msg: {
     invalidUrl: "That doesn't look like a photo or a URL.",
