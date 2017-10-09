@@ -24,8 +24,12 @@ var changeProxy = () => {
     return;
   proxy.idx = (proxy.idx + 1 ) % SETTINGS.private.socksProxyUrls.length;
   var url = SETTINGS.private.socksProxyUrls[proxy.idx];
-  if (url)
-    proxy.agent = new socksProxyAgent(url);
+  if (url){
+    if (url.startsWith('http'))
+      proxy.agent = new httpsProxyAgent(url);
+    else if (url.startsWith('socks'))
+      proxy.agent = new socksProxyAgent(url);
+  }
   else
     proxy.agent = null;
   proxy.lastReqTime = now;
