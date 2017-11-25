@@ -200,12 +200,12 @@ module.exports = {
         reportToOwner.reportLimitReached("sauceNao", bot);
         return [tools.getGoogleSearch(MESSAGE.reachLimitation, err.url)];
       } else
-        return [MESSAGE.unknownError];
+        return ["<b>Error:</b> " + err.name +" \n\nPlease try again after some time..."];
     } else {
       console.dir(err);
 
       console.log('-----error', err.message);
-      return ["<b>Error:</b> " + err.name ];
+      return ["<b>Error:</b> " + err.name +" \n\nPlease try again after some time..."];
     }
     
   }
