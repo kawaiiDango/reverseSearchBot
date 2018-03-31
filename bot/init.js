@@ -149,6 +149,8 @@ module.exports = () => {
       if(splits[0] == "sn"){
         msg.origFrom = msg.from;
         var rm = msg.message.reply_to_message;
+        if (!rm)
+          return;
         if(rm.photo && rm.photo.length >0)
           msg.fileId = rm.photo[rm.photo.length-1].file_id;
         else if (rm.sticker)
@@ -205,7 +207,7 @@ module.exports = () => {
       ]]);
       bot.sendMessage(msg.chat.id, MESSAGE.loading, {reply: msg.message_id, markup: loadingKb, parse: "HTML"})
       .then(res => {
-        getSauce(msg, res.result);
+        getSauce(msg, res);
       });
     }
   };
@@ -229,7 +231,8 @@ module.exports = () => {
         })
         .catch( err => {
           console.dir(err);
-          bot.editText(tools.getId(editMsg), MESSAGE.invalidFileId, {parse: "HTML"});
+          bot.editText(tools.getId(editMsg), MESSAGE.invalidFileId, {parse: "HTML"})
+            .catch(reqs.errInFetch);
         });
     }
   };
@@ -263,7 +266,7 @@ module.exports = () => {
           msg[2] = msg[2] || false;
           bot.editText(tools.getId(editMsg.message || editMsg), msg[0] + getRateText(editMsg, msg[1])
             , {parse: "HTML", markup: msg[1], webPreview: msg[2]})
-            .catch(reqs.errInFetch);;
+            .catch(reqs.errInFetch);
         }
       })
       .catch(reqs.errInFetch);

@@ -37,7 +37,7 @@ jspm_packages
 .node_repl_history
 
 # private
-settings/private.js
+# settings/private.js
 phpProxy
 
 # trash

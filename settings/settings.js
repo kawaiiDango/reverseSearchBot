@@ -4,7 +4,7 @@ var settings = {
   botName : "reverseSearchBot",
   url: {
     sauceNao: "http://saucenao.com/search.php?",
-    tinEye: "http://tineye.com/search?",
+    tinEye: "https://tineye.com/search?",
     proxyList: "https://gimmeproxy.com/api/getProxy?",
     proxyListParams: {
       anonymityLevel: 1,

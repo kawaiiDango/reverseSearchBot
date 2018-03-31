@@ -154,7 +154,7 @@ module.exports = {
     return new Promise ( (resolve, reject) => {
       const $ =cheerio.load(tmp);
 
-      var siteName = $("h4").text(), 
+      var siteName = $("h4").text().trim(), 
         imgName = $("p > a").first().text(),
         highResUrl = $("p > a").attr('href'), 
         page = $("p > span").next().attr('href');
