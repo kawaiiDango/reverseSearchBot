@@ -4,7 +4,7 @@ var private = {
     SNKey: "saucenao key",
     analKey: "amplitude analytics key",
     botName: "tg bot username",
-    proxyUrl: "proxy url prefix",
+    tokenHiderUrl: "phpTokenHiderExample url prefix",
     webhookPort:443,
     webhookEndpoint: "https://some.thing:8443",
     socksProxyUrls: [
@@ -12,7 +12,7 @@ var private = {
         "socks://url:port"
     ],
     favouriteGroups: [
-        -0,
+        -0
     ]
 }
 module.exports = private;

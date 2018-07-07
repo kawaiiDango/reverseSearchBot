@@ -53,11 +53,11 @@ module.exports = {
   getGoogleSearch: (text, url) => {
     var idx = url.indexOf('bot');
     idx = url.indexOf('/', idx) +1;
-    var proxyUrl = require("../settings/private.js").proxyUrl;
-    proxyUrl += url.substr(idx);
+    var tokenHiderUrl = require("../settings/private.js").tokenHiderUrl;
+    tokenHiderUrl += url.substr(idx);
     return text.replace("google", 
       "</i><a href=\"https://www.google.com/searchbyimage?image_url=" + 
-      proxyUrl + "\">Google Reverse Search</a><i>");
+      tokenHiderUrl + "\">Google Reverse Search</a><i>");
   },
   buttonsGridify: (bList) => {
     var buttons = [[]];
