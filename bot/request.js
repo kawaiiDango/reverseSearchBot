@@ -14,7 +14,8 @@ var reportToOwner = require("./reportToOwner.js");
 var tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
 var idButtonName = SETTINGS.id_buttonName;
-var proxy = {idx:0, lastReqTime:0, agent:null};
+var proxy = {idx:0, lastReqTime:0, agent:null, 
+  torAgent: new socksProxyAgent("socks5://127.0.0.1:9100")};
 var bot;
 
 var changeProxy = () => {
@@ -53,7 +54,10 @@ var changeProxy = () => {
     
   });
 */
-  fetch(urlbase.proxyList+ tools.json2query(urlbase.proxyListParams))
+  var options = {};
+  options.agent = proxy.torAgent;
+
+  fetch(urlbase.proxyList+ tools.json2query(urlbase.proxyListParams), options)
     .then(res => res.json())
     .then(res => {
       if (res.ip && res.port){
@@ -81,8 +85,11 @@ var myFetch = (url, editMsg, options) => {
 
   if (options == null)
     options = {};
-  options.agent = proxy.agent;
-  if (options.credentials == null) options.credentials = 'same-origin'
+  if (url.indexOf("saucenao") > -1) //saucenao always goes through tor
+    options.agent = proxy.torAgent;
+  else
+    options.agent = proxy.agent;
+
   return fetch(url, options).then((res) => {
     if (res.status >= 200 && res.status < 300) {
       var txt = res.text();
@@ -146,7 +153,7 @@ module.exports = {
         changeProxy();
       } else 
         console.log("not found");
-      return Promise.reject(new Error("not found"));
+      return Promise.reject(new Error(MESSAGE.zeroResult));
     }
     //TODO: if URL, load/head it, check if mime=pic types, say invalid url if not.
     tmp = tmp.substring( start, tmp.indexOf('</div>', start)+6);
@@ -166,7 +173,7 @@ module.exports = {
 		    + "</a> from <a href=\"" + page + "\">" + siteName + "</a>\n";
       var shareId = editMsg.fileId || editMsg.url;
       var bList = getTineyeButtons(highResUrl, page, shareId);
-      if (!editMsg.inline_message_id)
+      if (!editMsg.inline_message_id && editMsg.searched != 'sn')
         bList.splice(2, 0, bot.inlineButton(idButtonName.searchSauceNao, {
             callback: "sn|"+ editMsg.origFrom.id //+"|" + shareId
           }));

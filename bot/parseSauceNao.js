@@ -113,7 +113,7 @@ var parseSauceNao = (response, bot, editMsg) => {
 
   if (!found){
     analytics.track(editMsg.origFrom, "sauce_not_found", {url: editMsg.url});
-    return [tools.getGoogleSearch(MESSAGE.zeroResult, editMsg.url)];
+    return Promise.reject(new Error(MESSAGE.zeroResult));
   }
 
   displayText = "<b>" + content._title + "</b>"+ '\n' ;

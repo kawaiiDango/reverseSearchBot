@@ -245,7 +245,12 @@ module.exports = () => {
       reqs.fetchSauceNao(url, editMsg)
         .catch(reqs.errInFetch)
         .then(res => reqs.parseSauceNao(res, editMsg))
-        .catch(reqs.errInFetch)
+        .catch(err => {
+          if(err.message == MESSAGE.zeroResult)
+            return [tools.getGoogleSearch(MESSAGE.zeroResult, editMsg.url)];
+          else
+            return reqs.errInFetch(err);
+        })
         .then(msg => {
         if (msg && msg[0]){
           
@@ -272,15 +277,21 @@ module.exports = () => {
         }
       })
       .catch(reqs.errInFetch);
-    else 
-      reqs.fetchTineye(url, editMsg)
+    else
+      reqs.fetchSauceNao(url, editMsg) //SN first
         .catch(reqs.errInFetch)
-        .then(res => reqs.parseTineye(res, editMsg))
+        .then(res => reqs.parseSauceNao(res, editMsg))
         .catch(err => {
-          return reqs.fetchSauceNao(url, editMsg)
-            .then(res => reqs.parseSauceNao(res, editMsg))
+          editMsg.searched = 'sn';
+          return reqs.fetchTineye(url, editMsg)
+            .then(res => reqs.parseTineye(res, editMsg))
         })
-        .catch(reqs.errInFetch)
+        .catch(err => {
+          if(err.message == MESSAGE.zeroResult)
+            return [tools.getGoogleSearch(MESSAGE.zeroResult, editMsg.url)];
+          else
+            return reqs.errInFetch(err);
+        })
         .then(msg => {
           if (msg && msg[0]){
             msg[2] = msg[2] || false;
@@ -289,7 +300,32 @@ module.exports = () => {
               .catch(reqs.errInFetch);
           }
         })
-      .catch(reqs.errInFetch)
+      .catch(reqs.errInFetch);
+/*
+      reqs.fetchTineye(url, editMsg) //TE first
+        .catch(reqs.errInFetch)
+        .then(res => reqs.parseTineye(res, editMsg))
+        .catch(err => {
+          editMsg.searched = 'te';
+          return reqs.fetchSauceNao(url, editMsg)
+            .then(res => reqs.parseSauceNao(res, editMsg))
+        })
+        .catch(err => {
+          if(err.message == MESSAGE.zeroResult)
+            return [tools.getGoogleSearch(MESSAGE.zeroResult, editMsg.url)];
+          else
+            return reqs.errInFetch(err);
+        })
+        .then(msg => {
+          if (msg && msg[0]){
+            msg[2] = msg[2] || false;
+            bot.editText(tools.getId(editMsg), msg[0] + getRateText(editMsg, msg[1])
+              , {parse: "HTML", markup: msg[1], webPreview: msg[2]})
+              .catch(reqs.errInFetch);
+          }
+        })
+      .catch(reqs.errInFetch);
+      */
   };
 
   var getRateText = (editMsg, markupPresent) => {                   
