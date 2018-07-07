@@ -4,7 +4,9 @@
   "description": "Reverse Image Search bot for Telegram. Check settings/private.js for the api keys and tokens required.",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "pm2 start server.js",
+    "stop": "pm2 stop server.js"
   },
   "author": "kawaiiDango",
   "bugs": {
