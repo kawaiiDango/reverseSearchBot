@@ -67,7 +67,7 @@ module.exports = () => {
     } else if (msg.text) {
       if (KEYWORDS.indexOf(msg.text.toLowerCase().split(/[@ ]/)[0]) > -1){
         var rmsg = msg.reply_to_message;
-        if (rmsg && (rmsg.photo || rmsg.document || rmsg.sticker)){
+        if (rmsg && (rmsg.photo || rmsg.document || rmsg.sticker || rmsg.video)){
           getSauceInit(rmsg);
           analytics.track(msg.from, "sauce_keyword", {text:msg.text});
         }
@@ -84,7 +84,7 @@ module.exports = () => {
           //bot.sendMessage(chat_id, MESSAGE.invalidUrl, {reply: reply, parse: "HTML"});
         }
       }
-    } else if (msg.chat.type == "private" && (msg.photo || msg.document || msg.sticker)){
+    } else if (msg.chat.type == "private" && (msg.photo || msg.document || msg.sticker || msg.video)){
         getSauceInit(msg);
     } else if (SETTINGS.private.favouriteGroups.indexOf(chat_id)>-1  && (msg.photo)) {
         getSauceInit(msg);
@@ -196,8 +196,10 @@ module.exports = () => {
           msg.fileId = msg.document.thumb.file_id;
           analytics.track(msg.from, "query", {type: "video"});
         }
-      }
-      else
+      } else if (msg.video){
+        msg.fileId = msg.video.thumb.file_id;
+        analytics.track(msg.from, "query", {type: "video"});
+      } else
 	      return;
 
       var loadingKb = bot.inlineKeyboard([[
