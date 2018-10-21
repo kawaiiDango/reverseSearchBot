@@ -1,30 +1,34 @@
+"use strict";
+
 const fetch = require('node-fetch');
 const socksProxyAgent = require('socks-proxy-agent');
 const httpsProxyAgent = require('https-proxy-agent');
-// var proxyLists = require('proxy-lists');
-var LRU = require("lru-cache");
-var cache = LRU({ max: 50, maxAge: 1000 * 60 * 60 * 24 });
+// const proxyLists = require('proxy-lists');
+const LRU = require("lru-cache");
+const cache = LRU({ max: 200, maxAge: 1000 * 60 * 60 * 24 });
 const cheerio = require('cheerio');
 
-var SETTINGS = require("../settings/settings.js");
-var urlbase = SETTINGS.url;
-var MESSAGE = SETTINGS.msg;
-var parseSauceNao = require("./parseSauceNao.js");
-var reportToOwner = require("./reportToOwner.js");
-var tools = require("../tools/tools.js");
+const Markup = require('telegraf/markup');
+const Extra = require('telegraf/extra');
+const SETTINGS = require("../settings/settings.js");
+const urlbase = SETTINGS.url;
+const MESSAGE = SETTINGS.msg;
+const parseSauceNao = require("./parseSauceNao.js");
+const reportToOwner = require("./reportToOwner.js");
+const tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
-var idButtonName = SETTINGS.id_buttonName;
-var proxy = {idx:0, lastReqTime:0, agent:null, 
+const idButtonName = SETTINGS.id_buttonName;
+let proxy = {idx:0, lastReqTime:0, agent:null, 
   torAgent: new socksProxyAgent("socks5://127.0.0.1:9100")};
-var bot;
+let bot;
 
-var changeProxy = () => {
+const changeProxy = () => {
   const now = (new Date).getTime();
-  if (now - proxy.lastReqTime < 10*60*1000)
+  if (now - proxy.lastReqTime < 30*1000)
    //allow only one proxy req within x mins
     return;
   proxy.idx = (proxy.idx + 1 ) % SETTINGS.private.socksProxyUrls.length;
-  var url = SETTINGS.private.socksProxyUrls[proxy.idx];
+  let url = SETTINGS.private.socksProxyUrls[proxy.idx];
   if (url){
     if (url.startsWith('http'))
       proxy.agent = new httpsProxyAgent(url);
@@ -54,14 +58,14 @@ var changeProxy = () => {
     
   });
 */
-  var options = {};
+  const options = {};
   options.agent = proxy.torAgent;
 
   fetch(urlbase.proxyList+ tools.json2query(urlbase.proxyListParams), options)
     .then(res => res.json())
     .then(res => {
       if (res.ip && res.port){
-        var protocol = res.protocol || res.type;
+        const protocol = res.protocol || res.type;
         url = protocol + "://" +res.ip+ ":" + res.port;
         if (protocol == 'http'){
           proxy.agent = new httpsProxyAgent(url);
@@ -75,8 +79,8 @@ var changeProxy = () => {
   );
 };
 
-var myFetch = (url, editMsg, options) => {
-  var hit = cache.get(url);
+const myFetch = (url, editMsg, options) => {
+  const hit = cache.get(url);
 
   if (hit && editMsg && editMsg.origFrom){
     analytics.track(editMsg.origFrom, "cache_hit");
@@ -92,12 +96,12 @@ var myFetch = (url, editMsg, options) => {
 
   return fetch(url, options).then((res) => {
     if (res.status >= 200 && res.status < 300) {
-      var txt = res.text();
+      const txt = res.text();
           cache.set(url, txt);
           return txt;
       // return Promise.resolve(txt)
     } else {
-      var error = new Error(res.statusText || res.status);
+      const error = new Error(res.statusText || res.status);
       error.response = res;
       if (options.params && options.params.url)
         error.url = options.params.url;
@@ -106,22 +110,16 @@ var myFetch = (url, editMsg, options) => {
   })
 };
 
-var getTineyeButtons = (pic, page, shareId) => 
+const getTineyeButtons = (pic, page, shareId) => 
   [
-    bot.inlineButton(idButtonName.picLink, {
-      url: pic
-    }),
-    bot.inlineButton(idButtonName.pageLink, {
-      url: page
-    }),
-    bot.inlineButton(idButtonName.share, {
-      inline: "te|" + shareId
-    })
+    Markup.urlButton(idButtonName.picLink, pic),
+    Markup.urlButton(idButtonName.pageLink, page),
+    Markup.switchToChatButton (idButtonName.share, "te|" + shareId)
   ];
 module.exports = {
   fetchTineye: (url, editMsg) => {
-    var params = {url: url, sort: 'size', order: 'desc'};
-    uurl = urlbase.tinEye + tools.json2query(params);
+    const params = {url: url, sort: 'size', order: 'desc'};
+    const uurl = urlbase.tinEye + tools.json2query(params);
     
     return myFetch(uurl, editMsg,
       {headers:
@@ -143,8 +141,8 @@ module.exports = {
   parseTineye: (res, editMsg) => {
     console.log("get tineye completed");
 
-    var tmp = res;
-    var start = tmp.indexOf('match-row"');
+    let tmp = res;
+    let start = tmp.indexOf('match-row"');
     start = tmp.indexOf('<div class="match"', start);
     if (start == -1){
       
@@ -161,7 +159,7 @@ module.exports = {
     return new Promise ( (resolve, reject) => {
       const $ =cheerio.load(tmp);
 
-      var siteName = $("h4").text().trim(), 
+      let siteName = $("h4").text().trim(), 
         imgName = $("p > a").first().text(),
         highResUrl = $("p > a").attr('href'), 
         page = $("p > span").next().attr('href');
@@ -169,25 +167,23 @@ module.exports = {
       //"collections"
       if (!page)
         page = highResUrl;
-      var displayText = "Image source was found at: <a href=\"" + highResUrl + "\">" + imgName 
+      const displayText = "Image source was found at: <a href=\"" + highResUrl + "\">" + imgName 
 		    + "</a> from <a href=\"" + page + "\">" + siteName + "</a>\n";
-      var shareId = editMsg.fileId || editMsg.url;
-      var bList = getTineyeButtons(highResUrl, page, shareId);
+      const shareId = editMsg.fileId || editMsg.url;
+      const bList = getTineyeButtons(highResUrl, page, shareId);
       if (!editMsg.inline_message_id && editMsg.searched != 'sn')
-        bList.splice(2, 0, bot.inlineButton(idButtonName.searchSauceNao, {
-            callback: "sn|"+ editMsg.origFrom.id //+"|" + shareId
-          }));
-      var markup = bot.inlineKeyboard(tools.buttonsGridify(bList));
+        bList.splice(2, 0, Markup.callbackButton (idButtonName.searchSauceNao, "sn|"+ editMsg.origFrom.id));
+      const markup = Markup.inlineKeyboard(tools.buttonsGridify(bList));
 
       analytics.track(editMsg.origFrom, "sauce_found_tineye");
       resolve([displayText, markup]);
     });
   },
   fetchSauceNao: (url, editMsg) => {
-    var params = urlbase.sauceNaoParams;
+    const params = urlbase.sauceNaoParams;
     params.url = url;
     // params.api_key = SETTINGS.private.SNKey;
-    uurl = urlbase.sauceNao + tools.json2query(params);
+    const uurl = urlbase.sauceNao + tools.json2query(params);
     
     return myFetch(uurl, editMsg, { params: params });
   },

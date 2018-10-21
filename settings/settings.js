@@ -1,6 +1,8 @@
-var privateSettings = require("./private.js");
+"use strict";
 
-var settings = {
+const privateSettings = require("./private.js");
+
+let settings = {
   botName : "reverseSearchBot",
   url: {
     sauceNao: "http://saucenao.com/search.php?",
@@ -23,7 +25,7 @@ var settings = {
       // output_type: 2,
       testmode: 1,
       numres: 5,
-      minSimilarity: 56,
+      minSimilarity: 60,
       tolerance: 7
     },
     pixiv_id: "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=",
@@ -71,17 +73,14 @@ var settings = {
     invalidForm: "That type of message is not supported yet.",
     loading: "<i>Pouring some sauce on it...</i>",
     zeroResult: "No sauce found. <i>Maybe try google instead?</i>",
-    help: "Send me an image, a sticker, an image file or a GIF to find its source Right Nao."+
-          "\n\n<i>Tip: Click the 🔍ArtSearch button if it is an artwork or cosplay, for character, show episode and artist identification.</i>",
-    tooManyRequests: "Too many requests. Please send one by one and take time between requests.",
+    help: "Send me an image, a sticker, an image file or a GIF to find its source Right Nao.\n\n"+
+          // "\n\n<i>Tip: Click the 🔍ArtSearch button if it is an artwork or cosplay, for character, show episode and artist identification.</i>"+
+          "<i>If I'm in a group, reply to a media with /sauce or /source (note the slash)</i>",
     reachLimitation: "The request limit has been reached. <i>Please wait for a few minutes or use google instead</i>",
     unknownError: "<b>Unknown error occured.</b> Please report this to @dangou if it happens repeatedly.",
     invalidFileId: "<i>Invalid file id</i>",
     requestRating: "<a href=\"https://telegram.me/storebot?start=reverseSearchBot\">★ Rate this result</a>",
     keywordHelp: "Dont just click me like that. \n\n PM me a pic, GIF, a sticker, or an image file\n\n If I'm in a group, reply with /source or /sauce to find its source."
-  },
-  moduleSwitch: {
-    flooder: {on: true, notify: true}
   },
   reporter: {
     events: [
@@ -89,22 +88,23 @@ var settings = {
     ],  
     to: privateSettings.adminId
   },
-  flooder: {
-    message_: "DO NOT EDIT IN THIS PROPERTY. GOTO settings.msg.tooManyRequests",
-    interval: 5,
-    numMsgs: 20
+  floodProtect: {
+    message: "aaaaah, slow down...",
+    interval: 10,
+    msgLimit: 4
   },
   reportToOwnerSwitch: {
     reportLimitsOfSaucenao: {on: true, notify: true},
     reportError: {on: true, notify: true},
     reportFile: {on: false, notify: false}
   },
-  keywords: ["sauce", "/sauce", "#sauce", "source", "/source", "#source", "what?"],
+  keywords: /^(sauce|source|what\?)$/i,
+  commands: ['sauce', 'source', 'sauce@reverseSearchBot', 'source@reverseSearchBot'],
+  // keywords: ['sauce', 'source', 'what?'],
   private: privateSettings,
   userAgents: [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12",
   ]
 };
 
-settings.flooder.msg = settings.msg.tooManyRequests;
 module.exports = settings;

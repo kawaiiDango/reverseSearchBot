@@ -5,8 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "pm2 start server.js",
-    "stop": "pm2 stop server.js"
+    "start": "pm2 start sauceBot.js",
+    "stop": "pm2 stop sauceBot.js"
   },
   "author": "kawaiiDango",
   "bugs": {
@@ -17,11 +17,11 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "cheerio": "^1.0.0-rc.2",
-    "express": "^4.16.3",
+    "express": "^4.16.4",
     "https-proxy-agent": "^2.2.1",
     "lru-cache": "^4.1.3",
-    "node-fetch": "^2.1.2",
+    "node-fetch": "^2.2.0",
     "socks-proxy-agent": "^4.0.1",
-    "telebot": "^1.2.6"
+    "telegraf": "^3.24.1"
   }
 }

@@ -3,6 +3,6 @@ process.on('unhandledRejection', e => {
     console.dir(e);
 });
 
-var botInit = require("./bot/init.js");
+const botInit = require("./bot/init.js");
 
 botInit();

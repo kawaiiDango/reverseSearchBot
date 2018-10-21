@@ -1,28 +1,30 @@
-var urlbase = require("../settings/settings.js").url;
-var MESSAGE = require("../settings/settings.js").msg;
-var idButtonName = require("../settings/settings.js").id_buttonName;
-var tools = require("../tools/tools.js");
+"use strict";
+
+const Markup = require('telegraf/markup');
+const urlbase = require("../settings/settings.js").url;
+const MESSAGE = require("../settings/settings.js").msg;
+const idButtonName = require("../settings/settings.js").id_buttonName;
+const tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
-var reportToOwner = require("./reportToOwner.js");
+const reportToOwner = require("./reportToOwner.js");
 const cheerio = require('cheerio');
 
-var parseSauceNao = (response, bot, editMsg) => {
+const parseSauceNao = (response, bot, editMsg) => {
   console.log("get saucenao completed ");
   const $ = cheerio.load(response);
-  var found = false;
-  var from_id = editMsg.from.id;
-  var shareId = editMsg.fileId || editMsg.url;
-  var preview = false;
-  var bList = [];
+  let found = false;
+  const shareId = editMsg.fileId || editMsg.url;
+  const preview = false;
+  const bList = [];
 
-  var results = [];
-  var links = {};
-  var content = {_title:'', _text:''};
-  var displayText = "";
+  const results = [];
+  const links = {};
+  const content = {_title:'', _text:''};
+  let displayText = "";
 
   $(".resulttablecontent").each(
     (i, elem) => {
-      percent = parseFloat($(elem).find(".resultsimilarityinfo").text());
+      const percent = parseFloat($(elem).find(".resultsimilarityinfo").text());
       if (results.length && Math.abs(results[0].percent - percent) > urlbase.sauceNaoParams.tolerance)
         return;
       if(percent < urlbase.sauceNaoParams.minSimilarity)
@@ -32,6 +34,7 @@ var parseSauceNao = (response, bot, editMsg) => {
       
       $(elem).find(".resultcontentcolumn a").each(
         (i,elem) => {
+          let text;
           if ($(elem).prev())
             text = $(elem).prev().text();
           if(!text)
@@ -47,9 +50,9 @@ var parseSauceNao = (response, bot, editMsg) => {
 
       $(elem).find(".resulttitle, .resultcontentcolumn").each(
         (i,elem) => {
-          var isCharactersDiv = false;
+          let isCharactersDiv = false;
 
-          var lines = $(elem).html().replace(/<br \/>|<br>/g, "\n").trim();
+          let lines = $(elem).html().replace(/<br \/>|<br>/g, "\n").trim();
           lines = $(lines).text();
 
           if(lines){
@@ -57,8 +60,8 @@ var parseSauceNao = (response, bot, editMsg) => {
             for(i in lines){
               if (!lines[i].trim())
                 continue;
-              splits = lines[i].split(": ");
-              key = splits[0].trim();
+              const splits = lines[i].split(": ");
+              let key = splits[0].trim();
               if (splits.length==2 && splits[1]){
                 key = key.replace("Est Time", "Time")
                     .replace("Creator", "By");
@@ -88,16 +91,16 @@ var parseSauceNao = (response, bot, editMsg) => {
 
       $(elem).find(".resultmiscinfo > a").each(
         (i,elem) => {
-          text = $(elem).children().attr("src")
+          let text = $(elem).children().attr("src")
           text = text.substring(text.lastIndexOf("/")+1, text.lastIndexOf("."));
           if (links[text]){
-            console.log("key " + key + " was occupied");
             return;
           }
           links[text] = $(elem).attr("href");
           if (text == "anidb"){
             // extract episode number
-            matches = content._title.match(/(.+) - ([\d]+)\n$/);
+            let title;
+            const matches = content._title.match(/(.+) - ([\d]+)\n$/);
             if (matches && matches.length == 3){
               title = matches[1];
               content._title = title + " (Ep. " + matches[2] + ")\n";
@@ -131,7 +134,7 @@ var parseSauceNao = (response, bot, editMsg) => {
     delete content.Material;
   }
 
-  for (var key in content) {
+  for (let key in content) {
     if (!( key == "_text" || key == "JPTitle"))
         displayText += "<b>" + key + ": </b>"+content[key]+ '\n';
   }
@@ -141,31 +144,29 @@ var parseSauceNao = (response, bot, editMsg) => {
 
   displayText += content._text;
 
-  var ctr = 0;
-  for (var key in links) {
+  let ctr = 0;
+  for (const key in links) {
     if (ctr>=6) //max 6 buttons or 3 lines 
       break;
     console.log("link:", key, links[key]);
-    text = key.replace(/:/g,"").replace(/ ID/g,"");
-    url = links[key];
+    let text = key.replace(/:/g,"").replace(/ ID/g,"");
+    let url = links[key];
     if (url.startsWith("//"))
       url = "http:" + url;
     if (ctr == 0)
       text = "View on " + text;
-    bList.push( bot.inlineButton(text, { url: url }) );
+    bList.push( Markup.urlButton(text, url) );
     ctr++;
   }
   bList.push(
-    bot.inlineButton(idButtonName.share, {
-      inline: "sn|" + shareId
-    })
-  );
+    Markup.switchToChatButton(idButtonName.share, "sn|" + shareId)
+    );
   
-  markup = bot.inlineKeyboard(tools.buttonsGridify(bList));
+  const markup = Markup.inlineKeyboard(tools.buttonsGridify(bList));
 
   analytics.track(editMsg.origFrom, "sauce_found_saucenao");
 
-  report = "<a href=\"" + urlbase.sauceNao + "url=" + 
+  let report = "<a href=\"" + urlbase.sauceNao + "url=" + 
     editMsg.url + "\">link</a>\n\n" + displayText;
   reportToOwner.sauceNaoResult(report, bot);
   reportToOwner.reportFile(editMsg.fileId, bot, 1);

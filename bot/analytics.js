@@ -1,30 +1,34 @@
+"use strict";
+
 const fetch = require('node-fetch');
-var SETTINGS = require("../settings/settings.js");
-var reportToOwner = require("./reportToOwner.js");
+const SETTINGS = require("../settings/settings.js");
+const reportToOwner = require("./reportToOwner.js");
 
-var ip = '0.0.0.0'
-var ctr = 887
-var bot;
+let ip = '0.0.0.0'
+let ctr = 887
+let bot;
 
-var init = (botp) => {
+const init = (botp) => {
     bot = botp;
     fetch('http://api.ipify.org/')
     .then(res => res.text())
     .then( res => { ip = res } )
-    .then(bot.getMe()
-        .then(res => {
-            SETTINGS.botName = res.username;
+    .then(bot.telegram.getMe()
+        .then(botInfo => {
+            SETTINGS.botName = botInfo.username;
             }
         )
     )
 };
 
-var track = (msgFrom, eventType, eventProps) => {
-    var uniq = SETTINGS.botName + (new Date().getTime()) + '' + ctr++;
-    var lang = msgFrom.language_code || 'undefined';
+const track = (msgFrom, eventType, eventProps) => {
+    if (!msgFrom)
+        return;
+    const uniq = SETTINGS.botName + (new Date().getTime()) + '' + ctr++;
+    const lang = msgFrom.language_code || 'undefined';
 
     //user_properties
-    var tdata = {platform: SETTINGS.botName, ip: ip, event_type: eventType,
+    const tdata = {platform: SETTINGS.botName, ip: ip, event_type: eventType,
         event_properties: eventProps, user_id: msgFrom.id,
         user_properties: msgFrom, insert_id: uniq, language: lang};
     fetch(SETTINGS.url.analUrl, {
