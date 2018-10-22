@@ -109,9 +109,7 @@ module.exports = () => {
   });
   
 // format for inline share: sn|fileID or te|fileID
-  bot.on('chosen_inline_result', ({chosenInlineResult}) => {
-    console.dir(chosenInlineResult);
-    
+  bot.on('chosen_inline_result', ({chosenInlineResult}) => {    
     if (tools.urlDetector(chosenInlineResult.query)){
         chosenInlineResult.url = chosenInlineResult.query;
         analytics.track(chosenInlineResult.from, "query", {type: "url_inline"});
