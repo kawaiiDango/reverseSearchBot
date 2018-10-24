@@ -1,18 +1,19 @@
 var private = {
     botToken: "tg bot token",
-    adminId: [""],
-    SNKey: "saucenao key",
-    analKey: "amplitude analytics key",
-    botName: "tg bot username",
-    tokenHiderUrl: "phpTokenHiderExample url prefix",
+    adminId: ["123456"],
+    SNKey: "saucenao.com key (create an account to get one)",
+    analKey: "amplitude.com analytics key",
+    botName: "mybot",
+    tokenHiderUrl: "https://my.site/tokenHider.php?l=",
+    webpToPngUrl: "https://my.site/webpTopng.php?url=",
     webhookPort:443,
-    webhookEndpoint: "https://some.thing:8443",
+    webhookEndpoint: "https://my.site/secretPath",
     socksProxyUrls: [
         null, 
         "socks://url:port"
     ],
     favouriteGroups: [
-        -0
+        -111111
     ]
 }
 module.exports = private;

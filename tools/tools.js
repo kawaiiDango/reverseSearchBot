@@ -48,10 +48,8 @@ module.exports = {
   	return false;
 	},
   getGoogleSearch: (text, url) => {
-    let idx = url.indexOf('bot');
-    idx = url.indexOf('/', idx) +1;
     let tokenHiderUrl = require("../settings/private.js").tokenHiderUrl;
-    tokenHiderUrl += url.substr(idx);
+    tokenHiderUrl += url.match(/bot..+?\/(.*)/)[1];
     return text.replace("google", 
       "</i><a href=\"https://www.google.com/searchbyimage?image_url=" + 
       tokenHiderUrl + "\">Google Reverse Search</a><i>");

@@ -118,9 +118,11 @@ const getTineyeButtons = (pic, page, shareId) =>
   ];
 module.exports = {
   fetchTineye: (url, editMsg) => {
+    if (url.endsWith('webp'))
+      url = SETTINGS.private.webpToPngUrl + url;
     const params = {url: url, sort: 'size', order: 'desc'};
     const uurl = urlbase.tinEye + tools.json2query(params);
-    
+
     return myFetch(uurl, editMsg,
       {headers:
         {
