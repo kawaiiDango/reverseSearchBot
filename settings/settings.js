@@ -80,7 +80,7 @@ let settings = {
     unknownError: "<b>Unknown error occured.</b> Please report this to @dangou if it happens repeatedly.",
     invalidFileId: "<i>Invalid file id</i>",
     requestRating: "<a href=\"https://telegram.me/storebot?start=reverseSearchBot\">★ Rate this result</a>",
-    keywordHelp: "Dont just click me like that. \n\n PM me a pic, GIF, a sticker, or an image file\n\n If I'm in a group, reply with /source or /sauce to find its source."
+    keywordHelp: "Don't just click me like that. \n\n PM me a pic, GIF, a sticker, or an image file\n\n If I'm in a group, reply with /source or /sauce to find its source."
   },
   reporter: {
     events: [
