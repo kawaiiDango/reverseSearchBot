@@ -171,7 +171,7 @@ module.exports = () => {
         } else
           return;        
       }
-    } else if (msg.video){
+    } else if (msg.video && msg.video.thumb){
       msg.fileId = msg.video.thumb.file_id;
       analytics.track(msg.from, "query", {type: "video"});
     } else
@@ -285,7 +285,7 @@ module.exports = () => {
       count = global.userCount[from_id.toString()];
 
       if ((count / 2) - Math.floor(count / 2) === 0) {
-        rateText = "\n\n" + MESSAGE.requestRating;
+        //rateText = "\n\n" + MESSAGE.requestRating; //TODO: enable when storebot.me is up
       }
     }
     return rateText;

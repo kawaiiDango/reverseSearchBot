@@ -158,9 +158,7 @@ const parseSauceNao = (response, bot, editMsg) => {
     bList.push( Markup.urlButton(text, url) );
     ctr++;
   }
-  bList.push(
-    Markup.switchToChatButton(idButtonName.share, "sn|" + shareId)
-    );
+  // bList.push(Markup.switchToChatButton(idButtonName.share, "sn|" + shareId));
   
   const markup = Markup.inlineKeyboard(tools.buttonsGridify(bList));
 

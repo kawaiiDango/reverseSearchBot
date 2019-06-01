@@ -5,7 +5,7 @@ const socksProxyAgent = require('socks-proxy-agent');
 const httpsProxyAgent = require('https-proxy-agent');
 // const proxyLists = require('proxy-lists');
 const LRU = require("lru-cache");
-const cache = LRU({ max: 200, maxAge: 1000 * 60 * 60 * 24 });
+const cache = new LRU({ max: 200, maxAge: 1000 * 60 * 60 * 24 });
 const cheerio = require('cheerio');
 
 const Markup = require('telegraf/markup');
@@ -113,8 +113,8 @@ const myFetch = (url, editMsg, options) => {
 const getTineyeButtons = (pic, page, shareId) => 
   [
     Markup.urlButton(idButtonName.picLink, pic),
-    Markup.urlButton(idButtonName.pageLink, page),
-    Markup.switchToChatButton (idButtonName.share, "te|" + shareId)
+    Markup.urlButton(idButtonName.pageLink, page)
+    // Markup.switchToChatButton (idButtonName.share, "te|" + shareId)
   ];
 module.exports = {
   fetchTineye: (url, editMsg) => {
