@@ -157,7 +157,10 @@ module.exports = () => {
       analytics.track(msg.from, "query", {type: "photo"});
     }
     else if (msg.sticker){
-      msg.fileId = msg.sticker.file_id;
+      if (msg.sticker.is_animated)
+          msg.fileId = msg.sticker.thumb.file_id;
+      else
+          msg.fileId = msg.sticker.file_id;
       analytics.track(msg.from, "query", {type: "sticker"});
     }
     else if (msg.document){
