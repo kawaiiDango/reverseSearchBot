@@ -118,8 +118,9 @@ const parseSauceNao = (response, bot, editMsg) => {
     analytics.track(editMsg.origFrom, "sauce_not_found", {url: editMsg.url});
     return Promise.reject(new Error(MESSAGE.zeroResult));
   }
-
-  displayText = "<b>" + content._title + "</b>"+ '\n' ;
+  if (content._title)
+    displayText = "<b>" + content._title + "</b>"+ '\n' ;
+  
   delete content._title;
 
   if (!content.By && content._byUsername)
@@ -143,6 +144,8 @@ const parseSauceNao = (response, bot, editMsg) => {
     content._text = "\n" + content._text;
 
   displayText += content._text;
+  if (!displayText.trim())
+    displayText = "-no title-";
 
   let ctr = 0;
   for (const key in links) {
