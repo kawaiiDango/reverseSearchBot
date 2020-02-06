@@ -138,7 +138,7 @@ module.exports = {
   parseSauceNao: (response, editMsg) => parseSauceNao(response, bot, editMsg),
   setBot: botp => {
     bot = botp;
-    changeProxy();
+    // changeProxy();
   },
   parseTineye: (res, editMsg) => {
     console.log("get tineye completed");
@@ -148,7 +148,7 @@ module.exports = {
     start = tmp.indexOf('<div class="match"', start);
     if (start == -1){
       
-      if (tmp.indexOf("/faq#search_limit")>-1){
+      if (tmp.indexOf("<h2 class=\"limit\">")>-1){
         reportToOwner.reportLimitReached("tineye", bot);
         changeProxy();
       } else 
@@ -202,8 +202,8 @@ module.exports = {
       console.log("-----error.headers is", err.response.headers);
       // console.log("-----error.text is", err.response.text);
       if (err.response.status && err.response.status == 429) {
-        reportToOwner.reportLimitReached("sauceNao", bot);
-        return [tools.getGoogleSearch(MESSAGE.reachLimitation, err.url)];
+        // reportToOwner.reportLimitReached("sauceNao", bot);
+        return [MESSAGE.reachLimitation];
       } else
         return ["<b>Error:</b> " + err.name +" \n\nPlease try again after some time..."];
     } else {

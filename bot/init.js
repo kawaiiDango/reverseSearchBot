@@ -249,15 +249,23 @@ module.exports = () => {
     else
       reqs.fetchSauceNao(url, editMsg) //SN first
         .catch(reqs.errInFetch)
-        .then(res => reqs.parseSauceNao(res, editMsg))
-        .catch(err => {
-          editMsg.searched = 'sn';
-          return reqs.fetchTineye(url, editMsg)
-            .then(res => reqs.parseTineye(res, editMsg))
+        .then(res => {
+            if (res == MESSAGE.reachLimitation){
+                return Promise.reject(new Error(MESSAGE.reachLimitation));
+              }
+            return reqs.parseSauceNao(res, editMsg);
         })
+        // .catch(err => {
+          // editMsg.searched = 'sn';
+          // return reqs.fetchTineye(url, editMsg)
+            // .then(res => reqs.parseTineye(res, editMsg))
+        // })
         .catch(err => {
+            console.log("err:"+err);
           if(err.message == MESSAGE.zeroResult)
             return [tools.getGoogleSearch(MESSAGE.zeroResult, editMsg.url)];
+          else if (err.message == MESSAGE.reachLimitation)
+            return [tools.getGoogleSearch(MESSAGE.reachLimitation, editMsg.url)];
           else
             return reqs.errInFetch(err);
         })

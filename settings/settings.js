@@ -72,11 +72,11 @@ let settings = {
     invalidUrl: "That doesn't look like a photo or a URL.",
     invalidForm: "That type of message is not supported yet.",
     loading: "<i>Pouring some sauce on it...</i>",
-    zeroResult: "No sauce found. <i>Maybe try google instead?</i>",
+    zeroResult: "No sauce found. <i>Maybe try google or tineye instead?</i>",
     help: "Send me an image, a sticker, an image file or a GIF to find its source Right Nao.\n\n"+
           // "\n\n<i>Tip: Click the 🔍ArtSearch button if it is an artwork or cosplay, for character, show episode and artist identification.</i>"+
           "<i>If I'm in a group, reply to a media with /sauce or /source (note the slash)</i>",
-    reachLimitation: "The request limit has been reached. <i>Please wait for a few minutes or use google instead</i>",
+    reachLimitation: "The request limit has reached. <i>Please use saucenao, google or tineye links instead</i>",
     unknownError: "<b>Unknown error occured.</b> Please report this to @dangou if it happens repeatedly.",
     invalidFileId: "<i>Invalid file id</i>",
     requestRating: "<a href=\"https://telegram.me/storebot?start=reverseSearchBot\">★ Rate this result</a>",

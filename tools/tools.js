@@ -50,9 +50,16 @@ module.exports = {
   getGoogleSearch: (text, url) => {
     let tokenHiderUrl = require("../settings/private.js").tokenHiderUrl;
     tokenHiderUrl += url.match(/bot..+?\/(.*)/)[1];
-    return text.replace("google", 
+    text = text.replace("google", 
       "</i><a href=\"https://www.google.com/searchbyimage?image_url=" + 
       tokenHiderUrl + "\">Google Reverse Search</a><i>");
+    text = text.replace("saucenao", 
+      "</i><a href=\"https://saucenao.com/search.php?url=" + 
+      tokenHiderUrl + "\">SauceNAO</a><i>");
+    text = text.replace("tineye", 
+      "</i><a href=\"https://tineye.com/search?url=" + 
+      tokenHiderUrl + "&sort=size&order=des\">TinEye</a><i>");
+    return text;
   },
   buttonsGridify: (bList) => {
     const buttons = [[]];
