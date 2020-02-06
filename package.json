@@ -18,10 +18,10 @@
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
     "express": "^4.17.1",
-    "https-proxy-agent": "^2.2.1",
+    "https-proxy-agent": "^4.0.0",
     "lru-cache": "^5.1.1",
     "node-fetch": "^2.6.0",
-    "socks-proxy-agent": "^4.0.2",
-    "telegraf": "^3.29.0"
+    "socks-proxy-agent": "^5.0.0",
+    "telegraf": "^3.36.0"
   }
 }
