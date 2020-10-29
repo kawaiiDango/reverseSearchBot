@@ -115,11 +115,17 @@ const parseSauceNao = (response, bot, editMsg) => {
     });
 
   if (!found){
-    analytics.track(editMsg.origFrom, "sauce_not_found", {url: editMsg.url});
-    return Promise.reject(new Error(MESSAGE.zeroResult));
+    analytics.track(editMsg.origFrom, "sauce_not_found");
+    const googleLink = $("#yourimageretrylinks > a").first().attr("href");
+    let directLink;
+    if (googleLink)
+      directLink = googleLink.substring(googleLink.indexOf("https://saucenao.com"), googleLink.indexOf("&"));
+    const error = new Error(MESSAGE.zeroResult);
+    error.directLink = directLink;
+    return Promise.reject(error);
   }
   if (content._title)
-    displayText = "<b>" + content._title + "</b>"+ '\n' ;
+    displayText = "<b>" + content._title + "</b>"+ '\n';
   
   delete content._title;
 

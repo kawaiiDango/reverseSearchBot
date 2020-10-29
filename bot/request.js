@@ -3,6 +3,7 @@
 const fetch = require('node-fetch');
 const socksProxyAgent = require('socks-proxy-agent');
 const httpsProxyAgent = require('https-proxy-agent');
+const { exec } = require('child_process');
 // const proxyLists = require('proxy-lists');
 const LRU = require("lru-cache");
 const cache = new LRU({ max: 200, maxAge: 1000 * 60 * 60 * 24 });
@@ -18,9 +19,11 @@ const reportToOwner = require("./reportToOwner.js");
 const tools = require("../tools/tools.js");
 const analytics = require('./analytics.js');
 const idButtonName = SETTINGS.id_buttonName;
-let proxy = {idx:0, lastReqTime:0, agent:null, 
-  torAgent: new socksProxyAgent("socks5://127.0.0.1:9100")};
+let proxy = {idx:0, lastReqTime:0, agent:null, perma: null};
 let bot;
+
+if (SETTINGS.private.socksProxyUrls && SETTINGS.private.socksProxyUrls[0])
+  proxy.perma = new socksProxyAgent(SETTINGS.private.socksProxyUrls[0]);
 
 const changeProxy = () => {
   const now = (new Date).getTime();
@@ -59,7 +62,7 @@ const changeProxy = () => {
   });
 */
   const options = {};
-  options.agent = proxy.torAgent;
+  options.agent = proxy.perma;
 
   fetch(urlbase.proxyList+ tools.json2query(urlbase.proxyListParams), options)
     .then(res => res.json())
@@ -89,8 +92,8 @@ const myFetch = (url, editMsg, options) => {
 
   if (options == null)
     options = {};
-  if (url.indexOf("saucenao") > -1) //saucenao always goes through tor
-    options.agent = proxy.torAgent;
+  if (url.indexOf("saucenao") > -1)
+    options.agent = proxy.perma;
   else
     options.agent = proxy.agent;
 
@@ -184,7 +187,6 @@ module.exports = {
   fetchSauceNao: (url, editMsg) => {
     const params = urlbase.sauceNaoParams;
     params.url = url;
-    // params.api_key = SETTINGS.private.SNKey;
     const uurl = urlbase.sauceNao + tools.json2query(params);
     
     return myFetch(uurl, editMsg, { params: params });
@@ -192,8 +194,8 @@ module.exports = {
   errInFetch: err => {
     console.log("errInFetch");
 
-    if (err.name == "FetchError" || err.status != 200)
-      changeProxy();
+    // if (err.name == "FetchError" || err.status != 200)
+      // changeProxy();
     reportToOwner.reportError(err, bot);
     if (err.response) {
       // The request was made, but the server responded with a status code
@@ -203,14 +205,25 @@ module.exports = {
       // console.log("-----error.text is", err.response.text);
       if (err.response.status && err.response.status == 429) {
         // reportToOwner.reportLimitReached("sauceNao", bot);
-        return [MESSAGE.reachLimitation];
+        let now = Date.now();
+        if (now - proxy.lastReqTime > 100 * 1000 && SETTINGS.private.changeProxyCommand) {
+          proxy.lastReqTime = now;
+          exec(SETTINGS.private.changeProxyCommand, (err, stdout, stderr) => {
+            if (stdout)
+               console.log(stdout);
+            else if (stderr)
+               console.log(stderr);
+           reportToOwner.reportLimitReached("saucenao", bot);
+        });
+      }
+        return new Error(MESSAGE.reachLimitation);
       } else
-        return ["<b>Error:</b> " + err.name +" \n\nPlease try again after some time..."];
+        return new Error("<b>Error:</b> " + err.name +" \n\nPlease try again after some time...");
     } else {
       console.dir(err);
 
       console.log('-----error', err.message);
-      return ["<b>Error:</b> " + err.name +" \n\nPlease try again after some time..."];
+      return new Error("<b>Error:</b> " + err.name +" \n\nPlease try again after some time...");
     }
     
   }

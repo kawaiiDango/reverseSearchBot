@@ -43,23 +43,29 @@ module.exports = {
     if (!filename)
       return false;
   	const ext = filename.substr(filename.lastIndexOf('.')+1).toLowerCase();
-  	if( ext == "jpg" || ext =="png" || ext == "webp" || ext == "bmp")
+  	if( ext == "jpg" || ext == "jpeg" || ext == "gif" ||  ext =="png" || ext == "webp" || ext == "bmp")
   		return true;
   	return false;
 	},
-  getGoogleSearch: (text, url) => {
-    let tokenHiderUrl = require("../settings/private.js").tokenHiderUrl;
-    tokenHiderUrl += url.match(/bot..+?\/(.*)/)[1];
-    text = text.replace("google", 
-      "</i><a href=\"https://www.google.com/searchbyimage?image_url=" + 
-      tokenHiderUrl + "\">Google Reverse Search</a><i>");
-    text = text.replace("saucenao", 
-      "</i><a href=\"https://saucenao.com/search.php?url=" + 
-      tokenHiderUrl + "\">SauceNAO</a><i>");
-    text = text.replace("tineye", 
-      "</i><a href=\"https://tineye.com/search?url=" + 
-      tokenHiderUrl + "&sort=size&order=des\">TinEye</a><i>");
-    return text;
+  getOtherSearches: (text, url) => {
+    if (url) {
+      text = text.replace("{google}", 
+        "</i><a href=\"https://www.google.com/searchbyimage?image_url=" + 
+        url + "\">Google Reverse Search</a><i>");
+      text = text.replace("{saucenao}", 
+        "</i><a href=\"https://saucenao.com/search.php?url=" + 
+        url + "\">SauceNAO</a><i>");
+      text = text.replace("{tineye}", 
+        "</i><a href=\"https://tineye.com/search?url=" + 
+        url + "&sort=size&order=des\">TinEye</a><i>");
+      text = text.replace("{ascii2d}", 
+        "</i><a href=\"https://ascii2d.net/search/url/" +
+        encodeURIComponent(url) + "\">Ascii2d</a><i>");
+      return text;
+    } else {
+      text = text.substring(0,text.indexOf("."));
+      return text;
+    }
   },
   buttonsGridify: (bList) => {
     const buttons = [[]];

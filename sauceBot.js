@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 process.on('unhandledRejection', e => {
     console.log("unhandledRejection:");
     console.dir(e);

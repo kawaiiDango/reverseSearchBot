@@ -1,17 +1,17 @@
 var private = {
     botToken: "tg bot token",
     adminId: ["123456"],
-    SNKey: "saucenao.com key (create an account to get one)",
+    trustedUserIds: [4568, 5755],
     analKey: "amplitude.com analytics key",
     botName: "mybot",
-    tokenHiderUrl: "https://my.site/tokenHider.php?l=",
-    webpToPngUrl: "https://my.site/webpTopng.php?url=",
     webhookPort:443,
+    webhookHost: "127.0.0.1",
     webhookEndpoint: "https://my.site/secretPath",
     socksProxyUrls: [
         null, 
         "socks://url:port"
     ],
+    changeProxyCommand: "",
     favouriteGroups: [
         -111111
     ]

@@ -3,7 +3,7 @@
 const privateSettings = require("./private.js");
 
 let settings = {
-  botName : "reverseSearchBot",
+  botName : privateSettings.botName,
   url: {
     sauceNao: "http://saucenao.com/search.php?",
     tinEye: "https://tineye.com/search?",
@@ -72,15 +72,15 @@ let settings = {
     invalidUrl: "That doesn't look like a photo or a URL.",
     invalidForm: "That type of message is not supported yet.",
     loading: "<i>Pouring some sauce on it...</i>",
-    zeroResult: "No sauce found. <i>Maybe try google or tineye instead?</i>",
+    zeroResult: "No sauce found; this bot works only with uncropped anime/2d art. <i>Maybe try {google},    {ascii2d}    or    {tineye} instead?</i>",
     help: "Send me an image, a sticker, an image file or a GIF to find its source Right Nao.\n\n"+
           // "\n\n<i>Tip: Click the 🔍ArtSearch button if it is an artwork or cosplay, for character, show episode and artist identification.</i>"+
-          "<i>If I'm in a group, reply to a media with /sauce or /source (note the slash)</i>",
-    reachLimitation: "The request limit has reached. <i>Please use saucenao, google or tineye links instead</i>",
-    unknownError: "<b>Unknown error occured.</b> Please report this to @dangou if it happens repeatedly.",
-    invalidFileId: "<i>Invalid file id</i>",
-    requestRating: "<a href=\"https://telegram.me/storebot?start=reverseSearchBot\">★ Rate this result</a>",
-    keywordHelp: "Don't just click me like that. \n\nPM me a pic, GIF, a sticker, or an image file\n\nIf I'm in a group, reply with /source or /sauce to find its source."
+          "<i>If I'm in a group, reply to a media with /sauce@"+privateSettings.botName+" or /source@"+privateSettings.botName+"</i>",
+    reachLimitation: "The request limit has reached, try again after some time. <i>Please use {saucenao},    {ascii2d},    {google}    or    {tineye} links instead</i>\nDo not forward this message",
+    unknownError: "<b>Unknown error occured.</b>",
+    invalidFileId: "<i>Invalid file</i>",
+    requestRating: "<a href=\"https://telegram.me/storebot?start="+privateSettings.botName+"\">★ Rate this result</a>",
+    keywordHelp: "Don't just click me like that. \n\nPM me a pic, GIF, a sticker, or an image file\n\nIf I'm in a group, reply with /source@"+privateSettings.botName+" or /sauce@"+privateSettings.botName+" to find its source."
   },
   reporter: {
     events: [
@@ -90,7 +90,7 @@ let settings = {
   },
   floodProtect: {
     message: "aaaaah, slow down...",
-    interval: 15,
+    interval: 30,
     msgLimit: 3
   },
   reportToOwnerSwitch: {
@@ -99,11 +99,11 @@ let settings = {
     reportFile: {on: false, notify: false}
   },
   keywords: /^(sauce|source|what\?)$/i,
-  commands: ['sauce', 'source', 'sauce@reverseSearchBot', 'source@reverseSearchBot'],
+  commands: ['sauce', 'source', 'sauce@'+privateSettings.botName, 'source@'+privateSettings.botName],
   // keywords: ['sauce', 'source', 'what?'],
   private: privateSettings,
   userAgents: [
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15",
   ]
 };
 

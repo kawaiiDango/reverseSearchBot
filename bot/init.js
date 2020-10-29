@@ -8,10 +8,8 @@ global.userCount = {
 const SETTINGS = require("../settings/settings.js");
 const tokenBot = SETTINGS.private.botToken;
 
-const tokenSN = SETTINGS.private.SNKey;
 const Telegraf = require('telegraf');
 const Markup = require('telegraf/markup');
-const express = require('express');
 const reqs = require("./request.js");
 const tools = require("../tools/tools.js");
 const fetch = require('node-fetch');
@@ -21,17 +19,8 @@ const isFlooding = require('./floodProtect.js');
 const MESSAGE = SETTINGS.msg;
 const reportOpt = SETTINGS.reporter;
 const reportToOwner = require("./reportToOwner.js");
-
+const http = require("http");
 const bot = new Telegraf(tokenBot)
-
-bot.telegram.setWebhook(SETTINGS.private.webhookEndpoint, undefined, 100);
-const app = express()
-app.get('/', (req, res) => res.send('Goodbye World'))
-app.use(bot.webhookCallback(
-    SETTINGS.private.webhookEndpoint.substring(SETTINGS.private.webhookEndpoint.lastIndexOf('/'))))
-app.listen(SETTINGS.private.webhookPort, () => {
-  console.log('sauce bot listening on port ' + SETTINGS.private.webhookPort)
-})
 
 reqs.setBot(bot);
 module.exports = () => {
@@ -45,14 +34,20 @@ module.exports = () => {
   bot.on('new_chat_members', ctx => {
     const token = SETTINGS.private.botToken;
     const myId = token.substring(0,token.indexOf(':'));
-    console.dir(ctx.message.new_chat_participant);
     if (ctx.message.new_chat_participant.id == myId)
       ctx.reply(MESSAGE.help, {parse_mode: 'HTML'})
   });
   const keywordResponse = ctx => {
-    const rmsg = ctx.message.reply_to_message;
-      if (rmsg && (rmsg.photo || rmsg.document || rmsg.sticker || rmsg.video) &&
-        !isFlooding(ctx)){
+      if (isFlooding(ctx))
+        return;
+      const rmsg = ctx.message.reply_to_message;
+      
+      if (rmsg && (rmsg.photo || rmsg.document || rmsg.sticker || rmsg.video)){
+        if ((rmsg.forward_from && rmsg.forward_from.id == 792028928) || 
+            rmsg.from.id == 792028928){
+            ctx.reply('LOL no cheating');
+            return;
+        }
         getSauceFromFile(rmsg);
         analytics.track(ctx.from, "sauce_keyword", {text:ctx.message.text});
       }
@@ -66,6 +61,11 @@ module.exports = () => {
   bot.command(SETTINGS.commands, keywordResponse);
 
   bot.on(['photo', 'sticker', 'document', 'video'], ctx => {
+    if ((ctx.message.forward_from && ctx.message.forward_from.id == 792028928)){
+        ctx.reply('LOL no cheating');
+        return;
+    }
+
     if (ctx.message.chat.type == "private" && !isFlooding(ctx)
     || (SETTINGS.private.favouriteGroups.indexOf(ctx.message.chat.id)>-1  && (ctx.message.photo)))
         getSauceFromFile(ctx.message);
@@ -76,7 +76,7 @@ module.exports = () => {
     const query = inlineQuery.query;
     const answers = [];
 
-    if (tools.urlDetector(query)) { //url
+    if (tools.urlDetector(query) && tools.isSupportedExt(query)) { //url
         answers.push({
           type: 'article',
           id: 'url',
@@ -218,7 +218,7 @@ module.exports = () => {
         .then(res => reqs.parseSauceNao(res, editMsg))
         .catch(err => {
           if(err.message == MESSAGE.zeroResult)
-            return [tools.getGoogleSearch(MESSAGE.zeroResult, editMsg.url)];
+            return [tools.getGoogleSearch(MESSAGE.zeroResult, undefined)];
           else
             return reqs.errInFetch(err);
         })
@@ -253,9 +253,8 @@ module.exports = () => {
       reqs.fetchSauceNao(url, editMsg) //SN first
         .catch(reqs.errInFetch)
         .then(res => {
-            if (res == MESSAGE.reachLimitation){
-                return Promise.reject(new Error(MESSAGE.reachLimitation));
-              }
+            if (res instanceof Error)
+                return Promise.reject(res);
             return reqs.parseSauceNao(res, editMsg);
         })
         // .catch(err => {
@@ -265,12 +264,18 @@ module.exports = () => {
         // })
         .catch(err => {
             console.log("err:"+err);
+            let directLink;
+            if (SETTINGS.private.trustedUserIds.includes(editMsg.origFrom.id) && editMsg.chat && editMsg.chat.type == "private"){
+              directLink = err.directLink;
+              if (!directLink && SETTINGS.private.adminId.includes(editMsg.origFrom.id))
+                directLink = editMsg.url;
+            }
           if(err.message == MESSAGE.zeroResult)
-            return [tools.getGoogleSearch(MESSAGE.zeroResult, editMsg.url)];
+            return [tools.getOtherSearches(MESSAGE.zeroResult, directLink)];
           else if (err.message == MESSAGE.reachLimitation)
-            return [tools.getGoogleSearch(MESSAGE.reachLimitation, editMsg.url)];
+            return [tools.getOtherSearches(MESSAGE.reachLimitation, directLink)];
           else
-            return reqs.errInFetch(err);
+            return [err.message];
         })
         .then(msg => {
           if (msg && msg[0]){
@@ -303,7 +308,19 @@ module.exports = () => {
   };
 
   analytics.init(bot); //uc
+  
+  //bot.launch();
+  bot.telegram.deleteWebhook().then( res => { 
+    bot.launch({
+      webhook: {
+        domain: SETTINGS.private.webhookEndpoint,
+        hookPath: SETTINGS.private.webhookEndpoint.substring(SETTINGS.private.webhookEndpoint.lastIndexOf('/')),
+        port: SETTINGS.private.webhookPort,
+        host:  SETTINGS.private.webhookHost
+      }
+    })
 
-  // bot.startPolling()
+  });
 
+  console.log(SETTINGS.private.webhookEndpoint);
 };
