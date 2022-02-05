@@ -1,4 +1,4 @@
-var private = {
+export let private = {
     botToken: "tg bot token",
     adminId: ["123456"],
     trustedUserIds: [4568, 5755],
@@ -16,4 +16,3 @@ var private = {
         -111111
     ]
 }
-module.exports = private;

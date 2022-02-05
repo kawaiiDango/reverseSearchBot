@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Reverse Image Search bot for Telegram. Check settings/private.js for the api keys and tokens required.",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "pm2 start sauceBot.js",
@@ -15,12 +16,12 @@
   "repository": "kawaiiDango/reverseSearchBot",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.19.0",
-    "cheerio": "^1.0.0-rc.3",
+    "body-parser": "^1.19.1",
+    "cheerio": "^1.0.0-rc.10",
     "https-proxy-agent": "^5.0.0",
     "lru-cache": "^6.0.0",
-    "node-fetch": "^2.6.1",
-    "socks-proxy-agent": "^5.0.0",
-    "telegraf": "^3.38.0"
+    "node-fetch": "^3.2.0",
+    "socks-proxy-agent": "^6.1.1",
+    "telegraf": "^4.7.0"
   }
 }

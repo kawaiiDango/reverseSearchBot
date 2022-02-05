@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-process.on('unhandledRejection', e => {
-    console.log("unhandledRejection:");
-    console.dir(e);
+process.on("unhandledRejection", (e) => {
+  console.log("unhandledRejection:");
+  console.dir(e);
 });
 
-const botInit = require("./bot/init.js");
+import botInit from "./bot/init.js";
 
 botInit();
