@@ -1,5 +1,3 @@
-"use strict";
-
 import fetch from "node-fetch";
 import socksProxyAgent from "socks-proxy-agent";
 import httpsProxyAgent from "https-proxy-agent";
@@ -7,25 +5,20 @@ import { exec } from "child_process";
 // const proxyLists = require('proxy-lists');
 import LRU from "lru-cache";
 const cache = new LRU({ max: 200, maxAge: 1000 * 60 * 60 * 24 });
-import { load } from "cheerio";
 
-import { Markup } from "telegraf";
 import settings from "../settings/settings.js";
 import privateSettings from "../settings/private.js";
 const urlbase = settings.url;
 const MESSAGE = settings.msg;
-import parseSauceNao from "./parseSauceNao.js";
 import { reportLimitReached, reportError } from "./reportToOwner.js";
-import { json2query, buttonsGridify } from "../tools/tools.js";
-import { track } from "./analytics.js";
-const idButtonName = settings.id_buttonName;
+import { json2query } from "../tools/tools.js";
+import track from "./analytics.js";
 let proxy = { idx: 0, lastReqTime: 0, agent: null, perma: null };
-let bot;
 
 if (privateSettings.socksProxyUrls && privateSettings.socksProxyUrls[0])
   proxy.perma = new socksProxyAgent(privateSettings.socksProxyUrls[0]);
 
-const changeProxy = () => {
+const changeProxy = async () => {
   const now = new Date().getTime();
   if (now - proxy.lastReqTime < 30 * 1000)
     //allow only one proxy req within x mins
@@ -60,20 +53,21 @@ const changeProxy = () => {
   const options = {};
   options.agent = proxy.perma;
 
-  fetch(urlbase.proxyList + json2query(urlbase.proxyListParams), options)
-    .then((res) => res.json())
-    .then((res) => {
-      if (res.ip && res.port) {
-        const protocol = res.protocol || res.type;
-        url = protocol + "://" + res.ip + ":" + res.port;
-        if (protocol == "http") {
-          proxy.agent = new httpsProxyAgent(url);
-        } else if (protocol.startsWith("socks")) {
-          proxy.agent = new socksProxyAgent(url);
-        } //else stay null
-        console.log("proxy set to " + url);
-      } else console.dir(res);
-    });
+  const rawResp = await fetch(urlbase.proxyList + json2query(urlbase.proxyListParams), options)
+  const res = await rawResp.json();
+  if (res.ip && res.port) {
+    const protocol = res.protocol || res.type;
+    url = protocol + "://" + res.ip + ":" + res.port;
+    if (protocol == "http") {
+      proxy.agent = new httpsProxyAgent(url);
+    } else if (protocol.startsWith("socks")) {
+      proxy.agent = new socksProxyAgent(url);
+    } //else stay null
+    console.log("proxy set to " + url);
+  } else {
+    console.log("proxy not set");
+    console.dir(res);
+  }
 };
 
 const myFetch = async (url, editMsg, options) => {
@@ -81,7 +75,7 @@ const myFetch = async (url, editMsg, options) => {
 
   if (hit && editMsg && editMsg.origFrom) {
     track(editMsg.origFrom, "cache_hit");
-    return Promise.resolve(hit);
+    return hit;
   }
 
   if (options == null) options = {};
@@ -93,93 +87,15 @@ const myFetch = async (url, editMsg, options) => {
     const txt = res.text();
     cache.set(url, txt);
 
-    return Promise.resolve(txt);
+    return txt;
   } else {
     const error = new Error(res.statusText || res.status);
     error.response = res;
     if (options.params && options.params.url) error.url = options.params.url;
-    return Promise.reject(error);
+    throw error;
   }
 };
 
-export const getTineyeButtons = (pic, page, shareId) => [
-  Markup.button.url(idButtonName.picLink, pic),
-  Markup.button.url(idButtonName.pageLink, page),
-  // Markup.switchToChatButton (idButtonName.share, "te|" + shareId)
-];
-export function fetchTineye(url, editMsg) {
-  if (url.endsWith("webp")) url = privateSettings.webpToPngUrl + url;
-  const params = { url: url, sort: "size", order: "desc" };
-  const uurl = urlbase.tinEye + json2query(params);
-
-  return myFetch(uurl, editMsg, {
-    headers: {
-      "User-Agent":
-        settings.userAgents[
-          parseInt(Math.random() * settings.userAgents.length)
-        ],
-    },
-    params: params,
-  });
-}
-export { parseSauceNao };
-export function setBot(botp) {
-  bot = botp;
-  // changeProxy();
-}
-export function parseTineye(res, editMsg) {
-  console.log("get tineye completed");
-
-  let tmp = res;
-  let start = tmp.indexOf('match-row"');
-  start = tmp.indexOf('<div class="match"', start);
-  if (start == -1) {
-    if (tmp.indexOf('<h2 class="limit">') > -1) {
-      reportLimitReached("tineye", bot);
-      changeProxy();
-    } else console.log("not found");
-    return Promise.reject(new Error(MESSAGE.zeroResult));
-  }
-  //TODO: if URL, load/head it, check if mime=pic types, say invalid url if not.
-  tmp = tmp.substring(start, tmp.indexOf("</div>", start) + 6);
-  //console.dir(tmp);
-  return new Promise((resolve, reject) => {
-    const $ = load(tmp);
-
-    let siteName = $("h4").text().trim(),
-      imgName = $("p > a").first().text(),
-      highResUrl = $("p > a").attr("href"),
-      page = $("p > span").next().attr("href");
-    console.log("tineyeUrls", imgName, highResUrl, page);
-    //"collections"
-    if (!page) page = highResUrl;
-    const displayText =
-      'Image source was found at: <a href="' +
-      highResUrl +
-      '">' +
-      imgName +
-      '</a> from <a href="' +
-      page +
-      '">' +
-      siteName +
-      "</a>\n";
-    const shareId = editMsg.fileId || editMsg.url;
-    const bList = getTineyeButtons(highResUrl, page, shareId);
-    if (!editMsg.inline_message_id && editMsg.searched != "sn")
-      bList.splice(
-        2,
-        0,
-        Markup.button.callback(
-          idButtonName.searchSauceNao,
-          "sn|" + editMsg.origFrom.id
-        )
-      );
-    const markup = Markup.inlineKeyboard(buttonsGridify(bList));
-
-    track(editMsg.origFrom, "sauce_found_tineye");
-    resolve([displayText, markup]);
-  });
-}
 export function fetchSauceNao(url, editMsg) {
   const params = urlbase.sauceNaoParams;
   params.url = url;
@@ -187,7 +103,8 @@ export function fetchSauceNao(url, editMsg) {
 
   return myFetch(uurl, editMsg, { params: params });
 }
-export function errInFetch(err) {
+
+export function errInFetch(err, bot) {
   console.log("errInFetch");
 
   // if (err.name == "FetchError" || err.status != 200)
@@ -197,8 +114,6 @@ export function errInFetch(err) {
     // The request was made, but the server responded with a status code
     // that falls out of the range of 2xx
     console.log("-----error.status is", err.response.status);
-    console.log("-----error.headers is", err.response.headers);
-    // console.log("-----error.text is", err.response.text);
     if (err.response.status && err.response.status == 429) {
       // reportToOwner.reportLimitReached("sauceNao", bot);
       let now = Date.now();
@@ -220,8 +135,6 @@ export function errInFetch(err) {
       );
   } else {
     console.dir(err);
-
-    console.log("-----error", err.message);
     return new Error(
       "<b>Error:</b> " + err.name + " \n\nPlease try again after some time..."
     );

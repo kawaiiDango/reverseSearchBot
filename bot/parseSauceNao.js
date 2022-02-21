@@ -1,16 +1,13 @@
-"use strict";
-
 import { Markup } from "telegraf";
 import settings from "../settings/settings.js";
-import { json2query, buttonsGridify } from "../tools/tools.js";
-import { track } from "./analytics.js";
-import { sauceNaoResult, reportFile } from "./reportToOwner.js";
+import { json2query } from "../tools/tools.js";
+import track from "./analytics.js";
 import { load } from "cheerio";
 
 const { url: urlbase, msg: MESSAGE } = settings;
 
-const parseSauceNao = (response, bot, editMsg) => {
-  console.log("get saucenao completed ");
+export default (response, editMsg) => {
+  console.log("parseSauceNao");
   const $ = load(response);
   let found = false;
   const preview = false;
@@ -118,7 +115,7 @@ const parseSauceNao = (response, bot, editMsg) => {
     if (directLink) directLink = "https://saucenao.com/" + directLink;
     const error = new Error(MESSAGE.zeroResult);
     error.directLink = directLink;
-    return Promise.reject(error);
+    throw error;
   }
   if (content._title) displayText = "<b>" + content._title + "</b>" + "\n";
 
@@ -161,20 +158,11 @@ const parseSauceNao = (response, bot, editMsg) => {
   }
   // bList.push(Markup.switchToChatButton(idButtonName.share, "sn|" + shareId));
 
-  const markup = Markup.inlineKeyboard(buttonsGridify(bList));
+  const markup = Markup.inlineKeyboard(bList, {
+    wrap: (btn, index, currentRow) => currentRow.length >= 3
+  });
 
   track(editMsg.origFrom, "sauce_found_saucenao");
 
-  let report =
-    '<a href="' +
-    urlbase.sauceNao +
-    "url=" +
-    editMsg.url +
-    '">link</a>\n\n' +
-    displayText;
-  sauceNaoResult(report, bot);
-  reportFile(editMsg.fileId, bot, 1);
-  return [displayText, markup, preview];
+  return { displayText, markup, preview };
 };
-
-export default parseSauceNao;

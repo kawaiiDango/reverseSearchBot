@@ -1,5 +1,3 @@
-"use strict";
-
 import settings from "../settings/settings.js";
 import LRU from "lru-cache";
 const userLRU = new LRU(100);

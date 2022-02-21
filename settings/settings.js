@@ -1,5 +1,3 @@
-"use strict";
-
 import privateSettings from "./private.js";
 
 const { botName, analKey, adminId } = privateSettings;

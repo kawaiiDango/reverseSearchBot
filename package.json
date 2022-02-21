@@ -6,8 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "pm2 start sauceBot.js",
-    "stop": "pm2 stop sauceBot.js"
+    "start": "node bot/init.js"
   },
   "author": "kawaiiDango",
   "bugs": {
