@@ -1,15 +1,12 @@
-[@reverseSearchBot](https://t.me/reverseSearchBot)
+~~[@reverseSearchBot](https://t.me/reverseSearchBot)~~ (leaked token)
 
-Finds the source of an image/GIF/sticker/video or identify the anime character, show, episode & time from its screenshot. Also works in groups if you reply to an image with commands "/source" and "/sauce". Use the inline mode for URL lookups and sharing the sauce with buttons.
+## Hi, @kawaiiDango!
+You must be interested, why the bot token counts as leaked?
 
-Scrapes from ~~Tineye~~ (fuck) and Saucenow. Doesn't use the standard API.
+When your request fail, you throw a full URL with _sensitive information_ to a user (see pic).
 
-A more user friendly and functional rewrite of https://github.com/cod119/TeleSaucenao_bot
+![Leaked token](https://i.ibb.co/N2xJY10/image.png)
 
-Usage:
+Please, revoke it and keep it safe. 😉
 
-Rename settings/private.js.example to .js after putting the required keys/tokens and constants.
-
-npm i
-
-npm start
+<!-- Can you turn Issues on? It's really painful to leave feedbacks this way... -->
