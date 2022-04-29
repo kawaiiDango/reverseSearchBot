@@ -84,7 +84,7 @@ const settings = {
       "</i>",
     reachLimitation:
       "The request limit has reached, try again after some time. <i>Please use {saucenao},    {ascii2d},    {google}    or    {tineye} links instead</i>\nDo not forward this message",
-    unknownError: "<b>Unknown error occured.</b>",
+    unknownError: "Oopsie doopsies",
     invalidFileId: "<i>Invalid file</i>",
     requestRating:
       '<a href="https://telegram.me/storebot?start=' +
@@ -107,10 +107,11 @@ const settings = {
     msgLimit: 3,
   },
   reportToOwnerSwitch: {
-    reportLimitsOfSaucenao: { on: true, notify: true },
-    reportError: { on: true, notify: true },
+    reportLimitsOfSaucenao: { on: false, notify: false },
+    reportError: { on: true, notify: false },
     reportFile: { on: false, notify: false },
   },
+  reportingInterval: 60 * 60 * 1000,
   keywords: /^(sauce|source|what\?)$/i,
   commands: ["sauce", "source", "sauce@" + botName, "source@" + botName],
   // keywords: ['sauce', 'source', 'what?'],

@@ -1,22 +1,22 @@
 import fetch from "node-fetch";
-import socksProxyAgent from "socks-proxy-agent";
-import httpsProxyAgent from "https-proxy-agent";
+import { SocksProxyAgent } from "socks-proxy-agent";
+import HttpsProxyAgent from "https-proxy-agent";
 import { exec } from "child_process";
 // const proxyLists = require('proxy-lists');
 import LRU from "lru-cache";
-const cache = new LRU({ max: 200, maxAge: 1000 * 60 * 60 * 24 });
+const cache = new LRU({ max: 200, ttl: 1000 * 60 * 60 * 24 });
 
 import settings from "../settings/settings.js";
 import privateSettings from "../settings/private.js";
 const urlbase = settings.url;
 const MESSAGE = settings.msg;
-import { reportLimitReached, reportError } from "./reportToOwner.js";
+import { reportError } from "./reportToOwner.js";
 import { json2query } from "../tools/tools.js";
 import track from "./analytics.js";
 let proxy = { idx: 0, lastReqTime: 0, agent: null, perma: null };
 
 if (privateSettings.socksProxyUrls && privateSettings.socksProxyUrls[0])
-  proxy.perma = new socksProxyAgent(privateSettings.socksProxyUrls[0]);
+  proxy.perma = new SocksProxyAgent(privateSettings.socksProxyUrls[0]);
 
 const changeProxy = async () => {
   const now = new Date().getTime();
@@ -26,8 +26,8 @@ const changeProxy = async () => {
   proxy.idx = (proxy.idx + 1) % privateSettings.socksProxyUrls.length;
   let url = privateSettings.socksProxyUrls[proxy.idx];
   if (url) {
-    if (url.startsWith("http")) proxy.agent = new httpsProxyAgent(url);
-    else if (url.startsWith("socks")) proxy.agent = new socksProxyAgent(url);
+    if (url.startsWith("http")) proxy.agent = new HttpsProxyAgent(url);
+    else if (url.startsWith("socks")) proxy.agent = new SocksProxyAgent(url);
   } else proxy.agent = null;
   proxy.lastReqTime = now;
   /*
@@ -41,9 +41,9 @@ const changeProxy = async () => {
       const protocol = res.protocols[0];
       const url = protocol + "://" +res.ipAddress+ ":" + res.port;
       if (protocol == 'http'){
-        proxy.agent = new httpsProxyAgent(url);
+        proxy.agent = new HttpsProxyAgent(url);
       } else if (protocol.startsWith('socks')){
-        proxy.agent = new socksProxyAgent(url);
+        proxy.agent = new SocksProxyAgent(url);
       } //else stay null
       console.log("proxy set to " + url);
     }
@@ -59,9 +59,9 @@ const changeProxy = async () => {
     const protocol = res.protocol || res.type;
     url = protocol + "://" + res.ip + ":" + res.port;
     if (protocol == "http") {
-      proxy.agent = new httpsProxyAgent(url);
+      proxy.agent = new HttpsProxyAgent(url);
     } else if (protocol.startsWith("socks")) {
-      proxy.agent = new socksProxyAgent(url);
+      proxy.agent = new SocksProxyAgent(url);
     } //else stay null
     console.log("proxy set to " + url);
   } else {
@@ -115,7 +115,6 @@ export function errInFetch(err, bot) {
     // that falls out of the range of 2xx
     console.log("-----error.status is", err.response.status);
     if (err.response.status && err.response.status == 429) {
-      // reportToOwner.reportLimitReached("sauceNao", bot);
       let now = Date.now();
       if (
         now - proxy.lastReqTime > 100 * 1000 &&
@@ -125,18 +124,11 @@ export function errInFetch(err, bot) {
         exec(privateSettings.changeProxyCommand, (err, stdout, stderr) => {
           if (stdout) console.log(stdout);
           else if (stderr) console.log(stderr);
-          reportLimitReached("saucenao", bot);
+          // reportLimitReached("saucenao", bot);
         });
       }
       return new Error(MESSAGE.reachLimitation);
-    } else
-      return new Error(
-        "<b>Error:</b> " + err.name + " \n\nPlease try again after some time..."
-      );
-  } else {
-    console.dir(err);
-    return new Error(
-      "<b>Error:</b> " + err.name + " \n\nPlease try again after some time..."
-    );
+    }
   }
+  return err;
 }

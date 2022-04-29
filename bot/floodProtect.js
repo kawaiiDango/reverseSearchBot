@@ -1,6 +1,6 @@
 import settings from "../settings/settings.js";
 import LRU from "lru-cache";
-const userLRU = new LRU(100);
+const userLRU = new LRU({ max: 100 });
 const {
   interval: intervalSecs,
   msgLimit,

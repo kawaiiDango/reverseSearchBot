@@ -248,7 +248,7 @@ const request = async (url, bot, editMsg) => {
       errDisplayText = getOtherSearches(MESSAGE.reachLimitation, directLink);
     } else {
       errInFetch(err, bot)
-      errDisplayText = err.message;
+      errDisplayText = MESSAGE.unknownError;
     }
     await editMessageText(bot, editMsg, errDisplayText, {
       parse_mode: "HTML",
