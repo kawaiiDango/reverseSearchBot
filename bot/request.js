@@ -114,7 +114,7 @@ export function errInFetch(err, bot) {
     // The request was made, but the server responded with a status code
     // that falls out of the range of 2xx
     console.log("-----error.status is", err.response.status);
-    if (err.response.status && err.response.status == 429) {
+    if (err.response.status && (err.response.status == 429 || err.response.status == 403)) {
       let now = Date.now();
       if (
         now - proxy.lastReqTime > 100 * 1000 &&

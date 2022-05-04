@@ -1,8 +1,10 @@
 import settings from "../settings/settings.js";
 import LRU from "lru-cache"
+import { Mutex } from "async-mutex"
 const { reportToOwnerSwitch, reportingInterval, privateSettings } = settings;
 const receiver_id = privateSettings.adminId;
 const errDataLRU = new LRU({ max: 15 });
+const mutex = new Mutex();
 
 export async function reportLimitReached(whichApi, bot) {
   if (!reportToOwnerSwitch.reportLimitsOfSaucenao.on) return;
@@ -22,16 +24,20 @@ export async function reportError(errorObj, bot) {
     "responseCode": errorObj.response?.status,
   });
 
-  let errData = errDataLRU.get(mapKey);
-  if (errData !== undefined) {
-    errData.count++;
-  } else {
-    errData = {
-      count: 1,
-      lastSendTime: -1,
-    };
-    errDataLRU.set(mapKey, errData);
-  }
+  let errData;
+  await mutex.runExclusive(async () => {
+    errData = errDataLRU.get(mapKey);
+    if (errData !== undefined) {
+      errData.count++;
+    } else {
+      errData = {
+        count: 1,
+        lastSendTime: -1,
+      };
+      errDataLRU.set(mapKey, errData);
+    }
+  })
+
 
   const now = Date.now();
   if (now - errData.lastSendTime > reportingInterval) {
