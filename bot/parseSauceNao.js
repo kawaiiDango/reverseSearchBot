@@ -159,7 +159,7 @@ export default (response, editMsg) => {
   // bList.push(Markup.switchToChatButton(idButtonName.share, "sn|" + shareId));
 
   const markup = Markup.inlineKeyboard(bList, {
-    wrap: (btn, index, currentRow) => currentRow.length >= 3
+    wrap: (btn, index, currentRow) => currentRow.length >= 3,
   });
 
   track(editMsg.origFrom, "sauce_found_saucenao");

@@ -3,8 +3,8 @@ import { SocksProxyAgent } from "socks-proxy-agent";
 import HttpsProxyAgent from "https-proxy-agent";
 import { exec } from "child_process";
 // const proxyLists = require('proxy-lists');
-import LRU from "lru-cache";
-const cache = new LRU({ max: 200, ttl: 1000 * 60 * 60 * 24 });
+import { LRUCache } from "lru-cache";
+const cache = new LRUCache({ max: 200, ttl: 1000 * 60 * 60 * 24 });
 
 import settings from "../settings/settings.js";
 import privateSettings from "../settings/private.js";
@@ -53,7 +53,10 @@ const changeProxy = async () => {
   const options = {};
   options.agent = proxy.perma;
 
-  const rawResp = await fetch(urlbase.proxyList + json2query(urlbase.proxyListParams), options)
+  const rawResp = await fetch(
+    urlbase.proxyList + json2query(urlbase.proxyListParams),
+    options
+  );
   const res = await rawResp.json();
   if (res.ip && res.port) {
     const protocol = res.protocol || res.type;
@@ -114,7 +117,10 @@ export function errInFetch(err, bot) {
     // The request was made, but the server responded with a status code
     // that falls out of the range of 2xx
     console.log("-----error.status is", err.response.status);
-    if (err.response.status && (err.response.status == 429 || err.response.status == 403)) {
+    if (
+      err.response.status &&
+      (err.response.status == 429 || err.response.status == 403)
+    ) {
       let now = Date.now();
       if (
         now - proxy.lastReqTime > 100 * 1000 &&
@@ -124,7 +130,6 @@ export function errInFetch(err, bot) {
         exec(privateSettings.changeProxyCommand, (err, stdout, stderr) => {
           if (stdout) console.log(stdout);
           else if (stderr) console.log(stderr);
-          // reportLimitReached("saucenao", bot);
         });
       }
       return new Error(MESSAGE.reachLimitation);

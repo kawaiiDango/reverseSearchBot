@@ -5,7 +5,7 @@ const { botName, analKey, adminId } = privateSettings;
 const settings = {
   botName,
   url: {
-    sauceNao: "http://saucenao.com/search.php?",
+    sauceNao: "https://saucenao.com/search.php?",
     tinEye: "https://tineye.com/search?",
     proxyList: "https://gimmeproxy.com/api/getProxy?",
     proxyListParams: {
@@ -18,8 +18,8 @@ const settings = {
       get: true,
       // level: "elite",
     },
-    mal: "http://myanimelist.net/anime.php?",
-    analUrl: "http://api.amplitude.com/httpapi?api_key=" + analKey,
+    mal: "https://myanimelist.net/anime.php?",
+    analUrl: "https://api.amplitude.com/httpapi?api_key=" + analKey,
     sauceNaoParams: {
       db: 999,
       // output_type: 2,
@@ -28,7 +28,7 @@ const settings = {
       minSimilarity: 60,
       tolerance: 7,
     },
-    pixiv_id: "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=",
+    pixiv_id: "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=",
     danbooru_id: "https://danbooru.donmai.us/post/show/",
     gelbooru_id: "https://gelbooru.com/index.php?page=post&s=view&id=",
     sankaku_id: "https://chan.sankakucomplex.com/post/show/",
@@ -37,7 +37,7 @@ const settings = {
     anidb_aid: "https://anidb.net/perl-bin/animedb.pl?show=anime&aid=",
     e621_id: "https://e621.net/post/show/",
     yandere_id: "https://yande.re/post/show/",
-    drawr_id: "http://drawr.net/show.php?id=",
+    drawr_id: "https://drawr.net/show.php?id=",
     da_id: "https://deviantart.com/view/",
     pawoo_id: "https://pawoo.net/@",
     bcy_id: "https://bcy.net/",
@@ -84,7 +84,7 @@ const settings = {
       "</i>",
     reachLimitation:
       "The request limit has reached, try again after some time. <i>Please use {saucenao},    {ascii2d},    {google}    or    {tineye} links instead</i>\nDo not forward this message",
-    unknownError: "Oopsie doopsies",
+    unknownError: "Oopsie doopsie, I did a fucky wucky",
     invalidFileId: "<i>Invalid file</i>",
     requestRating:
       '<a href="https://telegram.me/storebot?start=' +
@@ -107,9 +107,7 @@ const settings = {
     msgLimit: 3,
   },
   reportToOwnerSwitch: {
-    reportLimitsOfSaucenao: { on: false, notify: false },
     reportError: { on: true, notify: false },
-    reportFile: { on: false, notify: false },
   },
   reportingInterval: 60 * 60 * 1000,
   keywords: /^(sauce|source|what\?)$/i,

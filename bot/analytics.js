@@ -28,7 +28,7 @@ export default async (msgFrom, eventType, eventProps) => {
       },
       method: "POST",
       body: "event=[" + JSON.stringify(tdata) + "]",
-    })
+    });
   } catch (e) {
     console.log("anal failed " + e);
   }

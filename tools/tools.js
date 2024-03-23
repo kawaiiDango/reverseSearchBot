@@ -52,26 +52,26 @@ export function getOtherSearches(text, url) {
     text = text.replace(
       "{google}",
       '</i><a href="https://www.google.com/searchbyimage?image_url=' +
-      url +
-      '">Google Reverse Search</a><i>'
+        url +
+        '">Google Reverse Search</a><i>'
     );
     text = text.replace(
       "{saucenao}",
       '</i><a href="https://saucenao.com/search.php?url=' +
-      url +
-      '">SauceNAO</a><i>'
+        url +
+        '">SauceNAO</a><i>'
     );
     text = text.replace(
       "{tineye}",
       '</i><a href="https://tineye.com/search?url=' +
-      url +
-      '&sort=size&order=des">TinEye</a><i>'
+        url +
+        '&sort=size&order=des">TinEye</a><i>'
     );
     text = text.replace(
       "{ascii2d}",
       '</i><a href="https://ascii2d.net/search/url/' +
-      encodeURIComponent(url) +
-      '">Ascii2d</a><i>'
+        encodeURIComponent(url) +
+        '">Ascii2d</a><i>'
     );
     return text;
   } else {

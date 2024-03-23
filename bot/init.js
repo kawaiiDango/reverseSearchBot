@@ -189,7 +189,7 @@ const getSauce = async (msg, editMsg) => {
     await request(msg.url, bot, editMsg);
   } else {
     try {
-      const file = await bot.telegram.getFile(msg.fileId)
+      const file = await bot.telegram.getFile(msg.fileId);
       if (global.debug) console.log("file is", file);
 
       const url =
@@ -203,7 +203,7 @@ const getSauce = async (msg, editMsg) => {
       reportError(e, bot);
       await editMessageText(bot, editMsg, MESSAGE.invalidFileId, {
         parse_mode: "HTML",
-      })
+      });
     }
   }
 };
@@ -212,18 +212,23 @@ const request = async (url, bot, editMsg) => {
   editMsg.url = url;
 
   try {
-    const res = await fetchSauceNao(url, editMsg)
+    const res = await fetchSauceNao(url, editMsg);
     const parsedRes = parseSauceNao(res, editMsg);
     if (parsedRes) {
       const { displayText, markup, preview } = parsedRes;
       try {
-        await editMessageText(bot, editMsg, displayText + getRateText(editMsg, markup), {
-          parse_mode: "HTML",
-          ...markup,
-          disable_web_page_preview: !preview,
-        })
+        await editMessageText(
+          bot,
+          editMsg,
+          displayText + getRateText(editMsg, markup),
+          {
+            parse_mode: "HTML",
+            ...markup,
+            disable_web_page_preview: !preview,
+          }
+        );
       } catch (e) {
-        errInFetch(e, bot)
+        errInFetch(e, bot);
       }
     }
   } catch (err) {
@@ -234,26 +239,23 @@ const request = async (url, bot, editMsg) => {
       editMsg.chat.type == "private"
     ) {
       directLink = err.directLink;
-      if (
-        !directLink &&
-        privateSettings.adminId.includes(editMsg.origFrom.id)
-      )
+      if (!directLink && privateSettings.adminId.includes(editMsg.origFrom.id))
         directLink = editMsg.url;
     }
     let errDisplayText;
     if (err.message == MESSAGE.zeroResult)
       errDisplayText = getOtherSearches(MESSAGE.zeroResult, directLink);
     else if (err.message == MESSAGE.reachLimitation) {
-      errInFetch(err, bot)
+      errInFetch(err, bot);
       errDisplayText = getOtherSearches(MESSAGE.reachLimitation, directLink);
     } else {
-      errInFetch(err, bot)
+      errInFetch(err, bot);
       errDisplayText = MESSAGE.unknownError;
     }
     await editMessageText(bot, editMsg, errDisplayText, {
       parse_mode: "HTML",
       disable_web_page_preview: true,
-    })
+    });
   }
 };
 
@@ -281,19 +283,21 @@ const getRateText = (editMsg, markupPresent) => {
   return rateText;
 };
 
-settings.botName = (await bot.telegram.getMe()).username
+settings.botName = (await bot.telegram.getMe()).username;
 
-//bot.launch();
-await bot.telegram.deleteWebhook()
 bot.launch({
-  webhook: {
-    domain: privateSettings.webhookEndpoint,
-    hookPath: privateSettings.webhookEndpoint.substring(
-      privateSettings.webhookEndpoint.lastIndexOf("/")
-    ),
-    port: privateSettings.webhookPort,
-    host: privateSettings.webhookHost,
-  },
+  dropPendingUpdates: true,
 });
+// await bot.telegram.deleteWebhook()
+// bot.launch({
+//   webhook: {
+//     domain: privateSettings.webhookEndpoint,
+//     hookPath: privateSettings.webhookEndpoint.substring(
+//       privateSettings.webhookEndpoint.lastIndexOf("/")
+//     ),
+//     port: privateSettings.webhookPort,
+//     host: privateSettings.webhookHost,
+//   },
+// });
 
 console.log(privateSettings.webhookEndpoint);
