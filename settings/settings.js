@@ -1,25 +1,13 @@
 import privateSettings from "./private.js";
 
-const { botName, analKey, adminId } = privateSettings;
+const { botName } = privateSettings;
 
 const settings = {
   botName,
   url: {
     sauceNao: "https://saucenao.com/search.php?",
-    tinEye: "https://tineye.com/search?",
-    proxyList: "https://gimmeproxy.com/api/getProxy?",
-    proxyListParams: {
-      anonymityLevel: 1,
-      minSpeed: 10,
-      protocol: "socks5",
-      // type:"socks5",
-      maxCheckPeriod: 300,
-      cookies: true,
-      get: true,
-      // level: "elite",
-    },
     mal: "https://myanimelist.net/anime.php?",
-    analUrl: "https://api.amplitude.com/httpapi?api_key=" + analKey,
+    analUrl: "https://api2.amplitude.com/2/httpapi",
     sauceNaoParams: {
       db: 999,
       // output_type: 2,
@@ -62,14 +50,9 @@ const settings = {
     bcy_id: "BCY",
     url: "",
 
-    share: "↗️Forward",
     loading: "🍝",
-    pageLink: "📃Source",
-    picLink: "🖼️High res",
-    searchSauceNao: "🎨🔍ArtSearch",
   },
   msg: {
-    invalidUrl: "That doesn't look like a photo or a URL.",
     invalidForm: "That type of message is not supported yet.",
     loading: "<i>Pouring some sauce on it...</i>",
     zeroResult:
@@ -97,10 +80,6 @@ const settings = {
       botName +
       " to find its source.",
   },
-  reporter: {
-    events: ["reconnect", "reconnected", "error"],
-    to: adminId,
-  },
   floodProtect: {
     message: "aaaaah, slow down...",
     interval: 30,
@@ -114,9 +93,8 @@ const settings = {
   commands: ["sauce", "source", "sauce@" + botName, "source@" + botName],
   // keywords: ['sauce', 'source', 'what?'],
   privateSettings,
-  userAgents: [
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15",
-  ],
+  userAgent:
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
 };
 
 export default settings;

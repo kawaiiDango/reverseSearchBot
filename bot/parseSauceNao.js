@@ -7,7 +7,6 @@ import { load } from "cheerio";
 const { url: urlbase, msg: MESSAGE } = settings;
 
 export default (response, editMsg) => {
-  console.log("parseSauceNao");
   const $ = load(response);
   let found = false;
   const preview = false;
@@ -63,8 +62,7 @@ export default (response, editMsg) => {
             let key = splits[0].trim();
             if (splits.length == 2 && splits[1]) {
               key = key.replace("Est Time", "Time").replace("Creator", "By");
-              if (content[key]) console.log("key " + key + " was occupied");
-              else content[key] = splits[1].trim();
+              if (!content[key]) content[key] = splits[1].trim();
             } else if (key) {
               //a character block has multiple characters
               //seperated by \n and nothing else (i think)
@@ -148,7 +146,6 @@ export default (response, editMsg) => {
     if (ctr >= 6)
       //max 6 buttons or 3 lines
       break;
-    console.log("link:", key, links[key]);
     let text = key.replace(/:/g, "").replace(/ ID/g, "");
     let url = links[key];
     if (url.startsWith("//")) url = "http:" + url;

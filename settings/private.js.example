@@ -7,10 +7,8 @@ export let private = {
     webhookPort:443,
     webhookHost: "127.0.0.1",
     webhookEndpoint: "https://my.site/secretPath",
-    socksProxyUrls: [
-        null, 
-        "socks://url:port"
-    ],
+    socksProxyHost: "0.0.0.0",
+    socksProxyPort: 1234,
     changeProxyCommand: "",
     favouriteGroups: [
         -111111
