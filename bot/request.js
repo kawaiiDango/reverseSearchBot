@@ -8,7 +8,6 @@ import settings from "../settings/settings.js";
 import privateSettings from "../settings/private.js";
 const urlbase = settings.url;
 const MESSAGE = settings.msg;
-import { reportError } from "./reportToOwner.js";
 import { json2query } from "../tools/tools.js";
 import track from "./analytics.js";
 
@@ -52,10 +51,9 @@ export function fetchSauceNao(url, editMsg) {
   return myFetch(uurl, editMsg, { params: params });
 }
 
-export function errInFetch(err, bot) {
+export function errInFetch(err) {
   console.log("errInFetch");
 
-  reportError(err, bot);
   if (err.response) {
     // The request was made, but the server responded with a status code
     // that falls out of the range of 2xx

@@ -106,14 +106,7 @@ export default (response, editMsg) => {
   });
 
   if (!found) {
-    track(editMsg.origFrom, "sauce_not_found");
-    let directLink = $("#yourimage > a:nth-child(1) > img:nth-child(1)")
-      .first()
-      .attr("src");
-    if (directLink) directLink = "https://saucenao.com/" + directLink;
-    const error = new Error(MESSAGE.zeroResult);
-    error.directLink = directLink;
-    throw error;
+    throw new Error(MESSAGE.zeroResult);
   }
   if (content._title) displayText = "<b>" + content._title + "</b>" + "\n";
 
@@ -153,7 +146,6 @@ export default (response, editMsg) => {
     bList.push(Markup.button.url(text, url));
     ctr++;
   }
-  // bList.push(Markup.switchToChatButton(idButtonName.share, "sn|" + shareId));
 
   const markup = Markup.inlineKeyboard(bList, {
     wrap: (btn, index, currentRow) => currentRow.length >= 3,

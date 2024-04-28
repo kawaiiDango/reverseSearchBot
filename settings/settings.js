@@ -53,10 +53,9 @@ const settings = {
     loading: "🍝",
   },
   msg: {
-    invalidForm: "That type of message is not supported yet.",
     loading: "<i>Pouring some sauce on it...</i>",
     zeroResult:
-      "No sauce found; this bot works only with uncropped anime/2d art. <i>Maybe try {google},    {ascii2d}    or    {tineye} instead?</i>",
+      "No sauce found; this bot works only with uncropped anime/2d art.",
     help:
       "Send me an image, a sticker, an image file or a GIF to find its source Right Nao.\n\n" +
       // "\n\n<i>Tip: Click the 🔍ArtSearch button if it is an artwork or cosplay, for character, show episode and artist identification.</i>"+
@@ -66,13 +65,9 @@ const settings = {
       botName +
       "</i>",
     reachLimitation:
-      "The request limit has reached, try again after some time. <i>Please use {saucenao},    {ascii2d},    {google}    or    {tineye} links instead</i>\nDo not forward this message",
+      "The request limit has reached, try again after some time.",
     unknownError: "Oopsie doopsie, I did a fucky wucky",
     invalidFileId: "<i>Invalid file</i>",
-    requestRating:
-      '<a href="https://telegram.me/storebot?start=' +
-      botName +
-      '">★ Rate this result</a>',
     keywordHelp:
       "Don't just click me like that. \n\nPM me a pic, GIF, a sticker, or an image file\n\nIf I'm in a group, reply with /source@" +
       botName +
@@ -85,10 +80,6 @@ const settings = {
     interval: 30,
     msgLimit: 3,
   },
-  reportToOwnerSwitch: {
-    reportError: { on: true, notify: false },
-  },
-  reportingInterval: 60 * 60 * 1000,
   keywords: /^(sauce|source|what\?)$/i,
   commands: ["sauce", "source", "sauce@" + botName, "source@" + botName],
   // keywords: ['sauce', 'source', 'what?'],

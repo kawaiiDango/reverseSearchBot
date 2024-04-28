@@ -10,14 +10,14 @@
   },
   "author": "kawaiiDango",
   "bugs": {
-    "url": "https://github.com/owner/project/issues"
+    "url": "https://github.com/kawaiiDango/reverseSearchBot/issues"
   },
   "repository": "kawaiiDango/reverseSearchBot",
   "license": "ISC",
   "dependencies": {
     "async-mutex": "^0.5.0",
     "cheerio": "^1.0.0-rc.12",
-    "lru-cache": "^10.2.0",
+    "lru-cache": "^10.2.1",
     "fetch-socks": "^1.3.0",
     "telegraf": "^4.16.3"
   }

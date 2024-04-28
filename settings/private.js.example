@@ -1,7 +1,5 @@
 export let private = {
     botToken: "tg bot token",
-    adminId: ["123456"],
-    trustedUserIds: [4568, 5755],
     analKey: "amplitude.com analytics key",
     botName: "mybot",
     webhookPort:443,
