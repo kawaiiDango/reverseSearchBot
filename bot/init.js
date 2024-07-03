@@ -66,6 +66,10 @@ const keywordResponse = (ctx) => {
 
 bot.hears(keywords, keywordResponse);
 bot.command(commands, keywordResponse);
+bot.command("help", (ctx) => ctx.reply(MESSAGE.help, { parse_mode: "HTML" }));
+bot.command("privacy", (ctx) =>
+  ctx.reply(MESSAGE.privacyPolicy, { parse_mode: "HTML" })
+);
 
 bot.on(
   [message("photo"), message("sticker"), message("document"), message("video")],

@@ -6,10 +6,10 @@ Scrapes from ~~Tineye~~ (fuck) and Saucenow. Doesn't use the standard API.
 
 A more user friendly and functional rewrite of https://github.com/cod119/TeleSaucenao_bot
 
-Usage:
+### Usage:
 
 Rename settings/private.js.example to .js after putting the required keys/tokens and constants.
 
-npm i
+`npm i`
 
-npm start
+`npm start`

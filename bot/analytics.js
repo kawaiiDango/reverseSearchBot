@@ -14,7 +14,6 @@ export default async (msgFrom, eventType, eventProps) => {
         event_type: eventType,
         event_properties: eventProps,
         user_id: msgFrom.id,
-        user_properties: msgFrom,
         language: lang,
       },
     ],

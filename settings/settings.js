@@ -8,14 +8,6 @@ const settings = {
     sauceNao: "https://saucenao.com/search.php?",
     mal: "https://myanimelist.net/anime.php?",
     analUrl: "https://api2.amplitude.com/2/httpapi",
-    sauceNaoParams: {
-      db: 999,
-      // output_type: 2,
-      testmode: 1,
-      numres: 5,
-      minSimilarity: 60,
-      tolerance: 7,
-    },
     pixiv_id: "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=",
     danbooru_id: "https://danbooru.donmai.us/post/show/",
     gelbooru_id: "https://gelbooru.com/index.php?page=post&s=view&id=",
@@ -58,7 +50,6 @@ const settings = {
       "No sauce found; this bot works only with uncropped anime/2d art.",
     help:
       "Send me an image, a sticker, an image file or a GIF to find its source Right Nao.\n\n" +
-      // "\n\n<i>Tip: Click the 🔍ArtSearch button if it is an artwork or cosplay, for character, show episode and artist identification.</i>"+
       "<i>If I'm in a group, reply to a media with /sauce@" +
       botName +
       " or /source@" +
@@ -74,6 +65,8 @@ const settings = {
       " or /sauce@" +
       botName +
       " to find its source.",
+    privacyPolicy:
+      "The bot Reverse Search Bot, counts unique telegram user IDs for analytics.",
   },
   floodProtect: {
     message: "aaaaah, slow down...",
