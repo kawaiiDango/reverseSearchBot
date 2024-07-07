@@ -1,4 +1,4 @@
-export let private = {
+export const privateSettings = {
     botToken: "tg bot token",
     analKey: "amplitude.com analytics key",
     botName: "mybot",

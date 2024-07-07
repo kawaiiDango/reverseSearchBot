@@ -1,12 +1,10 @@
 import { Markup } from "telegraf";
-import settings from "../settings/settings.js";
+import { urls, msgs, sauceNaoParams } from "../settings/settings.js";
 import { json2query } from "../tools/tools.js";
-import track from "./analytics.js";
+import { track } from "./analytics.js";
 import { load } from "cheerio";
 
-const { url: urlbase, msg: MESSAGE } = settings;
-
-export default (response, editMsg) => {
+export const parseSauceNao = (response, editMsg) => {
   const $ = load(response);
   let found = false;
   const preview = false;
@@ -21,10 +19,10 @@ export default (response, editMsg) => {
     const percent = parseFloat($(elem).find(".resultsimilarityinfo").text());
     if (
       results.length &&
-      Math.abs(results[0].percent - percent) > urlbase.sauceNaoParams.tolerance
+      Math.abs(results[0].percent - percent) > sauceNaoParams.tolerance
     )
       return;
-    if (percent < urlbase.sauceNaoParams.minSimilarity) return;
+    if (percent < sauceNaoParams.minSimilarity) return;
 
     found = true;
 
@@ -98,7 +96,7 @@ export default (response, editMsg) => {
             content._title = title + " (Ep. " + matches[2] + ")\n";
           } else title = content._title;
 
-          links["MAL"] = urlbase.mal + json2query({ q: title });
+          links["MAL"] = urls.mal + json2query({ q: title });
         }
       });
 
@@ -106,7 +104,7 @@ export default (response, editMsg) => {
   });
 
   if (!found) {
-    throw new Error(MESSAGE.zeroResult);
+    throw new Error(msgs.zeroResult);
   }
   if (content._title) displayText = "<b>" + content._title + "</b>" + "\n";
 

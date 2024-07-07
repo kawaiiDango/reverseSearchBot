@@ -1,7 +1,6 @@
-import SETTINGS from "../settings/settings.js";
-import privateSettings from "../settings/private.js";
+import { privateSettings, urls } from "../settings/settings.js";
 
-export default async (msgFrom, eventType, eventProps) => {
+export const track = async (msgFrom, eventType, eventProps) => {
   if (!msgFrom) return;
   const lang = msgFrom.language_code || "undefined";
 
@@ -9,7 +8,7 @@ export default async (msgFrom, eventType, eventProps) => {
     api_key: privateSettings.analKey,
     events: [
       {
-        platform: SETTINGS.botName,
+        platform: privateSettings.botName,
         ip: "$remote",
         event_type: eventType,
         event_properties: eventProps,
@@ -20,7 +19,7 @@ export default async (msgFrom, eventType, eventProps) => {
   };
 
   try {
-    await fetch(SETTINGS.url.analUrl, {
+    await fetch(urls.analUrl, {
       headers: {
         Accept: "*/*",
         "Content-Type": "application/json",

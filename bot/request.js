@@ -1,15 +1,16 @@
 import { socksDispatcher } from "fetch-socks";
 import { exec } from "child_process";
-// const proxyLists = require('proxy-lists');
 import { LRUCache } from "lru-cache";
-const cache = new LRUCache({ max: 200, ttl: 1000 * 60 * 60 * 24 });
 
-import settings from "../settings/settings.js";
-import privateSettings from "../settings/private.js";
-const urlbase = settings.url;
-const MESSAGE = settings.msg;
+import {
+  privateSettings,
+  urls,
+  sauceNaoParams,
+  msgs,
+  userAgent,
+} from "../settings/settings.js";
 import { json2query } from "../tools/tools.js";
-import track from "./analytics.js";
+import { track } from "./analytics.js";
 
 const dispatcher = socksDispatcher({
   type: 5,
@@ -17,6 +18,7 @@ const dispatcher = socksDispatcher({
   port: privateSettings.socksProxyPort,
 });
 
+const cache = new LRUCache({ max: 200, ttl: 1000 * 60 * 60 * 24 });
 const myFetch = async (url, editMsg, options) => {
   const hit = cache.get(url);
 
@@ -26,7 +28,7 @@ const myFetch = async (url, editMsg, options) => {
   }
   options.dispatcher = dispatcher;
   options.headers = {
-    "User-Agent": settings.userAgent,
+    "User-Agent": userAgent,
   };
 
   const res = await fetch(url, options);
@@ -44,9 +46,9 @@ const myFetch = async (url, editMsg, options) => {
 };
 
 export function fetchSauceNao(url, editMsg) {
-  const params = urlbase.sauceNaoParams;
+  const params = sauceNaoParams;
   params.url = url;
-  const uurl = urlbase.sauceNao + json2query(params);
+  const uurl = urls.sauceNao + json2query(params);
 
   return myFetch(uurl, editMsg, { params: params });
 }
@@ -73,7 +75,7 @@ export function errInFetch(err) {
           else if (stderr) console.log(stderr);
         });
       }
-      return new Error(MESSAGE.reachLimitation);
+      return new Error(msgs.reachLimitation);
     }
   }
   return err;

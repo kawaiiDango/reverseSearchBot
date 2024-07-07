@@ -2,25 +2,22 @@
 
 global.debug = false;
 
-import "../settings/settings.js";
-const {
+import {
   privateSettings,
-  msg: _msg,
+  msgs,
   id_buttonName,
   keywords,
   commands,
-} = settings;
+} from "../settings/settings.js";
 
 import { Telegraf, Markup } from "telegraf";
 import { errInFetch, fetchSauceNao } from "./request.js";
-import parseSauceNao from "./parseSauceNao.js";
+import { parseSauceNao } from "./parseSauceNao.js";
 import { isSupportedExt, editMessageText } from "../tools/tools.js";
-import track from "./analytics.js";
-import isFlooding from "./floodProtect.js";
+import { track } from "./analytics.js";
+import { isFlooding } from "./floodProtect.js";
 import { message } from "telegraf/filters";
 
-const MESSAGE = _msg;
-import settings from "../settings/settings.js";
 const bot = new Telegraf(privateSettings.botToken);
 
 process.on("unhandledRejection", (e) => {
@@ -32,14 +29,14 @@ const loadingKb = Markup.inlineKeyboard([
   Markup.button.callback(id_buttonName.loading, "noop"),
 ]);
 
-bot.start((ctx) => ctx.reply(MESSAGE.help, { parse_mode: "HTML" }));
+bot.start((ctx) => ctx.reply(msgs.help, { parse_mode: "HTML" }));
 
 //added to group
 bot.on(message("new_chat_members"), (ctx) => {
   const token = privateSettings.botToken;
   const myId = token.substring(0, token.indexOf(":"));
   if (ctx.message.new_chat_participant.id == myId)
-    ctx.reply(MESSAGE.help, { parse_mode: "HTML" });
+    ctx.reply(msgs.help, { parse_mode: "HTML" });
 });
 const keywordResponse = (ctx) => {
   if (isFlooding(ctx)) return;
@@ -56,7 +53,7 @@ const keywordResponse = (ctx) => {
     getSauceFromFile(rmsg);
     track(ctx.from, "sauce_keyword", { text: ctx.message.text });
   } else if (ctx.message.text.indexOf("/") == 0) {
-    ctx.reply(MESSAGE.keywordHelp, {
+    ctx.reply(msgs.keywordHelp, {
       parse_mode: "HTML",
       reply_to_message_id: ctx.message.message_id,
     });
@@ -66,9 +63,9 @@ const keywordResponse = (ctx) => {
 
 bot.hears(keywords, keywordResponse);
 bot.command(commands, keywordResponse);
-bot.command("help", (ctx) => ctx.reply(MESSAGE.help, { parse_mode: "HTML" }));
+bot.command("help", (ctx) => ctx.reply(msgs.help, { parse_mode: "HTML" }));
 bot.command("privacy", (ctx) =>
-  ctx.reply(MESSAGE.privacyPolicy, { parse_mode: "HTML" })
+  ctx.reply(msgs.privacyPolicy, { parse_mode: "HTML" })
 );
 
 bot.on(
@@ -111,7 +108,7 @@ const getSauceFromFile = (msg) => {
     track(msg.from, "query", { type: "video" });
   } else return;
   bot.telegram
-    .sendMessage(msg.chat.id, MESSAGE.loading, {
+    .sendMessage(msg.chat.id, msgs.loading, {
       parse_mode: "HTML",
       reply_to_message_id: msg.message_id,
       ...loadingKb,
@@ -140,7 +137,7 @@ const getSauce = async (msg, editMsg) => {
       await request(url, bot, editMsg);
     } catch (e) {
       console.log("invalidFileId");
-      await editMessageText(bot, editMsg, MESSAGE.invalidFileId, {
+      await editMessageText(bot, editMsg, msgs.invalidFileId, {
         parse_mode: "HTML",
       });
     }
@@ -167,13 +164,13 @@ const request = async (url, bot, editMsg) => {
     }
   } catch (err) {
     let errDisplayText;
-    if (err.message == MESSAGE.zeroResult) errDisplayText = MESSAGE.zeroResult;
-    else if (err.message == MESSAGE.reachLimitation) {
+    if (err.message == msgs.zeroResult) errDisplayText = msgs.zeroResult;
+    else if (err.message == msgs.reachLimitation) {
       errInFetch(err);
-      errDisplayText = MESSAGE.reachLimitation;
+      errDisplayText = msgs.reachLimitation;
     } else {
       errInFetch(err);
-      errDisplayText = MESSAGE.unknownError;
+      errDisplayText = msgs.unknownError;
     }
     await editMessageText(bot, editMsg, errDisplayText, {
       parse_mode: "HTML",
@@ -181,8 +178,6 @@ const request = async (url, bot, editMsg) => {
     });
   }
 };
-
-settings.botName = (await bot.telegram.getMe()).username;
 
 bot.launch({
   dropPendingUpdates: true,
@@ -198,5 +193,3 @@ bot.launch({
 //     host: privateSettings.webhookHost,
 //   },
 // });
-
-console.log(privateSettings.webhookEndpoint);

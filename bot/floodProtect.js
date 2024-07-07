@@ -1,13 +1,8 @@
-import settings from "../settings/settings.js";
+import { floodProtect } from "../settings/settings.js";
 import { LRUCache } from "lru-cache";
 const userLRU = new LRUCache({ max: 100 });
-const {
-  interval: intervalSecs,
-  msgLimit,
-  message: warnMsg,
-} = settings.floodProtect;
 
-export default (ctx) => {
+export const isFlooding = (ctx) => {
   if (!ctx.message || !ctx.from || !ctx.message.date) return false;
   let userId = ctx.from.id;
   let user = userLRU.get(userId);
@@ -23,10 +18,10 @@ export default (ctx) => {
     user.lastTime = now;
     user.numMsgs++;
   }
-  if (diffSecs < intervalSecs) {
-    if (user.numMsgs > msgLimit) {
+  if (diffSecs < floodProtect.interval) {
+    if (user.numMsgs > floodProtect.msgLimit) {
       if (!user.warned) {
-        ctx.reply(warnMsg);
+        ctx.reply(floodProtect.message);
         user.warned = true;
       }
       console.log(userId + " is flooding");
